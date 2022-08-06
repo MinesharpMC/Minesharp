@@ -16,7 +16,7 @@ public class LoginStartPacket : ClientPacket
 public class LoginStartCreator : PacketCreator<LoginStartPacket>
 {
     public override int PacketId => 0x0;
-    public override NetworkProtocol NetworkProtocol => NetworkProtocol.Login;
+    public override NetworkProtocol Protocol => NetworkProtocol.Login;
 
     protected override LoginStartPacket CreatePacket(IByteBuffer buffer)
     {
@@ -29,12 +29,8 @@ public class LoginStartCreator : PacketCreator<LoginStartPacket>
         if (hasSig)
         {
             timestamp = buffer.ReadLong();
-
-            var keyLength = buffer.ReadVarInt();
-            key = buffer.ReadBytes(keyLength).Array;
-
-            var signatureLength = buffer.ReadVarInt();
-            signature = buffer.ReadBytes(signatureLength).Array;
+            key = buffer.ReadBytes();
+            signature = buffer.ReadBytes();
         }
         
         return new LoginStartPacket

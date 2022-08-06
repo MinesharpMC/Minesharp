@@ -14,7 +14,7 @@ public class PacketFactory
 
     public PacketFactory(IEnumerable<PacketCreator> packetCreators, IEnumerable<BufferCreator> bufferCreators)
     {
-        this.packetCreators = packetCreators.ToNestedDictionary(x => x.NetworkProtocol, x => x.PacketId);
+        this.packetCreators = packetCreators.ToNestedDictionary(x => x.Protocol, x => x.PacketId);
         this.bufferCreators = bufferCreators.ToNestedDictionary(x => x.Protocol, x => x.PacketType);
     }
     

@@ -11,7 +11,7 @@ public class RequestPacket : ClientPacket
 public class RequestCreator : PacketCreator<RequestPacket>
 {
     public override int PacketId => 0x0;
-    public override NetworkProtocol NetworkProtocol => NetworkProtocol.Status;
+    public override NetworkProtocol Protocol => NetworkProtocol.Status;
 
     protected override RequestPacket CreatePacket(IByteBuffer buffer)
     {

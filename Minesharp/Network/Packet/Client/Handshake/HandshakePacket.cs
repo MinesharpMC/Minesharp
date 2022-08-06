@@ -20,7 +20,7 @@ public class HandshakePacket : ClientPacket
 public class HandshakeCreator : PacketCreator<HandshakePacket>
 {
     public override int PacketId => 0x0;
-    public override NetworkProtocol NetworkProtocol => NetworkProtocol.Handshake;
+    public override NetworkProtocol Protocol => NetworkProtocol.Handshake;
 
     protected override HandshakePacket CreatePacket(IByteBuffer buffer)
     {

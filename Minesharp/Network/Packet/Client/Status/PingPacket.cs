@@ -16,7 +16,7 @@ public class PingPacket : ClientPacket
 public class PingCreator : PacketCreator<PingPacket>
 {
     public override int PacketId => 0x01;
-    public override NetworkProtocol NetworkProtocol => NetworkProtocol.Status;
+    public override NetworkProtocol Protocol => NetworkProtocol.Status;
 
     protected override PingPacket CreatePacket(IByteBuffer buffer)
     {

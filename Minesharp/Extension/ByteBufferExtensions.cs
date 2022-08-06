@@ -73,6 +73,14 @@ public static class ByteBufferExtensions
         buf.SetReaderIndex(idx);
         return true;
     }
+
+    public static byte[] ReadBytes(this IByteBuffer buffer)
+    {
+        var length = buffer.ReadVarInt();
+        var output = new byte[length];
+        buffer.ReadBytes(output);
+        return output;
+    }
     
     public static int ReadVarInt(this IByteBuffer buffer)
     {

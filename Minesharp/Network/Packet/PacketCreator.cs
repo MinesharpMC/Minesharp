@@ -7,7 +7,7 @@ namespace Minesharp.Network.Packet;
 public abstract class PacketCreator
 {
     public abstract int PacketId { get; }
-    public abstract NetworkProtocol NetworkProtocol { get; }
+    public abstract NetworkProtocol Protocol { get; }
     
     public abstract ClientPacket Create(IByteBuffer buffer);
 }
