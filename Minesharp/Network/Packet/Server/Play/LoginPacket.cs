@@ -1,7 +1,7 @@
 using DotNetty.Buffers;
 using Minesharp.Extension;
+using Minesharp.Nbt;
 using Minesharp.Network.Common;
-using NamedBinaryTag;
 
 namespace Minesharp.Network.Packet.Server.Play;
 

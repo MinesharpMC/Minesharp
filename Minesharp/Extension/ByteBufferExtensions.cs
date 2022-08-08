@@ -1,7 +1,8 @@
 using System.Text;
 using DotNetty.Buffers;
-using NamedBinaryTag;
-using NamedBinaryTag.Writer;
+using Minesharp.Chat.Component;
+using Minesharp.Nbt;
+using Minesharp.Nbt.Writer;
 
 namespace Minesharp.Extension;
 
@@ -19,13 +20,6 @@ public static class ByteBufferExtensions
         return Encoding.UTF8.GetString(bytes);
     }
 
-    private static void WriteTagString(this IByteBuffer buffer, string name)
-    {
-        var bytes = Encoding.UTF8.GetBytes(name);
-        buffer.WriteUnsignedShort((ushort)bytes.Length);
-        buffer.WriteBytes(bytes);
-    }
-    
     public static void WriteTag(this IByteBuffer buffer, Tag tag)
     {
         using var memory = new MemoryStream();
@@ -35,6 +29,11 @@ public static class ByteBufferExtensions
         }
 
         buffer.WriteBytes(memory.ToArray());
+    }
+
+    public static void WriteComponent(this IByteBuffer buffer, ChatComponent component)
+    {
+        buffer.WriteString(component.ToJson());
     }
 
     public static void WriteGuid(this IByteBuffer buffer, Guid guid)

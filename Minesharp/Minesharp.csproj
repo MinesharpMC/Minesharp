@@ -13,7 +13,9 @@
       <PackageReference Include="DotNetty.Common" Version="0.7.4" />
       <PackageReference Include="DotNetty.Handlers" Version="0.7.4" />
       <PackageReference Include="DotNetty.Transport" Version="0.7.4" />
-      <PackageReference Include="NamedBinaryTag" Version="1.2.0" />
+      <PackageReference Include="Minesharp.Chat" Version="1.0.0" />
+      <PackageReference Include="Minesharp.Nbt" Version="1.1.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="Serilog" Version="2.11.0" />
       <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
       <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
@@ -23,10 +25,6 @@
       <Content Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Network\Packet\Client\Play" />
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .MinimumLevel.Information()
+    .MinimumLevel.Debug()
     .CreateLogger();
 
 var app = Host.CreateDefaultBuilder(args)

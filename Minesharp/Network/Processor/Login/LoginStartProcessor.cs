@@ -1,22 +1,39 @@
+using System.Text.RegularExpressions;
+using Minesharp.Chat.Component;
 using Minesharp.Game.Entities;
+using Minesharp.Nbt;
 using Minesharp.Network.Common;
 using Minesharp.Network.Packet.Client.Login;
 using Minesharp.Network.Packet.Server.Login;
 using Minesharp.Network.Packet.Server.Play;
-using NamedBinaryTag;
 
 namespace Minesharp.Network.Processor.Login;
 
 public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 {
+    private static readonly Regex Regex = new("^[a-zA-Z0-9_]+$", RegexOptions.Compiled);
+    
     protected override void Process(NetworkClient client, LoginStartPacket packet)
     {
-        client.Player = new Player(client)
+        if (packet.Username.Length > 16 || Regex.IsMatch(packet.Username))
         {
-            Id = Guid.Empty,
-            Name = packet.Username,
-        };
+            client.SendPacket(new KickPacket
+            {
+                Component = new TextComponent
+                {
+                    Text = "Incorrect username"
+                }
+            });
+            client.Disconnect();
+            return;
+        }
         
+        client.Player = new Player
+        {
+            Id = Guid.NewGuid(),
+            Name = packet.Username
+        };
+
         client.SendPacket(new LoginSuccessPacket
         {
             Id = Guid.NewGuid(),
