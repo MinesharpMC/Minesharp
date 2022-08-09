@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Text;
 using DotNetty.Buffers;
 using Minesharp.Chat.Component;
 using Minesharp.Nbt;
 using Minesharp.Nbt.Writer;
+using Minesharp.Utility;
 
 namespace Minesharp.Extension;
 
@@ -18,6 +20,16 @@ public static class ByteBufferExtensions
         buffer.ReadBytes(bytes);
 
         return Encoding.UTF8.GetString(bytes);
+    }
+
+    public static void WriteBitSet(this IByteBuffer buffer, BitSet set)
+    {
+        var longs = set.ToLongArray();
+        buffer.WriteVarInt(longs.Length);
+        foreach (var value in longs)
+        {
+            buffer.WriteLong(value);
+        }
     }
 
     public static void WriteTag(this IByteBuffer buffer, Tag tag)

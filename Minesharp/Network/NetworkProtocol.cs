@@ -1,4 +1,4 @@
-namespace Minesharp.Network.Common;
+namespace Minesharp.Network;
 
 public enum NetworkProtocol
 {

@@ -1,23 +1,11 @@
-using Minesharp.Utility;
+using Minesharp.Game.Worlds;
+using Minesharp.Network;
 
 namespace Minesharp.Game.Entities;
 
 public class Player
 {
-    private readonly LockedProperty<string> name = new();
-    private readonly LockedProperty<Position> position = new();
-
-    public Guid Id { get; init; }
-    
-    public string Name
-    {
-        get => name.Value;
-        set => name.Value = value;
-    }
-
-    public Position Position
-    {
-        get => position.Value;
-        set => position.Value = value;
-    }
+    public World World { get; set; }
+    public Position Position { get; set; }
+    public NetworkClient Client { get; init; }
 }

@@ -1,7 +1,6 @@
 using System.Reflection;
 using DotNetty.Buffers;
 using Minesharp.Extension;
-using Minesharp.Network.Common;
 using Minesharp.Network.Packet.Client;
 using Minesharp.Network.Packet.Server;
 

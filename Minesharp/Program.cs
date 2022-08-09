@@ -1,9 +1,11 @@
 using Minesharp;
 using Serilog;
+using Serilog.Filters;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .MinimumLevel.Debug()
+    .Filter.ByExcluding(Matching.FromSource("Microsoft"))
+    .MinimumLevel.Information()
     .CreateLogger();
 
 var app = Host.CreateDefaultBuilder(args)

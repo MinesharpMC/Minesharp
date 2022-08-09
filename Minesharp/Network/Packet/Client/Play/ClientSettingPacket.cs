@@ -1,6 +1,5 @@
 using DotNetty.Buffers;
 using Minesharp.Extension;
-using Minesharp.Network.Common;
 
 namespace Minesharp.Network.Packet.Client.Play;
 

@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
-using Minesharp.Chat.Component;
+using Minesharp.Extension;
+using Minesharp.Game;
 using Minesharp.Game.Entities;
+using Minesharp.Game.Worlds;
 using Minesharp.Nbt;
-using Minesharp.Network.Common;
 using Minesharp.Network.Packet.Client.Login;
 using Minesharp.Network.Packet.Server.Login;
 using Minesharp.Network.Packet.Server.Play;
@@ -12,32 +13,38 @@ namespace Minesharp.Network.Processor.Login;
 public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 {
     private static readonly Regex Regex = new("^[a-zA-Z0-9_]+$", RegexOptions.Compiled);
-    
+
+    private readonly WorldManager worldManager;
+
+    public LoginStartProcessor(WorldManager worldManager)
+    {
+        this.worldManager = worldManager;
+    }
+
     protected override void Process(NetworkClient client, LoginStartPacket packet)
     {
-        if (packet.Username.Length > 16 || Regex.IsMatch(packet.Username))
+        if (packet.Username.Length > 16 || !Regex.IsMatch(packet.Username))
         {
-            client.SendPacket(new KickPacket
-            {
-                Component = new TextComponent
-                {
-                    Text = "Incorrect username"
-                }
-            });
             client.Disconnect();
             return;
         }
-        
+
         client.Player = new Player
         {
-            Id = Guid.NewGuid(),
-            Name = packet.Username
+            Position = new Position
+            {
+                X = 1000,
+                Y = 100,
+                Z = 1000
+            },
+            Client = client,
+            World = worldManager.GetPrimaryWorld()
         };
-
+        
         client.SendPacket(new LoginSuccessPacket
         {
             Id = Guid.NewGuid(),
-            Username = client.Player.Name
+            Username = packet.Username
         });
 
         client.Protocol = NetworkProtocol.Play;
@@ -160,6 +167,16 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             IsDebug = false,
             IsFlat = true,
             HasDeathLocation = false
+        });
+        
+        // client.UpdateChunks();
+        client.SendPacket(new PositionPacket
+        {
+            X = client.Player.Position.X,
+            Y = client.Player.Position.Y,
+            Z = client.Player.Position.Z,
+            Pitch = 0,
+            Rotation = 0
         });
     }
 }

@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Minesharp.Game;
 using Minesharp.Network.Packet.Client.Status;
 using Minesharp.Network.Packet.Server.Status;
 
@@ -7,13 +6,6 @@ namespace Minesharp.Network.Processor.Status;
 
 public class RequestProcessor : PacketProcessor<RequestPacket>
 {
-    private readonly Server server;
-
-    public RequestProcessor(Server server)
-    {
-        this.server = server;
-    }
-
     protected override void Process(NetworkClient client, RequestPacket packet)
     {
         client.SendPacket(new ResponsePacket
@@ -22,17 +14,17 @@ public class RequestProcessor : PacketProcessor<RequestPacket>
             {
                 version = new
                 {
-                    name = server.Version,
-                    protocol = server.Protocol
+                    name = "1.19",
+                    protocol = 759
                 },
                 players = new
                 {
-                    max = server.MaxPlayers,
+                    max = 1000,
                     online = 0
                 },
                 description = new
                 {
-                    text = server.Description
+                    text = "Powered by Minesharp"
                 }
             })
         });

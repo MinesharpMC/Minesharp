@@ -1,7 +1,6 @@
 using DotNetty.Buffers;
 using Minesharp.Chat.Component;
 using Minesharp.Extension;
-using Minesharp.Network.Common;
 
 namespace Minesharp.Network.Packet.Server.Login;
 

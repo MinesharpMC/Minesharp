@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Numerics;
 using DotNetty.Buffers;
 using Minesharp.Extension;
-using Minesharp.Network.Common;
 
 namespace Minesharp.Network.Packet.Server.Login;
 

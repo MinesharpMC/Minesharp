@@ -1,6 +1,5 @@
 using DotNetty.Transport.Channels;
 using Minesharp.Game.Entities;
-using Minesharp.Network.Common;
 using Minesharp.Network.Packet.Server;
 using Serilog;
 
@@ -8,9 +7,8 @@ namespace Minesharp.Network;
 
 public class NetworkClient
 {
-    public Player Player { get; set; }
-    
     public NetworkProtocol Protocol { get; set; }
+    public Player Player { get; set; }
 
     private readonly IChannel channel;
 
