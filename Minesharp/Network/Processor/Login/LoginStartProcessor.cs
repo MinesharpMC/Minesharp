@@ -31,13 +31,13 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 
         client.Player = new Player
         {
+            Name = packet.Username,
             Position = new Position
             {
-                X = 1000,
-                Y = 100,
-                Z = 1000
+                X = 0,
+                Y = 0,
+                Z = 0
             },
-            Client = client,
             World = worldManager.GetPrimaryWorld()
         };
         

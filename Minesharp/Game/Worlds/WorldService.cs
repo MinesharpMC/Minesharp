@@ -16,7 +16,9 @@ public class WorldService : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var creator = new WorldCreator("debug")
-            .WithChunkGenerator(new SuperflatGenerator());
+        {
+            ChunkGenerator = new SuperflatGenerator()
+        };
 
         var world = worldManager.CreateWorld(creator);
         if (world is null)
@@ -24,7 +26,7 @@ public class WorldService : IHostedService
             throw new InvalidOperationException();
         }
         
-        logger.LogInformation("Successfully created or loaded world {name}",  world.GetName());
+        logger.LogInformation("Successfully created or loaded world {name}",  world.Name);
         
         return Task.CompletedTask;
     }

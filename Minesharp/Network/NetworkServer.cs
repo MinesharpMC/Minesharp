@@ -15,15 +15,13 @@ public class NetworkServer
     private readonly MultithreadEventLoopGroup bossGroup;
     private readonly MultithreadEventLoopGroup workerGroup;
     private readonly NetworkConfiguration configuration;
-    private readonly ILogger<NetworkServer> logger;
     private IChannel channel;
 
     public IPEndPoint Ip => configuration.Ip;
 
-    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager, ILogger<NetworkServer> logger)
+    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager)
     {
         this.configuration = configuration;
-        this.logger = logger;
 
         this.bossGroup = new MultithreadEventLoopGroup(1);
         this.workerGroup = new MultithreadEventLoopGroup();

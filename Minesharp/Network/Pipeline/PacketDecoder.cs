@@ -22,6 +22,7 @@ public class PacketDecoder : ByteToMessageDecoder
         var packet = factory.CreatePacket(client.Protocol, input);
         if (packet is null)
         {
+            input.Clear();
             return;
         }
         

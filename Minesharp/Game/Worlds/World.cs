@@ -5,29 +5,34 @@ namespace Minesharp.Game.Worlds;
 
 public sealed class World
 {
-    private readonly string name;
-    private readonly ChunkManager chunkManager;
-    private readonly ChunkGenerator chunkGenerator;
+    public string Name { get; }
+    public ChunkManager ChunkManager { get; }
+    public ChunkGenerator ChunkGenerator { get; }
 
     public World(WorldCreator creator)
     {
-        this.name = creator.GetWorldName();
-        this.chunkGenerator = creator.GetChunkGenerator();
-        this.chunkManager = new ChunkManager(this);
-    }
-
-    public ChunkGenerator GetChunkGenerator()
-    {
-        return chunkGenerator;
+        Name = creator.Name;
+        ChunkGenerator = creator.ChunkGenerator;
+        ChunkManager = new ChunkManager(this);
     }
 
     public Chunk GetChunk(ChunkKey chunkKey)
     {
-        return chunkManager.GetChunk(chunkKey);
+        return ChunkManager.GetChunk(chunkKey);
     }
 
-    public string GetName()
+    public Chunk GetChunk(int x, int z)
     {
-        return name;
+        return ChunkManager.GetChunk(x, z);
+    }
+
+    public Chunk LoadChunk(int x, int z)
+    {
+        return ChunkManager.Load(x, z);
+    }
+
+    public Chunk LoadChunk(ChunkKey key)
+    {
+        return ChunkManager.Load(key);
     }
 }

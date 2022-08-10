@@ -9,81 +9,28 @@ public class Chunk
     public const int Depth = 256;
     public const int SectionDepth = 16;
     public const int SectionCount = Depth / SectionDepth;
+    
     public static readonly byte[] EmptyLight = new byte[2048];
     
-    private readonly int x;
-    private readonly int z;
-    private readonly World world;
+    public int X { get; init; }
+    public int Z { get; init; }
+    public List<ChunkSection> Sections { get; set; }
+    public sbyte[] Heightmap { get; set; }
+    public World World { get; }
     
-    private List<ChunkSection> sections;
-    private sbyte[] heightMap;
-
-    public Chunk(World world, int x, int z)
+    public Chunk(World world)
     {
-        this.x = x;
-        this.z = z;
-        this.world = world;
-        this.heightMap = new sbyte[Width * Height];
-    }
-
-    public int GetX()
-    {
-        return x;
-    }
-
-    public int GetZ()
-    {
-        return z;
-    }
-
-    public World GetWorld()
-    {
-        return world;
-    }
-
-    public int GetType(int blockX, int blockY, int blockZ)
-    {
-        return GetSection(blockY)?.GetType(blockX, blockY, blockZ) ?? 0;
+        World = world;
     }
 
     public ChunkSection GetSection(int y)
     {
         var index = y >> 4;
-        if (y is < 0 or > Depth || index > sections.Count)
+        if (y is < 0 or > Depth || index > Sections.Count)
         {
             return null;
         }
 
-        return sections[index];
-    }
-
-    public IEnumerable<ChunkSection> GetSections()
-    {
-        return sections;
-    }
-
-    public sbyte[] GetHeightmap()
-    {
-        return heightMap;
-    }
-
-    public void Load()
-    {
-        var generator = world.GetChunkGenerator();
-        var data = generator.GenerateChunkData(x, z);
-
-        var dataSections = data.GetSections();
-        if (dataSections is not null)
-        {
-            sections = new List<ChunkSection>();
-            for (var i = 0; i < dataSections.Length; ++i)
-            {
-                var section = dataSections[i];
-                if (section is not null)
-                {
-                    sections.Add(new ChunkSection(section));
-                }
-            }
-        }
+        return Sections[index];
     }
 }

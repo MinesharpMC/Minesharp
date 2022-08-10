@@ -4,28 +4,11 @@ namespace Minesharp.Game.Worlds;
 
 public class WorldCreator
 {
-    private readonly string name;
+    public string Name { get; }
+    public ChunkGenerator ChunkGenerator { get; init; }
     
-    private ChunkGenerator chunkGenerator;
-
     public WorldCreator(string name)
     {
-        this.name = name;
-    }
-
-    public WorldCreator WithChunkGenerator(ChunkGenerator generator)
-    {
-        this.chunkGenerator = generator;
-        return this;
-    }
-
-    public string GetWorldName()
-    {
-        return name;
-    }
-
-    public ChunkGenerator GetChunkGenerator()
-    {
-        return chunkGenerator;
+        Name = name;
     }
 }

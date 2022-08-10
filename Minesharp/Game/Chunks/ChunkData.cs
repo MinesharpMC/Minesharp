@@ -2,13 +2,11 @@ namespace Minesharp.Game.Chunks;
 
 public class ChunkData
 {
-    private readonly int maximumHeight;
-    private readonly int[][] sections;
+    public int[][] Sections { get; }
 
     public ChunkData()
     {
-        maximumHeight = 128;
-        sections = new int[Chunk.SectionCount][];
+        Sections = new int[Chunk.SectionCount][];
     }
 
     public void SetBlock(int x, int y, int z, int blockId)
@@ -18,17 +16,7 @@ public class ChunkData
             return;
         }
         
-        sections[y >> 4] ??= new int[4096];
-        sections[y >> 4][(y & 0xF) << 8 | z << 4 | x] = blockId;
-    }
-
-    public int[][] GetSections()
-    {
-        return sections;
-    }
-
-    public int GetMaximumHeight()
-    {
-        return maximumHeight;
+        Sections[y >> 4] ??= new int[4096];
+        Sections[y >> 4][(y & 0xF) << 8 | z << 4 | x] = blockId;
     }
 }

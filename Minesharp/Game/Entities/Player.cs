@@ -5,7 +5,8 @@ namespace Minesharp.Game.Entities;
 
 public class Player
 {
+    public string Name { get; set; }
     public World World { get; set; }
     public Position Position { get; set; }
-    public NetworkClient Client { get; init; }
+    public Rotation Rotation { get; set; }
 }

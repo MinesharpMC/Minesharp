@@ -8,13 +8,13 @@ public class WorldManager
     
     public World CreateWorld(WorldCreator creator)
     {
-        var world = GetWorld(creator.GetWorldName());
+        var world = GetWorld(creator.Name);
         if (world is not null)
         {
             return world;
         }
 
-        worlds[creator.GetWorldName()] = world = new World(creator);
+        worlds[creator.Name] = world = new World(creator);
         return world;
     }
 

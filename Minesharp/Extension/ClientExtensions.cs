@@ -1,8 +1,5 @@
-using System.Collections;
 using DotNetty.Buffers;
-using Minesharp.Game;
 using Minesharp.Game.Chunks;
-using Minesharp.Game.Worlds;
 using Minesharp.Nbt;
 using Minesharp.Network;
 using Minesharp.Network.Packet.Server.Play;
@@ -17,8 +14,8 @@ public static class ClientExtensions
         var player = client.Player;
         var chunkKeys = new List<ChunkKey>();
         
-        var centralX = player.Position.GetBlockX();
-        var centralZ = player.Position.GetBlockZ();
+        var centralX = player.Position.BlockX;
+        var centralZ = player.Position.BlockZ;
         var radius = 12;
 
         for (var x = centralX - radius; x < centralX + radius; x++)
@@ -31,12 +28,12 @@ public static class ClientExtensions
         
         chunkKeys.Sort((a, b) =>
         {
-            var dx = 16 * a.GetX() + 8 - player.Position.X;
-            var dz = 16 * a.GetZ() + 8 - player.Position.Z;
+            var dx = 16 * a.X + 8 - player.Position.X;
+            var dz = 16 * a.X + 8 - player.Position.Z;
             var da = dx * dx + dz * dz;
             
-            dx = 16 * b.GetX() + 8 - player.Position.X;
-            dz = 16 * b.GetZ() + 8 - player.Position.Z;
+            dx = 16 * b.X + 8 - player.Position.X;
+            dz = 16 * b.Z + 8 - player.Position.Z;
             
             var db = dx * dx + dz * dz;
             
@@ -45,16 +42,14 @@ public static class ClientExtensions
 
         foreach (var chunkKey in chunkKeys)
         {
-            var chunk = player.World.GetChunk(chunkKey);
+            var chunk = player.World.LoadChunk(chunkKey);
             if (chunk is null)
             {
                 continue;
             }
-            
-            chunk.Load();
 
             var buffer = Unpooled.Buffer();
-            foreach (var section in chunk.GetSections())
+            foreach (var section in chunk.Sections)
             {
                 var data = section.GetData();
                 var palette = section.GetPalette();
@@ -101,12 +96,12 @@ public static class ClientExtensions
             
             client.SendPacket(new ChunkUpdatePacket
             {
-                ChunkX = chunk.GetX(),
-                ChunkY = chunk.GetZ(),
+                ChunkX = chunk.X,
+                ChunkY = chunk.X,
                 Data = buffer,
                 Heightmaps = new CompoundTag
                 {
-                    ["MOTION_BLOCKING"] = new ByteArrayTag(chunk.GetHeightmap())
+                    ["MOTION_BLOCKING"] = new ByteArrayTag(chunk.Heightmap)
                 },
                 TrustEdges = true,
                 SkyLightMask = skylightMask,
