@@ -4,7 +4,7 @@ namespace Minesharp.Extension;
 
 public static class ChunkExtensions
 {
-    public static int GetLowerHeight(this Chunk chunk, int x, int y, int z)
+    public static int GetHighestSolidBlock(this Chunk chunk, int x, int y, int z)
     {
         for (--y; y >= 0; --y) 
         {

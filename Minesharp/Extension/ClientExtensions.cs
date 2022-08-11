@@ -16,7 +16,7 @@ public static class ClientExtensions
         
         var centralX = player.Position.BlockX;
         var centralZ = player.Position.BlockZ;
-        var radius = 1;
+        var radius = 3;
 
         for (var x = centralX - radius; x <= centralX + radius; x++)
         {
@@ -41,36 +41,27 @@ public static class ClientExtensions
                 {
                     continue;
                 }
-                
-                var data = section.GetData();
-                var palette = section.GetPalette();
 
-                buffer.WriteByte(data.GetBitsPerValue());
-                if (palette is null)
+                buffer.WriteShort(section.BlockCount);
+
+                buffer.WriteByte(section.State.BitsPerEntry);
+                if (section.State.HasPalette)
                 {
-                    buffer.WriteVarInt(0);
-                }
-                else
-                {
-                    buffer.WriteVarInt(palette.Count);
-                    foreach (var value in palette)
+                    buffer.WriteVarInt(section.State.Palette.Count);
+                    foreach (var value in section.State.Palette)
                     {
                         buffer.WriteVarInt(value);
                     }
                 }
 
-                var backing = data.GetBacking();
-                buffer.WriteVarInt(backing.Length);
-                foreach (var value in backing)
+                buffer.WriteVarInt(section.State.Storage.Count);
+                foreach (var value in section.State.Storage.Values)
                 {
                     buffer.WriteLong(value);
                 }
-
-                buffer.WriteVarInt(256);
-                buffer.WriteBytes(new byte[2048]);
             }
-            
-            for (var i = 0; i < 256; i++) 
+
+            for (var i = 0; i < 256; i++)
             {
                 buffer.WriteInt(0);
             }
@@ -90,7 +81,7 @@ public static class ClientExtensions
                 skyLights.Add(Chunk.EmptyLight);
                 blockLights.Add(Chunk.EmptyLight);
             }
-            
+
             session.SendPacket(new ChunkUpdatePacket
             {
                 ChunkX = chunk.X,
@@ -101,12 +92,12 @@ public static class ClientExtensions
                     ["MOTION_BLOCKING"] = new ByteArrayTag(chunk.Heightmap)
                 },
                 TrustEdges = true,
-                SkyLightMask = skylightMask,
-                BlockLightMask = blockLightMask,
                 EmptyBlockLightMask = new BitSet(),
                 EmptySkyLightMask = new BitSet(),
                 SkyLight = skyLights,
-                BlockLight = blockLights
+                BlockLight = blockLights,
+                SkyLightMask = skylightMask,
+                BlockLightMask = blockLightMask
             });
         }
     }

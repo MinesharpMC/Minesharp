@@ -1,4 +1,6 @@
 using Minesharp;
+using Minesharp.Game.Chunks;
+using Minesharp.Game.Chunks.Generator;
 using Serilog;
 using Serilog.Filters;
 

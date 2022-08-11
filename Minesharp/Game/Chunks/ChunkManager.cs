@@ -71,7 +71,7 @@ public class ChunkManager
         {
             for (var z = 0; z < Chunk.Height; ++z)
             {
-                heightmap[z * Chunk.Width + x] = (sbyte)chunk.GetLowerHeight(x, y, z);
+                heightmap[z * Chunk.Width + x] = (sbyte)chunk.GetHighestSolidBlock(x, y, z);
             }
         }
 

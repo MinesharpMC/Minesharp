@@ -22,4 +22,15 @@ public static class EnumerableExtensions
 
         return output;
     }
+
+    public static byte CalculateBitsPerEntry(this IEnumerable<int> values)
+    {
+        var number = values.Count();
+        byte count = 0;
+        do {
+            count++;
+            number >>= 1;
+        } while (number != 0);
+        return count;
+    }
 }

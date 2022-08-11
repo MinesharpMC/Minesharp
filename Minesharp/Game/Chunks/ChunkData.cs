@@ -19,4 +19,9 @@ public class ChunkData
         Sections[y >> 4] ??= new int[4096];
         Sections[y >> 4][(y & 0xF) << 8 | z << 4 | x] = blockId;
     }
+
+    public void SetBlock(int x, int y, int z, Material material)
+    {
+        SetBlock(x, y, z, (int)material);
+    }
 }
