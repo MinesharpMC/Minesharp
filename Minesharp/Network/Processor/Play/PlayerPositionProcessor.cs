@@ -5,9 +5,9 @@ namespace Minesharp.Network.Processor.Play;
 
 public class PlayerPositionProcessor : PacketProcessor<PlayerPositionPacket>
 {
-    protected override void Process(NetworkClient client, PlayerPositionPacket packet)
+    protected override void Process(NetworkSession session, PlayerPositionPacket packet)
     {
-        client.Player.Position = new Position
+        session.Player.Position = new Position
         {
             X = packet.X,
             Y = packet.Y,

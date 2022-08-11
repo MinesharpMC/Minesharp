@@ -14,7 +14,7 @@ public class LoginPacket : ServerPacket
     public CompoundTag RegistryCodec { get; init; }
     public string DimensionType { get; init; }
     public string DimensionName { get; init; }
-    public long HashedSeed { get; init; }
+    public byte[] SeedHash { get; init; }
     public int MaxPlayers { get; init; }
     public int ViewDistance { get; init; }
     public int SimulationDistance { get; init; }
@@ -48,7 +48,7 @@ public class LoginCreator : BufferCreator<LoginPacket>
         buffer.WriteTag(packet.RegistryCodec);
         buffer.WriteString(packet.DimensionType);
         buffer.WriteString(packet.DimensionName);
-        buffer.WriteLong(packet.HashedSeed);
+        buffer.WriteBytes(packet.SeedHash, 0, 8);
         buffer.WriteVarInt(packet.MaxPlayers);
         buffer.WriteVarInt(packet.ViewDistance);
         buffer.WriteVarInt(packet.SimulationDistance);

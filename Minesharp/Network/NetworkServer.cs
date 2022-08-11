@@ -19,7 +19,7 @@ public class NetworkServer
 
     public IPEndPoint Ip => configuration.Ip;
 
-    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager)
+    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager, NetworkSessionManager sessionManager)
     {
         this.configuration = configuration;
 
@@ -32,12 +32,12 @@ public class NetworkServer
             .ChildHandler(new ActionChannelInitializer<IChannel>(x =>
             {
                 var pipeline = x.Pipeline;
-                var client = new NetworkClient(x);
+                var session = new NetworkSession(x);
 
                 pipeline.AddLast(new FrameDecoder());
-                pipeline.AddLast(new PacketDecoder(client, packetFactory));
-                pipeline.AddLast(new PacketEncoder(client, packetFactory));
-                pipeline.AddLast(new PacketHandler(client, processorManager));
+                pipeline.AddLast(new PacketDecoder(session, packetFactory));
+                pipeline.AddLast(new PacketEncoder(session, packetFactory));
+                pipeline.AddLast(new SessionHandler(session, sessionManager, processorManager));
             }));
     }
 

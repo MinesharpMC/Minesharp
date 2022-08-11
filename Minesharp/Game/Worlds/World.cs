@@ -1,3 +1,4 @@
+using Minesharp.Extension;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Chunks.Generator;
 
@@ -6,33 +7,39 @@ namespace Minesharp.Game.Worlds;
 public sealed class World
 {
     public string Name { get; }
-    public ChunkManager ChunkManager { get; }
-    public ChunkGenerator ChunkGenerator { get; }
+    public bool IsHardcore { get; }
+    public long Seed { get; }
+    public byte[] SeedHash { get; }
+
+    private readonly ChunkManager chunkManager;
 
     public World(WorldCreator creator)
     {
         Name = creator.Name;
-        ChunkGenerator = creator.ChunkGenerator;
-        ChunkManager = new ChunkManager(this);
+        Seed = creator.Seed;
+        IsHardcore = creator.IsHardcore;
+        SeedHash = creator.Seed.ToSha256();
+        
+        this.chunkManager = new ChunkManager(creator.ChunkGenerator);
     }
 
     public Chunk GetChunk(ChunkKey chunkKey)
     {
-        return ChunkManager.GetChunk(chunkKey);
+        return chunkManager.GetChunk(chunkKey);
     }
 
     public Chunk GetChunk(int x, int z)
     {
-        return ChunkManager.GetChunk(x, z);
+        return chunkManager.GetChunk(x, z);
     }
 
     public Chunk LoadChunk(int x, int z)
     {
-        return ChunkManager.Load(x, z);
+        return chunkManager.Load(x, z);
     }
 
     public Chunk LoadChunk(ChunkKey key)
     {
-        return ChunkManager.Load(key);
+        return chunkManager.Load(key);
     }
 }

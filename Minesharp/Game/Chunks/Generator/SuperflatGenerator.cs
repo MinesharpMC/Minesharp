@@ -25,8 +25,9 @@ public class SuperflatGenerator : ChunkGenerator
         x &= 0xF;
         z &= 0xF;
         
-        chunkData.SetBlock(x, 0, z, 1);
-        chunkData.SetBlock(x, 1, z, 1);
-        chunkData.SetBlock(x, 2, z, 1);
+        chunkData.SetBlock(x, 0, z, 7);
+        chunkData.SetBlock(x, 1, z, 2);
+        chunkData.SetBlock(x, 2, z, 2);
+        chunkData.SetBlock(x, 3, z, 3);
     }
 }

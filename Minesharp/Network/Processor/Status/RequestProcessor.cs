@@ -6,9 +6,9 @@ namespace Minesharp.Network.Processor.Status;
 
 public class RequestProcessor : PacketProcessor<RequestPacket>
 {
-    protected override void Process(NetworkClient client, RequestPacket packet)
+    protected override void Process(NetworkSession session, RequestPacket packet)
     {
-        client.SendPacket(new ResponsePacket
+        session.SendPacket(new ResponsePacket
         {
             Json = JsonSerializer.Serialize(new
             {

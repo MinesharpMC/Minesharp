@@ -9,36 +9,22 @@ namespace Minesharp.Extension;
 
 public static class ClientExtensions
 {
-    public static void UpdateChunks(this NetworkClient client)
+    public static void UpdateChunks(this NetworkSession session)
     {
-        var player = client.Player;
+        var player = session.Player;
         var chunkKeys = new List<ChunkKey>();
         
         var centralX = player.Position.BlockX;
         var centralZ = player.Position.BlockZ;
-        var radius = 12;
+        var radius = 1;
 
-        for (var x = centralX - radius; x < centralX + radius; x++)
+        for (var x = centralX - radius; x <= centralX + radius; x++)
         {
-            for (var z = centralZ - radius; z < centralZ + radius; z++)
+            for (var z = centralZ - radius; z <= centralZ + radius; z++)
             {
                 chunkKeys.Add(ChunkKey.Create(x, z));
             }
         }
-        
-        chunkKeys.Sort((a, b) =>
-        {
-            var dx = 16 * a.X + 8 - player.Position.X;
-            var dz = 16 * a.X + 8 - player.Position.Z;
-            var da = dx * dx + dz * dz;
-            
-            dx = 16 * b.X + 8 - player.Position.X;
-            dz = 16 * b.Z + 8 - player.Position.Z;
-            
-            var db = dx * dx + dz * dz;
-            
-            return da.CompareTo(db);
-        });
 
         foreach (var chunkKey in chunkKeys)
         {
@@ -51,11 +37,20 @@ public static class ClientExtensions
             var buffer = Unpooled.Buffer();
             foreach (var section in chunk.Sections)
             {
+                if (section is null)
+                {
+                    continue;
+                }
+                
                 var data = section.GetData();
                 var palette = section.GetPalette();
 
                 buffer.WriteByte(data.GetBitsPerValue());
-                if (palette is not null)
+                if (palette is null)
+                {
+                    buffer.WriteVarInt(0);
+                }
+                else
                 {
                     buffer.WriteVarInt(palette.Count);
                     foreach (var value in palette)
@@ -70,12 +65,14 @@ public static class ClientExtensions
                 {
                     buffer.WriteLong(value);
                 }
-                
-                buffer.WriteVarInt(1);
-                buffer.WriteVarInt(0);
-                
+
                 buffer.WriteVarInt(256);
                 buffer.WriteBytes(new byte[2048]);
+            }
+            
+            for (var i = 0; i < 256; i++) 
+            {
+                buffer.WriteInt(0);
             }
 
             var skylightMask = new BitSet();
@@ -94,10 +91,10 @@ public static class ClientExtensions
                 blockLights.Add(Chunk.EmptyLight);
             }
             
-            client.SendPacket(new ChunkUpdatePacket
+            session.SendPacket(new ChunkUpdatePacket
             {
                 ChunkX = chunk.X,
-                ChunkY = chunk.X,
+                ChunkZ = chunk.Z,
                 Data = buffer,
                 Heightmaps = new CompoundTag
                 {

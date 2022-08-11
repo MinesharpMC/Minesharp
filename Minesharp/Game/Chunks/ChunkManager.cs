@@ -1,16 +1,17 @@
 using System.Collections.Concurrent;
-using Minesharp.Game.Worlds;
+using Minesharp.Extension;
+using Minesharp.Game.Chunks.Generator;
 
 namespace Minesharp.Game.Chunks;
 
 public class ChunkManager
 {
-    private readonly World world;
+    private readonly ChunkGenerator chunkGenerator;
     private readonly ConcurrentDictionary<ChunkKey, Chunk> chunks = new();
 
-    public ChunkManager(World world)
+    public ChunkManager(ChunkGenerator chunkGenerator)
     {
-        this.world = world;
+        this.chunkGenerator = chunkGenerator;
     }
 
     public Chunk GetChunk(int x, int z)
@@ -20,17 +21,7 @@ public class ChunkManager
 
     public Chunk GetChunk(ChunkKey key)
     {
-        var chunk = chunks.GetValueOrDefault(key);
-        if (chunk is null)
-        {
-            chunks[key] = chunk = new Chunk(world)
-            {
-                X = key.X,
-                Z = key.Z
-            };
-        }
-
-        return chunk;
+        return chunks.GetValueOrDefault(key);
     }
 
     public Chunk Load(int x, int z)
@@ -46,38 +37,41 @@ public class ChunkManager
             return chunk;
         }
 
-        chunk = new Chunk(world)
+        chunk = new Chunk
         {
             X = key.X,
             Z = key.Z
         };
         
-        var generator = world.ChunkGenerator;
-        var data = generator.GenerateChunkData(chunk.X, chunk.Z);
+        var data = chunkGenerator.GenerateChunkData(chunk.X, chunk.Z);
 
-        chunk.Sections = (from value 
-            in data.Sections 
-            where value is not null 
-            select new ChunkSection(value))
-            .ToList();
+        var sections = new ChunkSection[data.Sections.Length];
+        for (var i = 0; i < data.Sections.Length; i++)
+        {
+            if (data.Sections[i] is not null)
+            {
+                sections[i] = new ChunkSection(data.Sections[i]);
+            }
+        }
 
-        var sy = chunk.Sections.Count - 1;
+        chunk.Sections = sections;
+
+        var sy = chunk.Sections.Length - 1;
         for (; sy >= 0; --sy) 
         {
-            if (chunk.Sections[sy] != null) 
+            if (chunk.GetSection(sy) != null) 
             {
                 break;
             }
         }
         
         var y = (sy + 1) << 4;
-        var section = chunk.GetSection(y);
         var heightmap = new sbyte[Chunk.Width * Chunk.Height];
-        for (var x2 = 0; x2 < Chunk.Width; ++x2) 
+        for (var x = 0; x < Chunk.Width; ++x) 
         {
-            for (var z2 = 0; z2 < Chunk.Height; ++z2)
+            for (var z = 0; z < Chunk.Height; ++z)
             {
-                heightmap[z2 * Chunk.Width + x2] = (sbyte)section.GetHighestNonZeroType(x2, y, z2);
+                heightmap[z * Chunk.Width + x] = (sbyte)chunk.GetLowerHeight(x, y, z);
             }
         }
 

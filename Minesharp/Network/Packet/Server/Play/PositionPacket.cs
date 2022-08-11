@@ -9,7 +9,7 @@ public class PositionPacket : ServerPacket
     public double Y { get; init; }
     public double Z { get; init; }
     public float Pitch { get; init; }
-    public float Rotation { get; init; }
+    public float Yaw { get; init; }
     public int Flags { get; init; }
     public int TeleportId { get; init; }
     public bool DismountVehicle { get; init; }
@@ -24,7 +24,7 @@ public class PositionRotationCreator : BufferCreator<PositionPacket>
         buffer.WriteDouble(packet.X);
         buffer.WriteDouble(packet.Y);
         buffer.WriteDouble(packet.Z);
-        buffer.WriteFloat(packet.Rotation);
+        buffer.WriteFloat(packet.Yaw);
         buffer.WriteFloat(packet.Pitch);
         buffer.WriteByte(packet.Flags);
         buffer.WriteVarInt(packet.TeleportId);

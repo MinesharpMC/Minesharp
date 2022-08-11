@@ -21,15 +21,15 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         this.worldManager = worldManager;
     }
 
-    protected override void Process(NetworkClient client, LoginStartPacket packet)
+    protected override void Process(NetworkSession session, LoginStartPacket packet)
     {
         if (packet.Username.Length > 16 || !Regex.IsMatch(packet.Username))
         {
-            client.Disconnect();
+            session.Disconnect();
             return;
         }
 
-        client.Player = new Player
+        var player = session.Player = new Player
         {
             Name = packet.Username,
             Position = new Position
@@ -41,13 +41,13 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             World = worldManager.GetPrimaryWorld()
         };
         
-        client.SendPacket(new LoginSuccessPacket
+        session.SendPacket(new LoginSuccessPacket
         {
             Id = Guid.NewGuid(),
             Username = packet.Username
         });
 
-        client.Protocol = NetworkProtocol.Play;
+        session.Protocol = NetworkProtocol.Play;
 
         var registry = new CompoundTag
         {
@@ -62,7 +62,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
                         ["id"] = new IntTag(0),
                         ["element"] = new CompoundTag
                         {
-                            ["piglin_safe"] = new ByteTag(0),
+                            ["piglin_safe"] = new ByteTag(1),
                             ["has_raids"] = new ByteTag(0),
                             ["monster_spawn_light_level"] = new IntTag(10),
                             ["monster_spawn_block_light_limit"] = new IntTag(1),
@@ -145,10 +145,10 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             }
         };
         
-        client.SendPacket(new LoginPacket
+        session.SendPacket(new LoginPacket
         {
             Id = 1,
-            IsHardcore = false,
+            IsHardcore = player.World.IsHardcore,
             GameMode = 0,
             PreviousGameMode = -1,
             Dimensions = new List<string>
@@ -158,10 +158,10 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             RegistryCodec = registry,
             DimensionName = "minecraft:overworld",
             DimensionType = "minecraft:overworld",
-            HashedSeed = -1824611495,
-            MaxPlayers = 100,
-            ViewDistance = 10,
-            SimulationDistance = 10,
+            SeedHash = player.World.SeedHash,
+            MaxPlayers = 1000,
+            ViewDistance = 12,
+            SimulationDistance = 12,
             ReducedDebug = false,
             EnabledRespawnScreen = true,
             IsDebug = false,
@@ -169,14 +169,14 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
         
-        // client.UpdateChunks();
-        client.SendPacket(new PositionPacket
+        session.UpdateChunks();
+        session.SendPacket(new PositionPacket
         {
-            X = client.Player.Position.X,
-            Y = client.Player.Position.Y,
-            Z = client.Player.Position.Z,
-            Pitch = 0,
-            Rotation = 0
+            X = session.Player.Position.X,
+            Y = session.Player.Position.Y,
+            Z = session.Player.Position.Z,
+            Pitch = player.Rotation.Pitch,
+            Yaw = player.Rotation.Yaw,
         });
     }
 }

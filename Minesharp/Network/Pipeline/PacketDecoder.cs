@@ -8,18 +8,18 @@ namespace Minesharp.Network.Pipeline;
 
 public class PacketDecoder : ByteToMessageDecoder
 {
-    private readonly NetworkClient client;
+    private readonly NetworkSession session;
     private readonly PacketFactory factory;
 
-    public PacketDecoder(NetworkClient client, PacketFactory factory)
+    public PacketDecoder(NetworkSession session, PacketFactory factory)
     {
-        this.client = client;
+        this.session = session;
         this.factory = factory;
     }
 
     protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
     {
-        var packet = factory.CreatePacket(client.Protocol, input);
+        var packet = factory.CreatePacket(session.Protocol, input);
         if (packet is null)
         {
             input.Clear();

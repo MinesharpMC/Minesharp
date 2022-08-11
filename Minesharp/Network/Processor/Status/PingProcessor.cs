@@ -5,9 +5,9 @@ namespace Minesharp.Network.Processor.Status;
 
 public class PingProcessor : PacketProcessor<PingPacket>
 {
-    protected override void Process(NetworkClient client, PingPacket packet)
+    protected override void Process(NetworkSession session, PingPacket packet)
     {
-        client.SendPacket(new PongPacket
+        session.SendPacket(new PongPacket
         {
             Payload = packet.Payload
         });

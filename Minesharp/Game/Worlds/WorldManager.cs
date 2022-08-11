@@ -8,7 +8,7 @@ public class WorldManager
     
     public World CreateWorld(WorldCreator creator)
     {
-        var world = GetWorld(creator.Name);
+        var world = worlds.GetValueOrDefault(creator.Name);
         if (world is not null)
         {
             return world;

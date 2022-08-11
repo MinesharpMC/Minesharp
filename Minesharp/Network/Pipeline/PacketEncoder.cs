@@ -11,18 +11,18 @@ namespace Minesharp.Network.Pipeline;
 
 public class PacketEncoder : MessageToByteEncoder<ServerPacket>
 {
-    private readonly NetworkClient client;
+    private readonly NetworkSession session;
     private readonly PacketFactory factory;
 
-    public PacketEncoder(NetworkClient client, PacketFactory factory)
+    public PacketEncoder(NetworkSession session, PacketFactory factory)
     {
-        this.client = client;
+        this.session = session;
         this.factory = factory;
     }
 
     protected override void Encode(IChannelHandlerContext context, ServerPacket message, IByteBuffer output)
     {
-        var buffer = factory.CreateBuffer(client.Protocol, message);
+        var buffer = factory.CreateBuffer(session.Protocol, message);
         if (buffer is null)
         {
             return;

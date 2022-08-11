@@ -33,19 +33,6 @@ public class ChunkSection
         return value;
     }
 
-    public int GetHighestNonZeroType(int x, int y, int z)
-    {
-        for (--y; y >= 0; --y) 
-        {
-            if (GetType(x, z, y) != 0) 
-            {
-                break;
-            }
-        }
-        
-        return y + 1;
-    }
-
     private int CreateIndex(int x, int y, int z)
     {
         return (y & 0xf) << 8 | z << 4 | x;
@@ -61,7 +48,7 @@ public class ChunkSection
                 palette.Add(type);
             }
         }
-
+        
         var bitsPerBlock = VariableValueArray.Calculate(palette.Count);
         switch (bitsPerBlock)
         {
@@ -79,7 +66,7 @@ public class ChunkSection
         {
             if (palette != null)
             {
-                data[i] = palette.IndexOf(types[i]);
+                data[i] = palette.LastIndexOf(types[i]);
             }
             else
             {

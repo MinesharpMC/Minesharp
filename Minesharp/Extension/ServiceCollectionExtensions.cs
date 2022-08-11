@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
     public static void AddNetworkServer(this IServiceCollection services)
     {
         services.AddSingleton<NetworkServer>();
+        services.AddSingleton<NetworkSessionManager>();
         services.AddHostedService<NetworkService>();
     }
 

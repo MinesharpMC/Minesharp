@@ -5,9 +5,9 @@ namespace Minesharp.Network.Processor.Play;
 
 public class PlayerRotationProcessor : PacketProcessor<PlayerRotationPacket>
 {
-    protected override void Process(NetworkClient client, PlayerRotationPacket packet)
+    protected override void Process(NetworkSession session, PlayerRotationPacket packet)
     {
-        client.Player.Rotation = new Rotation
+        session.Player.Rotation = new Rotation
         {
             Yaw = packet.Yaw,
             Pitch = packet.Pitch

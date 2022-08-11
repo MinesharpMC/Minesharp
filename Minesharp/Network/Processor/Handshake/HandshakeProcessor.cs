@@ -4,8 +4,8 @@ namespace Minesharp.Network.Processor.Handshake;
 
 public class HandshakeProcessor : PacketProcessor<HandshakePacket>
 {
-    protected override void Process(NetworkClient client, HandshakePacket packet)
+    protected override void Process(NetworkSession session, HandshakePacket packet)
     {
-        client.Protocol = (NetworkProtocol)packet.NextState;
+        session.Protocol = (NetworkProtocol)packet.NextState;
     }
 }

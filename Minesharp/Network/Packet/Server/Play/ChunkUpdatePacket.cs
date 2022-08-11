@@ -9,7 +9,7 @@ namespace Minesharp.Network.Packet.Server.Play;
 public class ChunkUpdatePacket : ServerPacket
 {
     public int ChunkX { get; init; }
-    public int ChunkY { get; init; }
+    public int ChunkZ { get; init; }
     public CompoundTag Heightmaps { get; init; }
     public IByteBuffer Data { get; init; }
     public bool TrustEdges { get; init; }
@@ -30,7 +30,7 @@ public class ChunkUpdateCreator : BufferCreator<ChunkUpdatePacket>
     protected override void CreateBuffer(ChunkUpdatePacket packet, IByteBuffer buffer)
     {
         buffer.WriteInt(packet.ChunkX);
-        buffer.WriteInt(packet.ChunkY);
+        buffer.WriteInt(packet.ChunkZ);
         buffer.WriteTag(packet.Heightmaps);
         buffer.WriteVarInt(packet.Data.WriterIndex);
         buffer.WriteBytes(packet.Data);
