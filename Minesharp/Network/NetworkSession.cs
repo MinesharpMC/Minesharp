@@ -11,18 +11,17 @@ namespace Minesharp.Network;
 
 public class NetworkSession
 {
-    public Guid Id { get; } = Guid.NewGuid();
     public NetworkProtocol Protocol { get; set; }
     public Player Player { get; set; }
-    
-    public long LastKeepAlive { get; set; }
-    public DateTime LastKeepAliveSendAt { get; private set; }
 
     private readonly IChannel channel;
+    private readonly ConcurrentQueue<ClientPacket> packetQueue = new();
+    private readonly PacketProcessorManager processorManager;
 
-    public NetworkSession(IChannel channel)
+    public NetworkSession(IChannel channel, PacketProcessorManager processorManager)
     {
         this.channel = channel;
+        this.processorManager = processorManager;
     }
 
     public void SendPacket(ServerPacket packet)
@@ -41,21 +40,22 @@ public class NetworkSession
         }, TaskContinuationOptions.OnlyOnFaulted);
     }
 
+    public void ReceivePacket(ClientPacket packet)
+    {
+        packetQueue.Enqueue(packet);
+    }
+
     public void Tick()
     {
-        if (Protocol == NetworkProtocol.Play)
+        while (packetQueue.TryDequeue(out var packet))
         {
-            if (LastKeepAliveSendAt.AddSeconds(10) < DateTime.UtcNow)
+            var processor = processorManager.GetProcessorForPacket(packet);
+            if (processor is null)
             {
-                var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                SendPacket(new KeepAlivePacket
-                {
-                    Timestamp = timestamp
-                });
-
-                LastKeepAlive = timestamp;
-                LastKeepAliveSendAt = DateTime.UtcNow;
+                continue;
             }
+            
+            processor.Process(this, packet);
         }
     }
 }

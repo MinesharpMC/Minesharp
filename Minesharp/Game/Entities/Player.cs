@@ -1,36 +1,55 @@
+using Minesharp.Chat.Component;
 using Minesharp.Game.Worlds;
-using Minesharp.Utility;
+using Minesharp.Network;
+using Minesharp.Network.Packet.Server.Play;
 
 namespace Minesharp.Game.Entities;
 
 public sealed class Player
 {
-    private readonly ThreadSafeProperty<string> name = new();
-    private readonly ThreadSafeProperty<World> world = new();
-    private readonly ThreadSafeProperty<Position> position = new();
-    private readonly ThreadSafeProperty<Rotation> rotation = new();
+    private readonly Server server;
+    private readonly NetworkSession session;
 
-    public string Name
+    public Player(Server server, NetworkSession session)
     {
-        get => name.Value;
-        set => name.Value = value;
+        this.server = server;
+        this.session = session;
     }
 
-    public World World
+    public Guid Id { get; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public World World { get; set; }
+    public Position Position { get; set; }
+    public Rotation Rotation { get; set; }
+    
+    public DateTime LastKeepAliveSendAt { get; private set; }
+    public long LastKeepAlive { get; private set; }
+    
+    public void Tick()
     {
-        get => world.Value;
-        set => world.Value = value;
+        session.Tick();
+        
+        if (LastKeepAliveSendAt.AddSeconds(10) < DateTime.UtcNow)
+        {
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            session.SendPacket(new KeepAlivePacket
+            {
+                Timestamp = timestamp
+            });
+
+            LastKeepAlive = timestamp;
+            LastKeepAliveSendAt = DateTime.UtcNow;
+        }
     }
 
-    public Position Position
+    public void SendMessage(string message)
     {
-        get => position.Value;
-        set => position.Value = value;
-    }
-
-    public Rotation Rotation
-    {
-        get => rotation.Value;
-        set => rotation.Value = value;
+        session.SendPacket(new SystemMessagePacket
+        {
+            Chat = new TextComponent
+            {
+                Text = message
+            },
+        });
     }
 }

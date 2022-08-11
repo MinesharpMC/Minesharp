@@ -3,6 +3,7 @@ using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using Minesharp.Configuration;
+using Minesharp.Game;
 using Minesharp.Network.Packet;
 using Minesharp.Network.Pipeline;
 using Minesharp.Network.Processor;
@@ -19,7 +20,7 @@ public class NetworkServer
 
     public IPEndPoint Ip => configuration.Ip;
 
-    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager, NetworkSessionManager sessionManager)
+    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager, Server server)
     {
         this.configuration = configuration;
 
@@ -32,12 +33,13 @@ public class NetworkServer
             .ChildHandler(new ActionChannelInitializer<IChannel>(x =>
             {
                 var pipeline = x.Pipeline;
-                var session = new NetworkSession(x);
+                var session = new NetworkSession(x, processorManager);
 
                 pipeline.AddLast(new FrameDecoder());
                 pipeline.AddLast(new PacketDecoder(session, packetFactory));
                 pipeline.AddLast(new PacketEncoder(session, packetFactory));
-                pipeline.AddLast(new SessionHandler(session, sessionManager, processorManager));
+                pipeline.AddLast(new PacketHandler(session, processorManager));
+                pipeline.AddLast(new SessionHandler(session, server));
             }));
     }
 

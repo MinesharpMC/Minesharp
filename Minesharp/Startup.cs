@@ -13,8 +13,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddWorldManager();
-        services.AddWorldService();
+        services.AddServer();
+        services.AddServerConfiguration(configuration);
         
         services.AddNetworkServer();
         services.AddNetworkConfiguration(configuration);

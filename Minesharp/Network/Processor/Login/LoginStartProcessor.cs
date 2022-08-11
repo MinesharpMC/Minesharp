@@ -14,11 +14,11 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 {
     private static readonly Regex Regex = new("^[a-zA-Z0-9_]+$", RegexOptions.Compiled);
 
-    private readonly WorldManager worldManager;
+    private readonly Server server;
 
-    public LoginStartProcessor(WorldManager worldManager)
+    public LoginStartProcessor(Server server)
     {
-        this.worldManager = worldManager;
+        this.server = server;
     }
 
     protected override void Process(NetworkSession session, LoginStartPacket packet)
@@ -29,7 +29,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             return;
         }
 
-        var player = session.Player = new Player
+        var player = session.Player = new Player(server, session)
         {
             Name = packet.Username,
             Position = new Position
@@ -38,7 +38,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
                 Y = 0,
                 Z = 0
             },
-            World = worldManager.GetPrimaryWorld()
+            World = server.GetWorlds().First()
         };
         
         session.SendPacket(new LoginSuccessPacket
@@ -169,6 +169,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
         
+        server.AddPlayer(player);
+        
         session.UpdateChunks();
         session.SendPacket(new PositionPacket
         {
@@ -178,5 +180,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Pitch = player.Rotation.Pitch,
             Yaw = player.Rotation.Yaw,
         });
+        
+        server.BroadcastMessage($"{player.Name} joined the fucking game.");
     }
 }

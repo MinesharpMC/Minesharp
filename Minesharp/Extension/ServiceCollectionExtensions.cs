@@ -1,6 +1,7 @@
 
 using Minesharp.Configuration;
 using Minesharp.Game;
+using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Network.Packet;
@@ -10,16 +11,21 @@ namespace Minesharp.Extension;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddWorldManager(this IServiceCollection services)
+    public static void AddServer(this IServiceCollection services)
     {
+        services.AddSingleton<Server>();
+        services.AddSingleton<PlayerManager>();
         services.AddSingleton<WorldManager>();
-    }
 
-    public static void AddWorldService(this IServiceCollection services)
-    {
+        services.AddHostedService<ServerService>();
         services.AddHostedService<WorldService>();
     }
-    
+
+    public static void AddServerConfiguration(this IServiceCollection services, IConfiguration configuration)
+    {
+        
+    }
+
     public static void AddNetworkConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         var section = configuration.GetSection("Network");
@@ -34,8 +40,7 @@ public static class ServiceCollectionExtensions
     public static void AddNetworkServer(this IServiceCollection services)
     {
         services.AddSingleton<NetworkServer>();
-        services.AddSingleton<NetworkSessionManager>();
-        services.AddHostedService<NetworkService>();
+        services.AddHostedService<ServerService>();
     }
 
     public static void AddPacketFactory(this IServiceCollection services)
