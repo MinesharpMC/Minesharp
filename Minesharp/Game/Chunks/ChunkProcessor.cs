@@ -37,8 +37,7 @@ public class ChunkProcessor
                 newChunks.Add(ChunkKey.Create(x, z));
             }
         }
-        else if (Math.Abs(blockPosition.X - previousPosition.X) > radius ||
-                 Math.Abs(blockPosition.Z - previousPosition.Z) > radius)
+        else if (Math.Abs(blockPosition.X - previousPosition.X) > radius || Math.Abs(blockPosition.Z - previousPosition.Z) > radius)
         {
             knownChunks.Clear();
             for (var x = blockPosition.X - radius; x <= blockPosition.X + radius; x++)

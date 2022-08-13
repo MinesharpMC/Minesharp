@@ -11,8 +11,7 @@ public class ChunkData
 
     public void SetBlock(int x, int y, int z, int blockId)
     {
-        if (x < 0 || y < 0 || z < 0 || x >= ChunkConstants.Height || y >= ChunkConstants.Depth ||
-            z >= ChunkConstants.Width)
+        if (x < 0 || y < 0 || z < 0 || x >= ChunkConstants.Height || y >= ChunkConstants.Depth || z >= ChunkConstants.Width)
         {
             return;
         }
