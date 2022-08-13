@@ -1,12 +1,14 @@
 using System.Collections.Concurrent;
 using Minesharp.Common;
 using Minesharp.Common.Enum;
+using Minesharp.Game.Blocks;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
+using Minesharp.Packet;
 
 namespace Minesharp.Game.Worlds;
 
-public sealed class World : IEquatable<World>
+public sealed class World
 {
     private readonly ChunkFactory chunkFactory;
     private readonly ConcurrentDictionary<ChunkKey, Chunk> chunks;
@@ -27,40 +29,48 @@ public sealed class World : IEquatable<World>
         chunks = new ConcurrentDictionary<ChunkKey, Chunk>();
     }
 
-    public bool Equals(World other)
-    {
-        if (ReferenceEquals(null, other))
-        {
-            return false;
-        }
-
-        return ReferenceEquals(this, other) || Id.Equals(other.Id);
-    }
-
-    public override bool Equals(object obj)
-    {
-        return ReferenceEquals(this, obj) || obj is World other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
-
-    public static bool operator ==(World left, World right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(World left, World right)
-    {
-        return !Equals(left, right);
-    }
-
     public Guid Id { get; }
     public string Name { get; }
     public WorldBorder Border { get; }
     public Difficulty Difficulty { get; }
+
+    public Block GetBlockAt(int x, int y, int z)
+    {
+        return new Block
+        {
+            World = this,
+            X = x,
+            Y = Math.Min(256, Math.Max(y, 0)),
+            Z = z
+        };
+    }
+
+    public Material GetBlockTypeAt(Position position)
+    {
+        return GetBlockTypeAt(position.BlockX, position.BlockY, position.BlockZ);
+    }
+
+    public void SetBlockTypeAt(Position position, Material material)
+    {
+        SetBlockTypeAt(position.BlockX, position.BlockY, position.BlockZ, material);
+    }
+    
+    public void SetBlockTypeAt(int x, int y, int z, Material material)
+    {
+        var chunk = GetChunkAt(x >> 4, z >> 4);
+        chunk.SetTypeAt(x & 0xf, y, z & 0xf, material);
+    }
+
+    public Material GetBlockTypeAt(int x, int y, int z)
+    {
+        var chunk = GetChunkAt(x >> 4, z >> 4);
+        return chunk.GetTypeAt(x, y, z);
+    }
+
+    public Block GetBlockAt(Position position)
+    {
+        return GetBlockAt(position.BlockX, position.BlockY, position.BlockZ);
+    }
     
     public Chunk GetChunkAt(Position position)
     {
@@ -109,8 +119,21 @@ public sealed class World : IEquatable<World>
         playersByName.Remove(player.Username, out _);
     }
 
+    public void Broadcast(IPacket packet)
+    {
+        foreach (var player in GetPlayers())
+        {
+            player.SendPacket(packet);
+        }
+    }
+
     public IEnumerable<Player> GetPlayers()
     {
         return playersById.Values;
+    }
+
+    public IEnumerable<Chunk> GetChunks()
+    {
+        return chunks.Values;
     }
 }

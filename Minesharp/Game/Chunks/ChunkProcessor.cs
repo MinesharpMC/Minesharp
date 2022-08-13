@@ -47,7 +47,6 @@ public class ChunkProcessor
                 {
                     Bits = x.Bits,
                     BlockCount = (short)x.BlockCount,
-                    UsePalette = x.UsePalette,
                     Mapping = x.Mapping,
                     Palette = x.Palette
                 });

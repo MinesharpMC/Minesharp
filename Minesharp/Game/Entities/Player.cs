@@ -34,7 +34,7 @@ public sealed class Player
 
     public void Tick()
     {
-        chunkProcessor.Tick();
         session.Tick();
+        chunkProcessor.Tick();
     }
 }

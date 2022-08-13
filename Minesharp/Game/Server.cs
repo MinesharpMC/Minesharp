@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Minesharp.Configuration;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game;
 
@@ -81,6 +82,19 @@ public sealed class Server
             foreach (var player in players)
             {
                 player.Tick();
+            }
+
+            var chunks = world.GetChunks();
+            foreach (var chunk in chunks)
+            {
+                while (chunk.ModifiedBlocks.TryDequeue(out var modifiedBlock))
+                {
+                    world.Broadcast(new BlockChangePacket
+                    {
+                        Position = modifiedBlock.Position,
+                        Type = modifiedBlock.Type
+                    });
+                }
             }
         }
     }

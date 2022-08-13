@@ -7,21 +7,19 @@ public sealed class ChunkPaletteMapping
     public ChunkPaletteMapping(List<int> palette, int[] types)
     {
         Bits = palette.Calculate();
-        Bits = Bits < 4 ? (byte)4 : !UsePalette ? (byte)15 : Bits;
+        Bits = Bits < 4 ? (byte)4 : Bits > 8 ? (byte)15 : Bits;
         Mask = (1L << Bits) - 1L;
         Storage = new long[(int)Math.Ceiling(Bits * 4096 / 64.0)];
 
         for (var i = 0; i < 4096; i++)
         {
-            Set(i, UsePalette ? palette.IndexOf(types[i]) : types[i]);
+            Set(i, Bits <= 8 ? palette.IndexOf(types[i]) : types[i]);
         }
     }
 
     public byte Bits { get; }
     public long[] Storage { get; }
     public long Mask { get; }
-
-    public bool UsePalette => Bits <= 8;
 
     public int Get(int x, int y, int z)
     {
