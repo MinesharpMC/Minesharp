@@ -1,3 +1,4 @@
+using Minesharp.Common.Enum;
 using Minesharp.Game.Chunks.Generator;
 
 namespace Minesharp.Game.Worlds;

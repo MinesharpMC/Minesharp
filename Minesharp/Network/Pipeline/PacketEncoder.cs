@@ -28,6 +28,6 @@ public class PacketEncoder : MessageToByteEncoder<IPacket>
         output.WriteVarInt(buffer.ReadableBytes);
         output.WriteBytes(buffer);
         
-        Log.Debug("Sent packet {type} ({packet})", message.GetType().Name, message);
+        Log.Debug("Sending packet: {message}", message.GetType().Name);
     }
 }

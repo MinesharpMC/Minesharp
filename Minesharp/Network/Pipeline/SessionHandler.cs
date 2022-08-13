@@ -1,6 +1,5 @@
 using DotNetty.Transport.Channels;
 using Serilog;
-using Minesharp.Packet.Common;
 
 namespace Minesharp.Network.Pipeline;
 

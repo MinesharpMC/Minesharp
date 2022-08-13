@@ -1,9 +1,9 @@
+using Minesharp.Common;
+using Minesharp.Common.Enum;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Packet;
-using Minesharp.Packet.Common;
-using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game.Entities;
 
@@ -18,7 +18,8 @@ public sealed class Player
         this.chunkProcessor = new ChunkProcessor(this);
     }
 
-    public Guid Id { get; init; }
+    public int Id { get; init; }
+    public Guid UniqueId { get; init; }
     public string Username { get; set; }
     public Position Position { get; set; }
     public Rotation Rotation { get; set; }

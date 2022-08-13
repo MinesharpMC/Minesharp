@@ -10,11 +10,8 @@ public static class PlayerExtensions
     {
         player.SendPacket(new SyncPositionPacket
         {
-            X = player.Position.X,
-            Y = player.Position.Y,
-            Z = player.Position.Z,
-            Pitch = player.Rotation.Pitch,
-            Yaw = player.Rotation.Yaw
+            Position = player.Position,
+            Rotation = player.Rotation
         });
     }
 }

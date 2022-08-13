@@ -1,4 +1,4 @@
-using Minesharp.Packet.Common;
+using Minesharp.Common.Enum;
 
 namespace Minesharp.Game;
 

@@ -12,6 +12,8 @@ public sealed class Server
 
     public const string Version = "1.19";
     public const int Protocol = 759;
+
+    private int lastEntityId;
     
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
@@ -64,6 +66,11 @@ public sealed class Server
     public World GetWorld(Guid worldId)
     {
         return worlds.Values.FirstOrDefault(x => x.Id == worldId);
+    }
+
+    public int GetNextEntityId()
+    {
+        return ++lastEntityId;
     }
 
     public void Tick()

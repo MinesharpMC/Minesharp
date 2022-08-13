@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using Minesharp.Common;
+using Minesharp.Common.Enum;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
 
@@ -59,15 +61,10 @@ public sealed class World : IEquatable<World>
     public string Name { get; }
     public WorldBorder Border { get; }
     public Difficulty Difficulty { get; }
-
-    public Chunk GetChunkAt(BlockPosition position)
-    {
-        return GetChunkAt(position.X >> 4, position.Z >> 4);
-    }
-
+    
     public Chunk GetChunkAt(Position position)
     {
-        return GetChunkAt(position.ToBlockPosition());
+        return GetChunkAt(position.BlockX >> 4, position.BlockZ >> 4);
     }
 
     public Chunk GetChunkAt(int x, int z)
@@ -100,7 +97,7 @@ public sealed class World : IEquatable<World>
     {
         player.World = this;
 
-        playersById[player.Id] = player;
+        playersById[player.UniqueId] = player;
         playersByName[player.Username] = player;
     }
 
@@ -108,7 +105,7 @@ public sealed class World : IEquatable<World>
     {
         player.World = null;
 
-        playersById.Remove(player.Id, out _);
+        playersById.Remove(player.UniqueId, out _);
         playersByName.Remove(player.Username, out _);
     }
 

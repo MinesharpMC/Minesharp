@@ -1,3 +1,4 @@
+using Minesharp.Common;
 using Minesharp.Game;
 using Minesharp.Packet.Game.Client;
 using Minesharp.Packet.Game.Server;
@@ -12,20 +13,22 @@ public class PositionChangeProcessor : PacketProcessor<PositionChangePacket>
         var player = session.Player;
         
         var previousPosition = player.Position;
-        var currentPosition = new Position(packet.X, packet.Y, packet.Z);
+        var currentPosition = player.Position = packet.Position;
         
-        var previousChunk = player.World.GetChunkAt(previousPosition);
-        var currentChunk = player.World.GetChunkAt(currentPosition);
-
-        if (previousChunk != currentChunk)
+        if (previousPosition.BlockX != currentPosition.BlockX || previousPosition.BlockZ != currentPosition.BlockZ)
         {
-            player.SendPacket(new SetCenterChunkPacket
+            var currentChunk = player.World.GetChunkAt(currentPosition);
+            var previousChunk = player.World.GetChunkAt(previousPosition);
+
+            if (currentChunk != previousChunk)
             {
-                ChunkX = currentChunk.X,
-                ChunkZ = currentChunk.Z
-            });
+                session.SendPacket(new SetCenterChunkPacket
+                {
+                    ChunkX = currentChunk.X,
+                    ChunkZ = currentChunk.Z
+                });
+            }
         }
         
-        session.Player.Position = new Position(packet.X, packet.Y, packet.Z);
     }
 }

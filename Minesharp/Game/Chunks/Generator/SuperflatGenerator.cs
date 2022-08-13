@@ -1,3 +1,5 @@
+using Minesharp.Common.Enum;
+
 namespace Minesharp.Game.Chunks.Generator;
 
 public class SuperflatGenerator : ChunkGenerator

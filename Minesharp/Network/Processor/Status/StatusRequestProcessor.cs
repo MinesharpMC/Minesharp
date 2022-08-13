@@ -18,23 +18,20 @@ public class StatusRequestProcessor : PacketProcessor<StatusRequestPacket>
     {
         session.SendPacket(new StatusResponsePacket
         {
-            Json = JsonConvert.SerializeObject(new
+            Version = new StatusVersion
             {
-                version = new
-                {
-                    name = Server.Version,
-                    protocol = Server.Protocol
-                },
-                players = new
-                {
-                    max = server.MaxPlayers,
-                    online = server.GetPlayers().Count()
-                },
-                description = new
-                {
-                    text = server.Description
-                }
-            })
+                Name = Server.Version,
+                Protocol = Server.Protocol
+            },
+            Players = new StatusPlayers
+            {
+                Max = server.MaxPlayers,
+                Online = server.GetPlayers().Count()
+            },
+            Description = new StatusDescription
+            {
+                Text = server.Description
+            }
         });
     }
 }

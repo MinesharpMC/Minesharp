@@ -25,8 +25,9 @@ public class PacketDecoder : ByteToMessageDecoder
             input.Clear();
             return;
         }
-
-        Log.Debug("Received packet {type} ({packet})", packet.GetType().Name, packet);
+        
         output.Add(packet);
+        
+        Log.Debug("Receiving packet: {message}", packet.GetType().Name);
     }
 }

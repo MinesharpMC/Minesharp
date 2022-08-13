@@ -1,3 +1,5 @@
+using Minesharp.Common.Enum;
+
 namespace Minesharp.Game.Chunks;
 
 public class ChunkData

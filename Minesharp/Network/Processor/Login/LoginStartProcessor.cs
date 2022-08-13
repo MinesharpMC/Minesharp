@@ -1,7 +1,9 @@
+using System.Net.Sockets;
+using Minesharp.Common;
+using Minesharp.Common.Enum;
 using Minesharp.Extension;
 using Minesharp.Game;
 using Minesharp.Game.Entities;
-using Minesharp.Packet.Common;
 using Minesharp.Packet.Game.Server;
 using Minesharp.Packet.Login.Client;
 using Minesharp.Packet.Login.Server;
@@ -23,7 +25,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         var world = server.GetDefaultWorld();
         var player = session.Player = new Player(session)
         {
-            Id = Guid.NewGuid(),
+            Id = server.GetNextEntityId(),
+            UniqueId = Guid.NewGuid(),
             Username = packet.Username,
             Position = new Position(0, 0, 0),
             Rotation = new Rotation(0, 0),
@@ -32,15 +35,15 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 
         player.SendPacket(new LoginSuccessPacket
         {
-            Id = Guid.NewGuid(),
+            Id = player.UniqueId,
             Username = packet.Username
         });
 
-        session.Protocol = ProtocolType.Game;
+        session.Protocol = Protocol.Game;
 
         player.SendPacket(new JoinGamePacket
         {
-            Id = 1,
+            Id = player.Id,
             IsHardcore = false,
             GameMode = GameMode.Creative,
             PreviousGameMode = GameMode.None,
