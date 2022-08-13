@@ -1,18 +1,18 @@
 namespace Minesharp.Game.Chunks;
 
-public class ChunkKey : IEquatable<ChunkKey>
+public sealed class ChunkKey : IEquatable<ChunkKey>
 {
-    public int X { get; }
-    public int Z { get; }
-    public long Id { get; }
-
     public ChunkKey(int x, int z)
     {
         X = x;
         Z = z;
-        Id = x & 0xffffffffL | (z & 0xffffffffL) << 32;
+        Id = (x & 0xffffffffL) | ((z & 0xffffffffL) << 32);
     }
-    
+
+    public int X { get; }
+    public int Z { get; }
+    public long Id { get; }
+
     public bool Equals(ChunkKey other)
     {
         if (ReferenceEquals(null, other)) return false;
@@ -24,7 +24,7 @@ public class ChunkKey : IEquatable<ChunkKey>
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj.GetType() != GetType()) return false;
         return Equals((ChunkKey)obj);
     }
 

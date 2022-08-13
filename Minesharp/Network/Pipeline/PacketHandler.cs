@@ -1,14 +1,15 @@
 using DotNetty.Transport.Channels;
-using Minesharp.Network.Packet.Client;
 using Minesharp.Network.Processor;
+using Minesharp.Packet;
+using Minesharp.Packet.Game;
 using Serilog;
 
 namespace Minesharp.Network.Pipeline;
 
-public class PacketHandler : SimpleChannelInboundHandler<ClientPacket>
+public class PacketHandler : SimpleChannelInboundHandler<IPacket>
 {
-    private readonly NetworkSession session;
     private readonly PacketProcessorManager processorManager;
+    private readonly NetworkSession session;
 
     public PacketHandler(NetworkSession session, PacketProcessorManager processorManager)
     {
@@ -16,21 +17,21 @@ public class PacketHandler : SimpleChannelInboundHandler<ClientPacket>
         this.processorManager = processorManager;
     }
 
-    protected override void ChannelRead0(IChannelHandlerContext ctx, ClientPacket msg)
+    protected override void ChannelRead0(IChannelHandlerContext ctx, IPacket msg)
     {
-        if (session.Protocol == NetworkProtocol.Play)
+        if (msg is GamePacket) // Game packets are handled in thread loop
         {
-            session.ReceivePacket(msg);
+            session.Enqueue(msg);
             return;
         }
-        
-        var processor = processorManager.GetProcessorForPacket(msg);
+
+        var processor = processorManager.GetProcessor(msg.GetType());
         if (processor is null)
         {
             Log.Warning("Can't found packet processor for packet {packet}", msg.GetType().Name);
             return;
         }
-            
+
         processor.Process(session, msg);
     }
 }

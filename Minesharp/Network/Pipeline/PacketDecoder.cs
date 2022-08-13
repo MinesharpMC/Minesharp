@@ -1,15 +1,14 @@
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
-using Minesharp.Extension;
-using Minesharp.Network.Packet;
+using Minesharp.Packet;
 
 namespace Minesharp.Network.Pipeline;
 
 public class PacketDecoder : ByteToMessageDecoder
 {
-    private readonly NetworkSession session;
     private readonly PacketFactory factory;
+    private readonly NetworkSession session;
 
     public PacketDecoder(NetworkSession session, PacketFactory factory)
     {
@@ -19,13 +18,13 @@ public class PacketDecoder : ByteToMessageDecoder
 
     protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
     {
-        var packet = factory.CreatePacket(session.Protocol, input);
+        var packet = factory.Decode(session.Protocol, input);
         if (packet is null)
         {
             input.Clear();
             return;
         }
-        
+
         output.Add(packet);
     }
 }

@@ -1,45 +1,71 @@
-using Minesharp.Extension;
+using System.Collections.Concurrent;
 using Minesharp.Game.Chunks;
-using Minesharp.Game.Chunks.Generator;
+using Minesharp.Game.Entities;
 
 namespace Minesharp.Game.Worlds;
 
 public sealed class World
 {
-    public string Name { get; }
-    public bool IsHardcore { get; }
-    public long Seed { get; }
-    public byte[] SeedHash { get; }
-
-    private readonly ChunkManager chunkManager;
+    private readonly ChunkFactory chunkFactory;
+    private readonly ConcurrentDictionary<ChunkKey, Chunk> chunks;
+    private readonly ConcurrentDictionary<Guid, Player> playersById;
+    private readonly ConcurrentDictionary<string, Player> playersByName;
 
     public World(WorldCreator creator)
     {
+        Id = Guid.NewGuid();
         Name = creator.Name;
-        Seed = creator.Seed;
-        IsHardcore = creator.IsHardcore;
-        SeedHash = creator.Seed.ToSha256();
-        
-        this.chunkManager = new ChunkManager(creator.ChunkGenerator);
+        Border = creator.Border;
+        Difficulty = creator.Difficulty;
+
+        chunkFactory = new ChunkFactory(creator.ChunkGenerator);
+
+        playersById = new ConcurrentDictionary<Guid, Player>();
+        playersByName = new ConcurrentDictionary<string, Player>();
+        chunks = new ConcurrentDictionary<ChunkKey, Chunk>();
     }
 
-    public Chunk GetChunk(ChunkKey chunkKey)
+    public Guid Id { get; }
+    public string Name { get; }
+    public WorldBorder Border { get; }
+    public Difficulty Difficulty { get; }
+
+    public Chunk GetChunk(ChunkKey key)
     {
-        return chunkManager.GetChunk(chunkKey);
+        var chunk = chunks.GetValueOrDefault(key);
+        if (chunk is null) chunks[key] = chunk = chunkFactory.Create(key);
+
+        return chunk;
     }
 
-    public Chunk GetChunk(int x, int z)
+    public Player GetPlayer(string name)
     {
-        return chunkManager.GetChunk(x, z);
+        return playersByName.GetValueOrDefault(name);
     }
 
-    public Chunk LoadChunk(int x, int z)
+    public Player GetPlayer(Guid playerId)
     {
-        return chunkManager.Load(x, z);
+        return playersById.GetValueOrDefault(playerId);
     }
 
-    public Chunk LoadChunk(ChunkKey key)
+    public void Add(Player player)
     {
-        return chunkManager.Load(key);
+        player.World = this;
+
+        playersById[player.Id] = player;
+        playersByName[player.Username] = player;
+    }
+
+    public void Remove(Player player)
+    {
+        player.World = null;
+
+        playersById.Remove(player.Id, out _);
+        playersByName.Remove(player.Username, out _);
+    }
+
+    public IEnumerable<Player> GetPlayers()
+    {
+        return playersById.Values;
     }
 }

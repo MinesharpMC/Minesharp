@@ -1,16 +1,16 @@
 using Minesharp.Game;
-using Minesharp.Network.Packet.Server.Play;
+using Minesharp.Game.Chunks.Generator;
+using Minesharp.Game.Worlds;
+using Minesharp.Network;
 
-namespace Minesharp.Network;
+namespace Minesharp;
 
-public class ServerService : IHostedService
+public class ServerService : BackgroundService
 {
-    private readonly Server server;
-    private readonly NetworkServer networkServer;
     private readonly ILogger<ServerService> logger;
-    private readonly CancellationTokenSource cts = new();
-
-    private Task task;
+    private readonly NetworkServer networkServer;
+    private readonly Server server;
+    private readonly PeriodicTimer timer = new(TimeSpan.FromMilliseconds(100));
 
     public ServerService(Server server, ILogger<ServerService> logger, NetworkServer networkServer)
     {
@@ -19,32 +19,35 @@ public class ServerService : IHostedService
         this.networkServer = networkServer;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await networkServer.StartAsync();
-        logger.LogInformation("Server started and running on {ip}", networkServer.Ip);
-
-        task = ExecuteAsync(cts.Token);
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        cts.Cancel();
-        if (task is not null)
+        logger.LogInformation("Creating world");
+        var world = server.CreateWorld(new WorldCreator
         {
-            await task;
-        }
-        
-        await networkServer.StopAsync();
-        logger.LogInformation("Server running on {ip} successfully stopped", networkServer.Ip);
-    }
+            Name = "Debug World",
+            Border = new WorldBorder(),
+            ChunkGenerator = new SuperflatGenerator()
+        });
 
-    private async Task ExecuteAsync(CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
+        if (world is null)
+        {
+            logger.LogError("Failed to create world");
+            return;
+        }
+
+        logger.LogInformation("Starting server");
+        await networkServer.StartAsync();
+
+        logger.LogInformation("Server is now running");
+
+        while (!stoppingToken.IsCancellationRequested)
         {
             server.Tick();
-            await Task.Delay(100);
+            await timer.WaitForNextTickAsync();
         }
+
+        logger.LogInformation("Stopping server");
+        await networkServer.StopAsync();
+        logger.LogInformation("Server is now stopped");
     }
 }

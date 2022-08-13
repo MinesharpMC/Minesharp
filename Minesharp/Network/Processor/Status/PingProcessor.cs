@@ -1,5 +1,5 @@
-using Minesharp.Network.Packet.Client.Status;
-using Minesharp.Network.Packet.Server.Status;
+using Minesharp.Packet.Status.Client;
+using Minesharp.Packet.Status.Server;
 
 namespace Minesharp.Network.Processor.Status;
 

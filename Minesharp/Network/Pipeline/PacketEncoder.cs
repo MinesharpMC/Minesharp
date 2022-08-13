@@ -1,18 +1,15 @@
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
-using Minesharp.Extension;
-using Minesharp.Network.Packet;
-using Minesharp.Network.Packet.Client;
-using Minesharp.Network.Packet.Server;
-using Serilog;
+using Minesharp.Packet;
+using Minesharp.Packet.Extension;
 
 namespace Minesharp.Network.Pipeline;
 
-public class PacketEncoder : MessageToByteEncoder<ServerPacket>
+public class PacketEncoder : MessageToByteEncoder<IPacket>
 {
-    private readonly NetworkSession session;
     private readonly PacketFactory factory;
+    private readonly NetworkSession session;
 
     public PacketEncoder(NetworkSession session, PacketFactory factory)
     {
@@ -20,14 +17,11 @@ public class PacketEncoder : MessageToByteEncoder<ServerPacket>
         this.factory = factory;
     }
 
-    protected override void Encode(IChannelHandlerContext context, ServerPacket message, IByteBuffer output)
+    protected override void Encode(IChannelHandlerContext context, IPacket message, IByteBuffer output)
     {
-        var buffer = factory.CreateBuffer(session.Protocol, message);
-        if (buffer is null)
-        {
-            return;
-        }
-        
+        var buffer = factory.Encode(session.Protocol, message);
+        if (buffer is null) return;
+
         output.WriteVarInt(buffer.ReadableBytes);
         output.WriteBytes(buffer);
     }

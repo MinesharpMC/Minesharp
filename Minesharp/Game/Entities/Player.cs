@@ -1,55 +1,72 @@
-using Minesharp.Chat.Component;
+using Minesharp.Game.Chunks;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
-using Minesharp.Network.Packet.Server.Play;
+using Minesharp.Packet;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game.Entities;
 
 public sealed class Player
 {
-    private readonly Server server;
+    private readonly ChunkProcessor chunkProcessor;
+
     private readonly NetworkSession session;
 
-    public Player(Server server, NetworkSession session)
+    public Player(NetworkSession session)
     {
-        this.server = server;
         this.session = session;
+        chunkProcessor = new ChunkProcessor(this);
     }
 
-    public Guid Id { get; } = Guid.NewGuid();
-    public string Name { get; set; }
-    public World World { get; set; }
+    public Guid Id { get; init; }
+    public string Username { get; set; }
     public Position Position { get; set; }
     public Rotation Rotation { get; set; }
-    
-    public DateTime LastKeepAliveSendAt { get; private set; }
-    public long LastKeepAlive { get; private set; }
-    
+    public World World { get; set; }
+    public double Health { get; set; } = 20;
+    public double MaxHealth { get; set; } = 20;
+    public int Food { get; set; } = 20;
+    public float Saturation { get; set; }
+
+    public void SendPacket(IPacket packet)
+    {
+        session.SendPacket(packet);
+    }
+
+    public void SendHealth()
+    {
+        var health = (float)(Health / MaxHealth * 20);
+        SendPacket(new HealthPacket
+        {
+            Health = health,
+            Food = Food,
+            Saturation = Saturation
+        });
+    }
+
+    public void SendPosition()
+    {
+        SendPacket(new SyncPositionPacket
+        {
+            X = Position.X,
+            Y = Position.Y,
+            Z = Position.Z,
+            Pitch = Rotation.Pitch,
+            Yaw = Rotation.Yaw
+        });
+    }
+
     public void Tick()
     {
         session.Tick();
-        
-        if (LastKeepAliveSendAt.AddSeconds(10) < DateTime.UtcNow)
-        {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            session.SendPacket(new KeepAlivePacket
-            {
-                Timestamp = timestamp
-            });
+        chunkProcessor.Tick();
 
-            LastKeepAlive = timestamp;
-            LastKeepAliveSendAt = DateTime.UtcNow;
+        switch (World.Difficulty)
+        {
+            case Difficulty.Peaceful:
+                break;
         }
-    }
 
-    public void SendMessage(string message)
-    {
-        session.SendPacket(new SystemMessagePacket
-        {
-            Chat = new TextComponent
-            {
-                Text = message
-            },
-        });
+        SendHealth();
     }
 }

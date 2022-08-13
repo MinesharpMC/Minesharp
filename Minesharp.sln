@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minesharp", "Minesharp\Minesharp.csproj", "{92C6F964-4976-495A-BFFE-A77B814E541F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minesharp", "Minesharp\Minesharp.csproj", "{8F4D9928-8575-4976-9DB7-6C254E24496F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{92C6F964-4976-495A-BFFE-A77B814E541F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92C6F964-4976-495A-BFFE-A77B814E541F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92C6F964-4976-495A-BFFE-A77B814E541F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92C6F964-4976-495A-BFFE-A77B814E541F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F4D9928-8575-4976-9DB7-6C254E24496F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F4D9928-8575-4976-9DB7-6C254E24496F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F4D9928-8575-4976-9DB7-6C254E24496F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F4D9928-8575-4976-9DB7-6C254E24496F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

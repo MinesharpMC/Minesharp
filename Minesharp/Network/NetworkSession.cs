@@ -1,21 +1,17 @@
 using System.Collections.Concurrent;
 using DotNetty.Transport.Channels;
 using Minesharp.Game.Entities;
-using Minesharp.Network.Packet.Client;
-using Minesharp.Network.Packet.Server;
-using Minesharp.Network.Packet.Server.Play;
 using Minesharp.Network.Processor;
-using Serilog;
+using Minesharp.Packet;
+using Minesharp.Packet.Common;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Network;
 
-public class NetworkSession
+public sealed class NetworkSession
 {
-    public NetworkProtocol Protocol { get; set; }
-    public Player Player { get; set; }
-
     private readonly IChannel channel;
-    private readonly ConcurrentQueue<ClientPacket> packetQueue = new();
+    private readonly ConcurrentQueue<IPacket> packets = new();
     private readonly PacketProcessorManager processorManager;
 
     public NetworkSession(IChannel channel, PacketProcessorManager processorManager)
@@ -24,38 +20,47 @@ public class NetworkSession
         this.processorManager = processorManager;
     }
 
-    public void SendPacket(ServerPacket packet)
+    public ProtocolType Protocol { get; set; }
+    public Player Player { get; set; }
+
+    public long LastKeepAlive { get; private set; }
+    public DateTime LastKeepAliveAt { get; private set; }
+
+    public void Enqueue(IPacket packet)
     {
-        channel.WriteAndFlushAsync(packet).ContinueWith(x =>
-        {
-            Log.Error(x.Exception!.InnerException!, "Failed to send packet");
-        }, TaskContinuationOptions.OnlyOnFaulted);
+        packets.Enqueue(packet);
     }
 
-    public void Disconnect()
+    public void SendPacket(IPacket packet)
     {
-        channel.CloseAsync().ContinueWith(x =>
-        {
-            Log.Error(x.Exception!.InnerException!, "Failed to disconnect");
-        }, TaskContinuationOptions.OnlyOnFaulted);
-    }
-
-    public void ReceivePacket(ClientPacket packet)
-    {
-        packetQueue.Enqueue(packet);
+        channel.WriteAndFlushAsync(packet);
     }
 
     public void Tick()
     {
-        while (packetQueue.TryDequeue(out var packet))
+        while (packets.TryDequeue(out var packet))
         {
-            var processor = processorManager.GetProcessorForPacket(packet);
-            if (processor is null)
-            {
-                continue;
-            }
-            
+            var processor = processorManager.GetProcessor(packet.GetType());
+            if (processor is null) continue;
+
             processor.Process(this, packet);
         }
+
+        if (LastKeepAliveAt.AddSeconds(10) < DateTime.UtcNow)
+        {
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            SendPacket(new KeepAliveRequestPacket
+            {
+                Timestamp = timestamp
+            });
+
+            LastKeepAlive = timestamp;
+            LastKeepAliveAt = DateTime.UtcNow;
+        }
+    }
+
+    public void Disconnect()
+    {
+        channel.CloseAsync();
     }
 }

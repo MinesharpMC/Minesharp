@@ -1,18 +1,18 @@
-using Minesharp.Network.Packet.Client;
+using Minesharp.Packet;
 
 namespace Minesharp.Network.Processor;
 
-public abstract class PacketProcessor
+public interface IPacketProcessor
 {
-    public abstract Type PacketType { get; }
-    public abstract void Process(NetworkSession session, ClientPacket packet);
+    Type PacketType { get; }
+    void Process(NetworkSession session, IPacket packet);
 }
 
-public abstract class PacketProcessor<T> : PacketProcessor where T : ClientPacket
+public abstract class PacketProcessor<T> : IPacketProcessor where T : IPacket
 {
-    public override Type PacketType { get; } = typeof(T);
-    
-    public override void Process(NetworkSession session, ClientPacket packet)
+    public Type PacketType { get; } = typeof(T);
+
+    public void Process(NetworkSession session, IPacket packet)
     {
         Process(session, (T)packet);
     }

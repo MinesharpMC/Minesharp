@@ -1,18 +1,16 @@
-using Minesharp.Network.Packet.Client;
-
 namespace Minesharp.Network.Processor;
 
 public class PacketProcessorManager
 {
-    private readonly Dictionary<Type, PacketProcessor> processors;
+    private readonly Dictionary<Type, IPacketProcessor> processors;
 
-    public PacketProcessorManager(IEnumerable<PacketProcessor> processors)
+    public PacketProcessorManager(IEnumerable<IPacketProcessor> processors)
     {
         this.processors = processors.ToDictionary(x => x.PacketType);
     }
 
-    public PacketProcessor GetProcessorForPacket(ClientPacket packet)
+    public IPacketProcessor GetProcessor(Type packetType)
     {
-        return processors.GetValueOrDefault(packet.GetType());
+        return processors.GetValueOrDefault(packetType);
     }
 }

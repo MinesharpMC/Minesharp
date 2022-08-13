@@ -1,6 +1,4 @@
 using Minesharp;
-using Minesharp.Game.Chunks;
-using Minesharp.Game.Chunks.Generator;
 using Serilog;
 using Serilog.Filters;
 
@@ -14,10 +12,7 @@ var app = Host.CreateDefaultBuilder(args)
     .ConfigureWebHostDefaults(x =>
     {
         x.UseStartup<Startup>();
-        x.UseKestrel(s =>
-        {
-            s.ListenAnyIP(5000);
-        });
+        x.UseKestrel(s => { s.ListenAnyIP(5000); });
     })
     .UseSerilog()
     .UseConsoleLifetime()

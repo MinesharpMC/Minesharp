@@ -1,68 +1,60 @@
+using System.Collections.Concurrent;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
 
 namespace Minesharp.Game;
 
-public class Server
+public sealed class Server
 {
-    private readonly PlayerManager playerManager;
-    private readonly WorldManager worldManager;
+    private readonly ConcurrentDictionary<string, World> worlds = new();
 
-    public Server(PlayerManager playerManager, WorldManager worldManager)
+    public IEnumerable<Player> GetPlayers()
     {
-        this.playerManager = playerManager;
-        this.worldManager = worldManager;
+        return GetWorlds().SelectMany(x => x.GetPlayers());
     }
 
-    public World GetWorld(string name)
+    public World GetDefaultWorld()
     {
-        return worldManager.GetWorld(name);
-    }
-
-    public World CreateWorld(WorldCreator creator)
-    {
-        return worldManager.CreateWorld(creator);
+        return worlds.Values.First();
     }
 
     public IEnumerable<World> GetWorlds()
     {
-        return worldManager.GetWorlds();
+        return worlds.Values;
     }
 
-    public Player GetPlayer(Guid id)
+    public World CreateWorld(WorldCreator creator)
     {
-        return playerManager.Get(id);
+        var world = GetWorld(creator.Name);
+        if (world is not null) return world;
+
+        return worlds[creator.Name] = new World(creator);
     }
 
-    public IEnumerable<Player> GetPlayers()
+    public World CreateWorld(string name)
     {
-        return playerManager.GetPlayers();
-    }
-
-    public void RemovePlayer(Player player)
-    {
-        playerManager.Remove(player);
-    }
-
-    public void AddPlayer(Player player)
-    {
-        playerManager.Add(player);
-    }
-
-    public void BroadcastMessage(string message)
-    {
-        foreach (var player in playerManager.GetPlayers())
+        return CreateWorld(new WorldCreator
         {
-            player.SendMessage(message);
-        }
+            Name = name
+        });
+    }
+
+    public World GetWorld(string name)
+    {
+        return worlds.GetValueOrDefault(name);
+    }
+
+    public World GetWorld(Guid worldId)
+    {
+        return worlds.Values.FirstOrDefault(x => x.Id == worldId);
     }
 
     public void Tick()
     {
-        var players = playerManager.GetPlayers();
-        foreach (var player in players)
+        foreach (var world in GetWorlds())
         {
-            player.Tick();
+            var players = world.GetPlayers();
+            foreach (var player in players) player.Tick();
         }
     }
 }

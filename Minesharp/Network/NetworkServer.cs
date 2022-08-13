@@ -1,57 +1,50 @@
-using System.Net;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
-using Minesharp.Configuration;
-using Minesharp.Game;
-using Minesharp.Network.Packet;
 using Minesharp.Network.Pipeline;
 using Minesharp.Network.Processor;
+using Minesharp.Packet;
 
 namespace Minesharp.Network;
 
-public class NetworkServer
+public sealed class NetworkServer
 {
     private readonly ServerBootstrap bootstrap;
-    private readonly MultithreadEventLoopGroup bossGroup;
-    private readonly MultithreadEventLoopGroup workerGroup;
-    private readonly NetworkConfiguration configuration;
+    private readonly MultithreadEventLoopGroup bossGroup, workerGroup;
+
     private IChannel channel;
 
-    public IPEndPoint Ip => configuration.Ip;
-
-    public NetworkServer(NetworkConfiguration configuration, PacketFactory packetFactory, PacketProcessorManager processorManager, Server server)
+    public NetworkServer(PacketFactory packetFactory, PacketProcessorManager processorManager)
     {
-        this.configuration = configuration;
+        bossGroup = new MultithreadEventLoopGroup(1);
+        workerGroup = new MultithreadEventLoopGroup();
 
-        this.bossGroup = new MultithreadEventLoopGroup(1);
-        this.workerGroup = new MultithreadEventLoopGroup();
-        
-        this.bootstrap = new ServerBootstrap()
+        bootstrap = new ServerBootstrap()
             .Group(bossGroup, workerGroup)
             .Channel<TcpServerSocketChannel>()
             .ChildHandler(new ActionChannelInitializer<IChannel>(x =>
             {
                 var pipeline = x.Pipeline;
+
                 var session = new NetworkSession(x, processorManager);
 
                 pipeline.AddLast(new FrameDecoder());
                 pipeline.AddLast(new PacketDecoder(session, packetFactory));
                 pipeline.AddLast(new PacketEncoder(session, packetFactory));
                 pipeline.AddLast(new PacketHandler(session, processorManager));
-                pipeline.AddLast(new SessionHandler(session, server));
+                pipeline.AddLast(new SessionHandler(session));
             }));
     }
 
     public async Task StartAsync()
     {
-        channel = await bootstrap.BindAsync(configuration.Ip);
+        channel = await bootstrap.BindAsync(25565);
     }
 
     public async Task StopAsync()
     {
         await channel.CloseAsync();
-        await bossGroup.ShutdownGracefullyAsync();
-        await workerGroup.ShutdownGracefullyAsync();
+        await bossGroup.ShutdownGracefullyAsync(TimeSpan.Zero, TimeSpan.Zero);
+        await workerGroup.ShutdownGracefullyAsync(TimeSpan.Zero, TimeSpan.Zero);
     }
 }

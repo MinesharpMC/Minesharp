@@ -1,20 +1,30 @@
-using Minesharp.Utility;
-
 namespace Minesharp.Game.Chunks;
 
-public class ChunkSection
+public sealed class ChunkSection
 {
-    public short BlockCount { get; }
-    public PaletteWrapper State { get; }
+    private readonly ChunkPaletteMapping mapping;
+    private readonly List<int> palette;
 
     public ChunkSection(int[] types)
     {
-        BlockCount = (short) types.Count(x => x != 0);
-        State = PaletteWrapper.Create(types);
+        palette = new HashSet<int>(types).ToList();
+        mapping = new ChunkPaletteMapping(palette, types);
+
+        BlockCount = types.Count(x => x is not 0);
     }
-    
+
+    public int BlockCount { get; }
+    public byte Bits => mapping.Bits;
+    public IList<int> Palette => palette;
+    public IList<long> Mapping => mapping.Storage;
+    public bool UsePalette => mapping.UsePalette;
+
     public int GetType(int x, int y, int z)
     {
-        return State.Get(x, y, z);
+        var value = mapping.Get(x, y, z);
+        if (mapping.Bits < 8) // If bits > 8 we use global palette
+            value = palette[value];
+
+        return value;
     }
 }
