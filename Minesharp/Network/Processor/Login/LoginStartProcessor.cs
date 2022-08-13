@@ -26,7 +26,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Id = Guid.NewGuid(),
             Username = packet.Username,
             Position = new Position(0, 0, 0),
-            Rotation = new Rotation(0, 0)
+            Rotation = new Rotation(0, 0),
+            Server = server
         };
 
         player.SendPacket(new LoginSuccessPacket
@@ -52,8 +53,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             DimensionType = "minecraft:overworld",
             SeedHash = new byte[8],
             MaxPlayers = 1000,
-            ViewDistance = 1,
-            SimulationDistance = 1,
+            ViewDistance = 5,
+            SimulationDistance = 5,
             ReducedDebug = false,
             EnabledRespawnScreen = true,
             IsDebug = false,

@@ -15,6 +15,7 @@ public sealed class Server
     
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
+    public byte ViewDistance => configuration.ViewDistance;
     
     public Server(ServerConfiguration configuration)
     {

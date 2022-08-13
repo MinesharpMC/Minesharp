@@ -8,8 +8,8 @@ namespace Minesharp.Game.Chunks;
 
 public class ChunkProcessor
 {
-    private readonly HashSet<ChunkKey> knownChunks = new();
     private readonly Player player;
+    private readonly HashSet<ChunkKey> knownChunks = new();
 
     private bool firstStream = true;
     
@@ -32,7 +32,7 @@ public class ChunkProcessor
         
         var centralX = position.X >> 4;
         var centralZ = position.Z >> 4;
-        var radius = 1; // TODO : View distance
+        var radius = 5; // TODO : View distance
 
         if (firstStream)
         {
@@ -45,7 +45,7 @@ public class ChunkProcessor
         }
         else if (Math.Abs(centralX - previousCentralX) > radius || Math.Abs(centralZ - previousCentralZ) > radius)
         {
-            // knownChunks.Clear();
+            knownChunks.Clear();
             for (var x = centralX - radius; x <= centralX + radius; x++)
             for (var z = centralZ - radius; z <= centralZ + radius; z++)
             {
@@ -77,20 +77,6 @@ public class ChunkProcessor
         previousCentralX = centralX;
         previousCentralZ = centralZ;
         previousRadius = radius;
-
-        newChunks.Sort((a, b) =>
-        {
-            var dx = 16 * a.X + 8 - position.X;
-            var dz = 16 * a.Z + 8 - position.Z;
-
-            var da = dx * dx + dz * dz;
-            dx = 16 * b.X + 8 - position.X;
-            dz = 16 * b.X + 8 - position.Z;
-
-            var db = dx * dx + dz * dz;
-
-            return da.CompareTo(db);
-        });
 
         if (newChunks.Any())
         {
@@ -150,7 +136,7 @@ public class ChunkProcessor
                 });
             }
         }
-
+        
         if (previousChunks.Any())
         {
             foreach (var chunkKey in previousChunks)
