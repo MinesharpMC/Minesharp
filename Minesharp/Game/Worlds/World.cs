@@ -33,7 +33,10 @@ public sealed class World
     public Chunk GetChunk(ChunkKey key)
     {
         var chunk = chunks.GetValueOrDefault(key);
-        if (chunk is null) chunks[key] = chunk = chunkFactory.Create(key);
+        if (chunk is null)
+        {
+            chunks[key] = chunk = chunkFactory.Create(key);
+        }
 
         return chunk;
     }

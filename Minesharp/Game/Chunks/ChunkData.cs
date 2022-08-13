@@ -12,7 +12,10 @@ public class ChunkData
     public void SetBlock(int x, int y, int z, int blockId)
     {
         if (x < 0 || y < 0 || z < 0 || x >= ChunkConstants.Height || y >= ChunkConstants.Depth ||
-            z >= ChunkConstants.Width) return;
+            z >= ChunkConstants.Width)
+        {
+            return;
+        }
 
         Sections[y >> 4] ??= new int[4096];
         Sections[y >> 4][((y & 0xF) << 8) | (z << 4) | x] = blockId;

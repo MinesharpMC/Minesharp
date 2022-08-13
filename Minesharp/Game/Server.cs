@@ -26,7 +26,10 @@ public sealed class Server
     public World CreateWorld(WorldCreator creator)
     {
         var world = GetWorld(creator.Name);
-        if (world is not null) return world;
+        if (world is not null)
+        {
+            return world;
+        }
 
         return worlds[creator.Name] = new World(creator);
     }
@@ -54,7 +57,10 @@ public sealed class Server
         foreach (var world in GetWorlds())
         {
             var players = world.GetPlayers();
-            foreach (var player in players) player.Tick();
+            foreach (var player in players)
+            {
+                player.Tick();
+            }
         }
     }
 }

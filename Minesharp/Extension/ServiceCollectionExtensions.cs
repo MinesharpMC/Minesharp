@@ -24,7 +24,10 @@ public static class ServiceCollectionExtensions
             .Where(x => !x.IsAbstract)
             .Where(x => !x.IsInterface);
 
-        foreach (var type in types) services.AddTransient(typeof(IPacketProcessor), type);
+        foreach (var type in types)
+        {
+            services.AddTransient(typeof(IPacketProcessor), type);
+        }
 
         services.AddSingleton<PacketProcessorManager>();
     }

@@ -33,7 +33,9 @@ public class ChunkProcessor
             firstStream = false;
             for (var x = blockPosition.X - radius; x <= blockPosition.X + radius; x++)
             for (var z = blockPosition.Z - radius; z <= blockPosition.Z + radius; z++)
+            {
                 newChunks.Add(ChunkKey.Create(x, z));
+            }
         }
         else if (Math.Abs(blockPosition.X - previousPosition.X) > radius ||
                  Math.Abs(blockPosition.Z - previousPosition.Z) > radius)
@@ -41,7 +43,9 @@ public class ChunkProcessor
             knownChunks.Clear();
             for (var x = blockPosition.X - radius; x <= blockPosition.X + radius; x++)
             for (var z = blockPosition.Z - radius; z <= blockPosition.Z + radius; z++)
+            {
                 newChunks.Add(ChunkKey.Create(x, z));
+            }
         }
         else if (previousPosition.X != blockPosition.X || previousPosition.Z != blockPosition.Z)
         {
@@ -51,9 +55,13 @@ public class ChunkProcessor
             {
                 var key = ChunkKey.Create(x, z);
                 if (knownChunks.Contains(key))
+                {
                     previousChunks.Remove(key);
+                }
                 else
+                {
                     newChunks.Add(key);
+                }
             }
         }
         else
@@ -96,10 +104,16 @@ public class ChunkProcessor
                 .Select(_ => 0);
 
             var mask = new BitSet();
-            for (var i = 0; i < ChunkConstants.SectionCount + 2; i++) mask.Set(i);
+            for (var i = 0; i < ChunkConstants.SectionCount + 2; i++)
+            {
+                mask.Set(i);
+            }
 
             var lights = new List<byte[]>();
-            for (var i = 0; i < 18; i++) lights.Add(ChunkConstants.EmptyLight);
+            for (var i = 0; i < 18; i++)
+            {
+                lights.Add(ChunkConstants.EmptyLight);
+            }
 
             knownChunks.Add(key);
 
@@ -129,8 +143,10 @@ public class ChunkProcessor
         if (previousChunks.Any())
         {
             foreach (var chunkKey in previousChunks)
+            {
                 knownChunks.Remove(chunkKey);
-            
+            }
+
             previousChunks.Clear();
         }
     }

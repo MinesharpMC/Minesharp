@@ -9,7 +9,6 @@ namespace Minesharp.Game.Entities;
 public sealed class Player
 {
     private readonly ChunkProcessor chunkProcessor;
-
     private readonly NetworkSession session;
 
     public Player(NetworkSession session)

@@ -41,7 +41,10 @@ public sealed class NetworkSession
         while (packets.TryDequeue(out var packet))
         {
             var processor = processorManager.GetProcessor(packet.GetType());
-            if (processor is null) continue;
+            if (processor is null)
+            {
+                continue;
+            }
 
             processor.Process(this, packet);
         }

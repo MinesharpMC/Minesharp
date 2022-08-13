@@ -6,7 +6,10 @@ public class KeepAliveResponseProcessor : PacketProcessor<KeepAliveResponsePacke
 {
     protected override void Process(NetworkSession session, KeepAliveResponsePacket packet)
     {
-        if (session.LastKeepAlive == packet.Timestamp) return;
+        if (session.LastKeepAlive == packet.Timestamp)
+        {
+            return;
+        }
 
         session.Disconnect();
     }

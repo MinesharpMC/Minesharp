@@ -20,7 +20,10 @@ public class PacketEncoder : MessageToByteEncoder<IPacket>
     protected override void Encode(IChannelHandlerContext context, IPacket message, IByteBuffer output)
     {
         var buffer = factory.Encode(session.Protocol, message);
-        if (buffer is null) return;
+        if (buffer is null)
+        {
+            return;
+        }
 
         output.WriteVarInt(buffer.ReadableBytes);
         output.WriteBytes(buffer);

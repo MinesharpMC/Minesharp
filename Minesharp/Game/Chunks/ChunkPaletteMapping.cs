@@ -11,7 +11,10 @@ public sealed class ChunkPaletteMapping
         Mask = (1L << Bits) - 1L;
         Storage = new long[(int)Math.Ceiling(Bits * 4096 / 64.0)];
 
-        for (var i = 0; i < 4096; i++) Set(i, UsePalette ? palette.IndexOf(types[i]) : types[i]);
+        for (var i = 0; i < 4096; i++)
+        {
+            Set(i, UsePalette ? palette.IndexOf(types[i]) : types[i]);
+        }
     }
 
     public byte Bits { get; }
@@ -34,7 +37,10 @@ public sealed class ChunkPaletteMapping
         var value = Storage[i0] >> i1;
         var i2 = i1 + Bits;
 
-        if (i2 > 64) value |= Storage[++i0] << (64 - i1);
+        if (i2 > 64)
+        {
+            value |= Storage[++i0] << (64 - i1);
+        }
 
         return (int)(value & Mask);
     }

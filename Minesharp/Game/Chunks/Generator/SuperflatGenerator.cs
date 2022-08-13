@@ -11,7 +11,9 @@ public class SuperflatGenerator : ChunkGenerator
 
         for (var x = 0; x < 16; x++)
         for (var z = 0; z < 16; z++)
+        {
             GenerateTerrain(chunkData, cx + x, cz + z);
+        }
 
         return chunkData;
     }

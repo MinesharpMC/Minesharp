@@ -12,7 +12,8 @@ public static class ArrayExtensions
         {
             count++;
             number >>= 1;
-        } while (number != 0);
+        }
+        while (number != 0);
 
         return count;
     }
@@ -20,7 +21,10 @@ public static class ArrayExtensions
     public static ChunkSection GetSection(this ChunkSection[] sections, int y)
     {
         var index = y >> 4;
-        if (y is < 0 or >= ChunkConstants.Depth || index >= sections.Length) return null;
+        if (y is < 0 or >= ChunkConstants.Depth || index >= sections.Length)
+        {
+            return null;
+        }
 
         return sections[index];
     }
@@ -31,7 +35,10 @@ public static class ArrayExtensions
         {
             var section = sections.GetSection(y);
             var type = (sbyte)(section == null ? 0 : section.GetType(x, y, z) >> 4);
-            if (type != 0) break;
+            if (type != 0)
+            {
+                break;
+            }
         }
 
         return y + 1;

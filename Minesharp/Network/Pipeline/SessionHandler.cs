@@ -14,7 +14,10 @@ public class SessionHandler : ChannelHandlerAdapter
     public override void ChannelInactive(IChannelHandlerContext context)
     {
         var player = session.Player;
-        if (session.Player is not null) player.World.Remove(session.Player);
+        if (session.Player is not null)
+        {
+            player.World.Remove(session.Player);
+        }
 
         base.ChannelInactive(context);
     }

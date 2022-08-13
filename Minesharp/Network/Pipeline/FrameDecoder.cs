@@ -10,7 +10,10 @@ public class FrameDecoder : ByteToMessageDecoder
     protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
     {
         input.MarkReaderIndex();
-        if (!input.ReadableVarInt()) return;
+        if (!input.ReadableVarInt())
+        {
+            return;
+        }
 
         var length = input.ReadVarInt();
         if (input.ReadableBytes < length)
