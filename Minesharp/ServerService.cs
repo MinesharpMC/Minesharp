@@ -2,6 +2,7 @@ using Minesharp.Game;
 using Minesharp.Game.Chunks.Generator;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
+using Serilog;
 
 namespace Minesharp;
 
@@ -10,7 +11,7 @@ public class ServerService : BackgroundService
     private readonly ILogger<ServerService> logger;
     private readonly NetworkServer networkServer;
     private readonly Server server;
-    private readonly PeriodicTimer timer = new(TimeSpan.FromMilliseconds(100));
+    private readonly PeriodicTimer timer = new(TimeSpan.FromMilliseconds(50));
 
     public ServerService(Server server, ILogger<ServerService> logger, NetworkServer networkServer)
     {
@@ -42,8 +43,18 @@ public class ServerService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            server.Tick();
-            await timer.WaitForNextTickAsync();
+            try
+            {
+                server.Tick();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Something happened when ticking server");
+            }
+            finally
+            {
+                await timer.WaitForNextTickAsync();
+            }
         }
 
         logger.LogInformation("Stopping server");

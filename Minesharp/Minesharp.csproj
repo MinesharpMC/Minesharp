@@ -7,14 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Minesharp.Packet" Version="1.11.0"/>
-        <PackageReference Include="Serilog" Version="2.11.0"/>
-        <PackageReference Include="Serilog.AspNetCore" Version="6.0.1"/>
-        <PackageReference Include="DotNetty.Buffers" Version="0.7.4"/>
-        <PackageReference Include="DotNetty.Codecs" Version="0.7.4"/>
-        <PackageReference Include="DotNetty.Common" Version="0.7.4"/>
-        <PackageReference Include="DotNetty.Handlers" Version="0.7.4"/>
-        <PackageReference Include="DotNetty.Transport" Version="0.7.4"/>
+        <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.2.0" />
+        <PackageReference Include="Serilog" Version="2.11.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
+        <PackageReference Include="DotNetty.Buffers" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Codecs" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Common" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Handlers" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Transport" Version="0.7.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="config.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Minesharp.Packet\Minesharp.Packet\Minesharp.Packet.csproj" />
     </ItemGroup>
 
 </Project>

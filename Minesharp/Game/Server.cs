@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Minesharp.Configuration;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
 
@@ -6,7 +7,19 @@ namespace Minesharp.Game;
 
 public sealed class Server
 {
+    private readonly ServerConfiguration configuration;
     private readonly ConcurrentDictionary<string, World> worlds = new();
+
+    public const string Version = "1.19";
+    public const int Protocol = 759;
+    
+    public int MaxPlayers => configuration.MaxPlayers;
+    public string Description => configuration.Description;
+    
+    public Server(ServerConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
 
     public IEnumerable<Player> GetPlayers()
     {

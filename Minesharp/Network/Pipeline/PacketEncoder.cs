@@ -3,6 +3,8 @@ using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
 using Minesharp.Packet;
 using Minesharp.Packet.Extension;
+using Minesharp.Packet.Game.Server;
+using Serilog;
 
 namespace Minesharp.Network.Pipeline;
 
@@ -19,13 +21,13 @@ public class PacketEncoder : MessageToByteEncoder<IPacket>
 
     protected override void Encode(IChannelHandlerContext context, IPacket message, IByteBuffer output)
     {
-        var buffer = factory.Encode(session.Protocol, message);
-        if (buffer is null)
-        {
-            return;
-        }
+        var buffer = Unpooled.Buffer();
+
+        factory.Encode(session.Protocol, buffer, message);
 
         output.WriteVarInt(buffer.ReadableBytes);
         output.WriteBytes(buffer);
+        
+        Log.Debug("Sent packet {type} ({packet})", message.GetType().Name, message);
     }
 }

@@ -13,6 +13,13 @@ public readonly struct BlockPosition : IEquatable<BlockPosition>
         Z = z;
     }
 
+    public BlockPosition(double x, double y, double z)
+    {
+        X = (int)Math.Floor(x);
+        Y = (int)Math.Floor(y);
+        Z = (int)Math.Floor(z);
+    }
+
     public Position ToPosition()
     {
         return new Position(X, Y, Z);

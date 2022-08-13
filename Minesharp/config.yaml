@@ -1,0 +1,6 @@
+Network:
+  Port: 25565
+
+Server:
+  MaxPlayers: 1000
+  Description: "Powered by Minesharp"

@@ -1,3 +1,4 @@
+using Minesharp.Extension;
 using Minesharp.Game;
 using Minesharp.Game.Entities;
 using Minesharp.Packet.Common;
@@ -51,8 +52,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             DimensionType = "minecraft:overworld",
             SeedHash = new byte[8],
             MaxPlayers = 1000,
-            ViewDistance = 3,
-            SimulationDistance = 3,
+            ViewDistance = 1,
+            SimulationDistance = 1,
             ReducedDebug = false,
             EnabledRespawnScreen = true,
             IsDebug = false,
@@ -61,8 +62,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         });
 
         world.Add(player);
-
-        player.SendHealth();
+        
         player.SendPosition();
     }
 }

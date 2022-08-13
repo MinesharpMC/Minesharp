@@ -2,6 +2,7 @@ using Minesharp.Game.Entities;
 using Minesharp.Nbt;
 using Minesharp.Packet.Common;
 using Minesharp.Packet.Game.Server;
+using Serilog;
 
 namespace Minesharp.Game.Chunks;
 
@@ -11,7 +12,10 @@ public class ChunkProcessor
     private readonly Player player;
 
     private bool firstStream = true;
-    private BlockPosition previousPosition;
+    
+    private int previousCentralX;
+    private int previousCentralZ;
+    private int previousRadius;
 
     public ChunkProcessor(Player player)
     {
@@ -24,42 +28,44 @@ public class ChunkProcessor
         var newChunks = new List<ChunkKey>();
         var previousChunks = new HashSet<ChunkKey>();
 
-        var position = player.Position;
-        var blockPosition = position.ToBlockPosition();
+        var position = player.Position.ToBlockPosition();
+        
+        var centralX = position.X >> 4;
+        var centralZ = position.Z >> 4;
         var radius = 1; // TODO : View distance
 
         if (firstStream)
         {
             firstStream = false;
-            for (var x = blockPosition.X - radius; x <= blockPosition.X + radius; x++)
-            for (var z = blockPosition.Z - radius; z <= blockPosition.Z + radius; z++)
+            for (var x = centralX - radius; x <= centralX + radius; x++)
+            for (var z = centralZ - radius; z <= centralZ + radius; z++)
             {
-                newChunks.Add(ChunkKey.Create(x, z));
+                newChunks.Add(ChunkKey.Of(x, z));
             }
         }
-        else if (Math.Abs(blockPosition.X - previousPosition.X) > radius || Math.Abs(blockPosition.Z - previousPosition.Z) > radius)
+        else if (Math.Abs(centralX - previousCentralX) > radius || Math.Abs(centralZ - previousCentralZ) > radius)
         {
-            knownChunks.Clear();
-            for (var x = blockPosition.X - radius; x <= blockPosition.X + radius; x++)
-            for (var z = blockPosition.Z - radius; z <= blockPosition.Z + radius; z++)
+            // knownChunks.Clear();
+            for (var x = centralX - radius; x <= centralX + radius; x++)
+            for (var z = centralZ - radius; z <= centralZ + radius; z++)
             {
-                newChunks.Add(ChunkKey.Create(x, z));
+                newChunks.Add(ChunkKey.Of(x, z));
             }
         }
-        else if (previousPosition.X != blockPosition.X || previousPosition.Z != blockPosition.Z)
+        else if (centralX != previousCentralX || centralZ != previousCentralZ || radius != previousRadius)
         {
             previousChunks = new HashSet<ChunkKey>(knownChunks);
-            for (var x = blockPosition.X - radius; x <= blockPosition.X + radius; x++)
-            for (var z = blockPosition.Z - radius; z <= blockPosition.Z + radius; z++)
+            for (var x = centralX - radius; x <= centralX + radius; x++)
+            for (var z = centralZ - radius; z <= centralZ + radius; z++)
             {
-                var key = ChunkKey.Create(x, z);
-                if (knownChunks.Contains(key))
+                var key = ChunkKey.Of(x, z);
+                if (!knownChunks.Contains(key))
                 {
-                    previousChunks.Remove(key);
+                    newChunks.Add(key);
                 }
                 else
                 {
-                    newChunks.Add(key);
+                    previousChunks.Remove(key);
                 }
             }
         }
@@ -67,8 +73,10 @@ public class ChunkProcessor
         {
             return;
         }
-
-        previousPosition = blockPosition;
+        
+        previousCentralX = centralX;
+        previousCentralZ = centralZ;
+        previousRadius = radius;
 
         newChunks.Sort((a, b) =>
         {
@@ -84,65 +92,75 @@ public class ChunkProcessor
             return da.CompareTo(db);
         });
 
-        foreach (var key in newChunks)
+        if (newChunks.Any())
         {
-            var chunk = world.GetChunk(key);
+            Log.Information("Updating chunks");
+            foreach (var key in newChunks)
+            {
+                var chunk = world.GetChunk(key);
 
-            var sections = chunk.Sections
-                .Where(x => x is not null)
-                .Select(x => new SectionInfo
+                var sections = chunk.Sections
+                    .Where(x => x is not null)
+                    .Select(x => new SectionInfo
+                    {
+                        Bits = x.Bits,
+                        BlockCount = (short)x.BlockCount,
+                        UsePalette = x.UsePalette,
+                        Mapping = x.Mapping,
+                        Palette = x.Palette
+                    });
+
+                var biomes = Enumerable.Range(0, 256)
+                    .Select(_ => 0);
+
+                var mask = new BitSet();
+                for (var i = 0; i < ChunkConstants.SectionCount + 2; i++)
                 {
-                    Bits = x.Bits,
-                    BlockCount = (short)x.BlockCount,
-                    UsePalette = x.UsePalette,
-                    Mapping = x.Mapping,
-                    Palette = x.Palette
+                    mask.Set(i);
+                }
+
+                var lights = new List<byte[]>();
+                for (var i = 0; i < 18; i++)
+                {
+                    lights.Add(ChunkConstants.EmptyLight);
+                }
+
+                knownChunks.Add(key);
+
+                player.SendPacket(new LoadChunkPacket
+                {
+                    ChunkX = chunk.X,
+                    ChunkZ = chunk.Z,
+                    ChunkInfo = new ChunkInfo
+                    {
+                        Sections = sections,
+                        Biomes = biomes
+                    },
+                    Heightmaps = new CompoundTag
+                    {
+                        ["MOTION_BLOCKING"] = new ByteArrayTag(chunk.Heightmap)
+                    },
+                    TrustEdges = true,
+                    EmptyBlockLightMask = new BitSet(),
+                    EmptySkyLightMask = new BitSet(),
+                    SkyLight = lights,
+                    BlockLight = lights,
+                    SkyLightMask = mask,
+                    BlockLightMask = mask
                 });
-
-            var biomes = Enumerable.Range(0, 256)
-                .Select(_ => 0);
-
-            var mask = new BitSet();
-            for (var i = 0; i < ChunkConstants.SectionCount + 2; i++)
-            {
-                mask.Set(i);
             }
-
-            var lights = new List<byte[]>();
-            for (var i = 0; i < 18; i++)
-            {
-                lights.Add(ChunkConstants.EmptyLight);
-            }
-
-            knownChunks.Add(key);
-
-            player.SendPacket(new LoadChunkPacket
-            {
-                ChunkX = chunk.X,
-                ChunkZ = chunk.Z,
-                ChunkInfo = new ChunkInfo
-                {
-                    Sections = sections,
-                    Biomes = biomes
-                },
-                Heightmaps = new CompoundTag
-                {
-                    ["MOTION_BLOCKING"] = new ByteArrayTag(chunk.Heightmap)
-                },
-                TrustEdges = true,
-                EmptyBlockLightMask = new BitSet(),
-                EmptySkyLightMask = new BitSet(),
-                SkyLight = lights,
-                BlockLight = lights,
-                SkyLightMask = mask,
-                BlockLightMask = mask
-            });
         }
 
         if (previousChunks.Any())
         {
             foreach (var chunkKey in previousChunks)
             {
+                player.SendPacket(new UnloadChunkPacket
+                {
+                    ChunkX = chunkKey.X,
+                    ChunkZ = chunkKey.Z
+                });
+
                 knownChunks.Remove(chunkKey);
             }
 

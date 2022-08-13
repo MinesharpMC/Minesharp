@@ -15,7 +15,7 @@ public readonly struct Position : IEquatable<Position>
 
     public BlockPosition ToBlockPosition()
     {
-        return new BlockPosition((int)X, (int)Y, (int)Z);
+        return new BlockPosition(X, Y, Z);
     }
 
     public bool Equals(Position other)

@@ -1,15 +1,19 @@
 using Minesharp.Extension;
 using Minesharp.Game.Chunks.Generator;
+using Minesharp.Game.Worlds;
+using Serilog;
 
 namespace Minesharp.Game.Chunks;
 
 public sealed class ChunkFactory
 {
+    private readonly World world;
     private readonly ChunkGenerator generator;
 
-    public ChunkFactory(ChunkGenerator generator)
+    public ChunkFactory(ChunkGenerator generator, World world)
     {
         this.generator = generator;
+        this.world = world;
     }
 
     public Chunk Create(ChunkKey key)
@@ -42,7 +46,7 @@ public sealed class ChunkFactory
             heightmap[z * ChunkConstants.Width + x] = (sbyte)sections.GetHighestTypeAt(x, y, z);
         }
 
-        return new Chunk(key)
+        return new Chunk(key, world)
         {
             Sections = sections,
             Heightmap = heightmap

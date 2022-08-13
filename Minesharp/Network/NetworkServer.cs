@@ -1,6 +1,7 @@
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
+using Minesharp.Configuration;
 using Minesharp.Network.Pipeline;
 using Minesharp.Network.Processor;
 using Minesharp.Packet;
@@ -11,11 +12,13 @@ public sealed class NetworkServer
 {
     private readonly ServerBootstrap bootstrap;
     private readonly MultithreadEventLoopGroup bossGroup, workerGroup;
+    private readonly NetworkConfiguration configuration;
 
     private IChannel channel;
 
-    public NetworkServer(PacketFactory packetFactory, PacketProcessorManager processorManager)
+    public NetworkServer(PacketFactory packetFactory, PacketProcessorManager processorManager, NetworkConfiguration configuration)
     {
+        this.configuration = configuration;
         bossGroup = new MultithreadEventLoopGroup(1);
         workerGroup = new MultithreadEventLoopGroup();
 
@@ -38,7 +41,7 @@ public sealed class NetworkServer
 
     public async Task StartAsync()
     {
-        channel = await bootstrap.BindAsync(25565);
+        channel = await bootstrap.BindAsync(configuration.Port);
     }
 
     public async Task StopAsync()

@@ -5,6 +5,7 @@ using Minesharp.Network.Processor;
 using Minesharp.Packet;
 using Minesharp.Packet.Common;
 using Minesharp.Packet.Game.Server;
+using Serilog;
 
 namespace Minesharp.Network;
 

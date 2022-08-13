@@ -22,17 +22,17 @@ public class StatusRequestProcessor : PacketProcessor<StatusRequestPacket>
             {
                 version = new
                 {
-                    name = "1.19",
-                    protocol = 759
+                    name = Server.Version,
+                    protocol = Server.Protocol
                 },
                 players = new
                 {
-                    max = 100,
+                    max = server.MaxPlayers,
                     online = server.GetPlayers().Count()
                 },
                 description = new
                 {
-                    text = "Powered by Minesharp"
+                    text = server.Description
                 }
             })
         });
