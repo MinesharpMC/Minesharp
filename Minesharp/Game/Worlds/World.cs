@@ -40,7 +40,7 @@ public sealed class World
         {
             World = this,
             X = x,
-            Y = Math.Min(256, Math.Max(y, 0)),
+            Y = y,
             Z = z
         };
     }
@@ -58,13 +58,13 @@ public sealed class World
     public void SetBlockTypeAt(int x, int y, int z, Material material)
     {
         var chunk = GetChunkAt(x >> 4, z >> 4);
-        chunk.SetTypeAt(x & 0xf, y, z & 0xf, material);
+        chunk.SetTypeAt(x, y, z, material);
     }
 
     public Material GetBlockTypeAt(int x, int y, int z)
     {
         var chunk = GetChunkAt(x >> 4, z >> 4);
-        return chunk.GetTypeAt(x, y, z);
+        return chunk.GetTypeAt(x & 0xf, y, z & 0xf);
     }
 
     public Block GetBlockAt(Position position)
@@ -74,12 +74,12 @@ public sealed class World
     
     public Chunk GetChunkAt(Position position)
     {
-        return GetChunkAt(position.BlockX >> 4, position.BlockZ >> 4);
+        return GetChunkAt(position.BlockX, position.BlockZ);
     }
 
     public Chunk GetChunkAt(int x, int z)
     {
-        return GetChunk(ChunkKey.Of(x, z));
+        return GetChunk(ChunkKey.Of(x >> 4, z >> 4));
     }
     
     public Chunk GetChunk(ChunkKey key)
@@ -135,5 +135,18 @@ public sealed class World
     public IEnumerable<Chunk> GetChunks()
     {
         return chunks.Values;
+    }
+
+    public void Tick()
+    {
+        foreach (var player in GetPlayers())
+        {
+            player.Tick();
+        }
+        
+        foreach (var chunk in GetChunks())
+        {
+            chunk.ClearModifiedBlocks();
+        }
     }
 }

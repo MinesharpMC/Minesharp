@@ -26,6 +26,7 @@ public sealed class Player
     public World World { get; set; }
     public Server Server { get; init; }
     public Setting Setting { get; set; } = Setting.Default;
+    public int ViewDistance => Math.Min(Setting.ViewDistance, Server.ViewDistance + 1);
 
     public void SendPacket(IPacket packet)
     {

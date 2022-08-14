@@ -6,20 +6,25 @@ public class ChunkData
 {
     public ChunkData()
     {
-        Sections = new int[ChunkConstants.SectionCount][];
+        Sections = new Dictionary<int, int[]>();
     }
 
-    public int[][] Sections { get; }
+    public Dictionary<int, int[]> Sections { get; }
 
     public void SetBlock(int x, int y, int z, int blockId)
     {
-        if (x < 0 || y < 0 || z < 0 || x >= ChunkConstants.Height || y >= ChunkConstants.Depth || z >= ChunkConstants.Width)
+        if (x < 0 || y < -64 || z < 0 || x >= 16 || y >= 256 || z >= 16)
         {
             return;
         }
 
-        Sections[y >> 4] ??= new int[4096];
-        Sections[y >> 4][((y & 0xF) << 8) | (z << 4) | x] = blockId;
+        var section = Sections.GetValueOrDefault(y >> 4);
+        if (section is null)
+        {
+            Sections[y >> 4] = section = new int[4096];
+        }
+        
+        section[((y & 0xF) << 8) | (z << 4) | x] = blockId;
     }
 
     public void SetBlock(int x, int y, int z, Material material)

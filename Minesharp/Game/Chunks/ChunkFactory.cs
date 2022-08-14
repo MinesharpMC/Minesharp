@@ -20,30 +20,27 @@ public sealed class ChunkFactory
     {
         var data = generator.Generate(key.X, key.Z);
 
-        var sections = new ChunkSection[data.Sections.Length];
-        for (var i = 0; i < data.Sections.Length; i++)
+        var sections = new Dictionary<int, ChunkSection>();
+        foreach (var (sectionId, sectionData) in data.Sections)
         {
-            if (data.Sections[i] is not null)
-            {
-                sections[i] = new ChunkSection(data.Sections[i]);
-            }
+            sections[sectionId] = new ChunkSection(sectionData);
         }
 
-        var sy = sections.Length - 1;
-        for (; sy >= 0; --sy)
+        var sy = 16;
+        for (; sy >= -4; --sy)
         {
-            if (sections.GetSection(sy) != null)
+            if (sections.GetValueOrDefault(sy) != null)
             {
                 break;
             }
         }
 
         var y = (sy + 1) << 4;
-        var heightmap = new sbyte[ChunkConstants.Width * ChunkConstants.Height];
-        for (var x = 0; x < ChunkConstants.Width; ++x)
-        for (var z = 0; z < ChunkConstants.Height; ++z)
+        var heightmap = new sbyte[16 * 16];
+        for (var x = 0; x < 16; ++x)
+        for (var z = 0; z < 16; ++z)
         {
-            heightmap[z * ChunkConstants.Width + x] = (sbyte)sections.GetHighestTypeAt(x, y, z);
+            heightmap[z * 16 + x] = (sbyte)sections.GetHighestTypeAt(x, y, z);
         }
 
         return new Chunk(key, world)

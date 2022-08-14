@@ -28,7 +28,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Id = server.GetNextEntityId(),
             UniqueId = Guid.NewGuid(),
             Username = packet.Username,
-            Position = new Position(0, 0, 0),
+            Position = new Position(0, 50, 0),
             Rotation = new Rotation(0, 0),
             Server = server
         };

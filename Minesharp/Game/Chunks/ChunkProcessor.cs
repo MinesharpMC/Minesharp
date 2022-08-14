@@ -1,4 +1,5 @@
 using Minesharp.Common.Collection;
+using Minesharp.Common.Enum;
 using Minesharp.Game.Entities;
 using Minesharp.Nbt;
 using Minesharp.Packet.Game.Server;
@@ -42,27 +43,23 @@ public class ChunkProcessor
             var chunk = world.GetChunk(key);
 
             var sections = chunk.Sections
-                .Where(x => x is not null)
+                .OrderBy(x => x.Key)
                 .Select(x => new SectionInfo
                 {
-                    Bits = x.Bits,
-                    BlockCount = (short)x.BlockCount,
-                    Mapping = x.Mapping,
-                    Palette = x.Palette
+                    Bits = x.Value.Bits,
+                    BlockCount = (short)x.Value.BlockCount,
+                    Mapping = x.Value.Mapping,
+                    Palette = x.Value.Palette
                 });
 
             var biomes = Enumerable.Range(0, 256)
                 .Select(_ => 0);
-
+            
             var mask = new BitSet();
-            for (var i = 0; i < ChunkConstants.SectionCount + 2; i++)
-            {
-                mask.Set(i);
-            }
-
             var lights = new List<byte[]>();
             for (var i = 0; i < 18; i++)
             {
+                mask.Set(i);
                 lights.Add(ChunkConstants.EmptyLight);
             }
             
@@ -97,7 +94,17 @@ public class ChunkProcessor
         var world = player.World;
         foreach (var chunkKey in knownChunks)
         {
-            // TODO : Update modified blocks
+            var chunk = world.GetChunk(chunkKey);
+            var blocks = chunk.GetModifiedBlocks();
+
+            foreach (var block in blocks)
+            {
+                player.SendPacket(new BlockChangePacket
+                {
+                    Position = block.Position,
+                    Type = block.Type
+                });
+            }
         }
     }
 

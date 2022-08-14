@@ -12,7 +12,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         var block = player.World.GetBlockAt(packet.Position);
         var target = block.GetRelative(packet.Face);
         
-        if (block.Type != Material.Air)
+        if (target.Type == Material.Air)
         {
             target.Type = Material.Stone;
         }

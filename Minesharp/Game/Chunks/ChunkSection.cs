@@ -1,53 +1,132 @@
-// MIT License
-// 
-// Copyright (c) 2022 Roxeez
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+using System.Collections.ObjectModel;
+using Minesharp.Extension;
 
 namespace Minesharp.Game.Chunks;
 
 public sealed class ChunkSection
 {
-    private readonly ChunkPaletteMapping mapping;
-    private readonly List<int> palette;
+    private byte bits;
+    private long mask;
+    private Dictionary<int, long> mapping;
+    private int blockCount;
+    private readonly IList<int> palette;
 
-    public ChunkSection(int[] types)
+    public byte Bits => bits;
+    public IEnumerable<long> Mapping => mapping.Values;
+    public IEnumerable<int> Palette => palette;
+    public int BlockCount => blockCount;
+
+    public ChunkSection() : this(new int[4096])
     {
-        palette = new HashSet<int>(types).ToList();
-        mapping = new ChunkPaletteMapping(palette, types);
-
-        BlockCount = types.Count(x => x is not 0);
+        
     }
+    
+    public ChunkSection(IList<int> types)
+    {
+        this.palette = new HashSet<int>(types).ToList();
+        this.bits = palette.GetBitsSize();
+        this.mask = (1L << bits) - 1L;
+        this.mapping = new Dictionary<int, long>();
 
-    public int BlockCount { get; }
-    public byte Bits => mapping.Bits;
-    public IList<int> Palette => palette;
-    public IList<long> Mapping => mapping.Storage;
+        for (var i = 0; i < 4096; i++)
+        {
+            if (types[i] != 0)
+            {
+                blockCount++;
+            }
+            
+            mapping.Set(i, bits > 8 ? types[i] : palette.IndexOf(types[i]), bits, mask);
+        }
+    }
 
     public int GetType(int x, int y, int z)
     {
-        var value = mapping.Get(x, y, z);
-        if (mapping.Bits <= 8)
+        var index = Index(x, y, z);
+        var value = mapping.Get(index, bits, mask);
+        if (bits > 8)
         {
-            value = palette[value];
+            return value;
         }
 
-        return value;
+        return palette[value];
+    }
+
+    public void SetType(int x, int y, int z, int type)
+    {
+        var index = Index(x, y, z);
+        
+        var previous = mapping.Get(index, bits, mask);
+        if (previous != 0)
+        {
+            blockCount--;
+        }
+
+        if (type != 0)
+        {
+            blockCount++;
+        }
+
+        int value;
+        if (bits > 8)
+        {
+            value = type;
+        }
+        else
+        {
+            value = palette.IndexOf(type);
+            if (value == -1)
+            {
+                palette.Add(type);
+                value = palette.IndexOf(type);
+
+                if (value > mask)
+                {
+                    if (bits == 8)
+                    {
+                        var modifiedBits = palette.GetBitsSize();
+                        var modifiedMask = (1L << bits) - 1L;
+                    
+                        var modifiedMapping = new Dictionary<int, long>();
+                        for (var i = 0; i < 4096; i++)
+                        {
+                            var oldValue = mapping.Get(i, bits, mask);
+                            var newValue = palette.IndexOf(oldValue);
+                            
+                            modifiedMapping.Set(i, newValue, modifiedBits, modifiedMask);
+                        }
+
+                        bits = modifiedBits;
+                        mask = modifiedMask;
+                        mapping = modifiedMapping;
+                        
+                        value = type;
+                    }
+                    else
+                    {
+                        var modifiedBits = palette.GetBitsSize();
+                        var modifiedMask = (1L << bits) - 1L;
+                    
+                        var modifiedMapping = new Dictionary<int, long>();
+                        for (var i = 0; i < 4096; i++)
+                        {
+                            var oldValue = mapping.Get(i, bits, mask);
+                            
+                            modifiedMapping.Set(i, oldValue, modifiedBits, modifiedMask);
+                        }
+
+                        bits = modifiedBits;
+                        mask = modifiedMask;
+                        mapping = modifiedMapping;
+                    }
+                }
+            }
+        }
+        
+        mapping.Set(index, value, bits, mask);
+    }
+
+    private static int Index(int x, int y, int z)
+    {
+        return ((y & 0xf) << 8) | (z << 4) | x;
     }
 }

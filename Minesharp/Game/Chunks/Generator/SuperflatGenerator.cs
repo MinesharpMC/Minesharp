@@ -25,10 +25,10 @@ public class SuperflatGenerator : ChunkGenerator
         x &= 0xF;
         z &= 0xF;
 
-        chunkData.SetBlock(x, 0, z, Material.Bedrock);
-        chunkData.SetBlock(x, 1, z, Material.Dirt);
-        chunkData.SetBlock(x, 2, z, Material.Dirt);
-        chunkData.SetBlock(x, 3, z, Material.Dirt);
-        chunkData.SetBlock(x, 4, z, Material.GrassBlock);
+        chunkData.SetBlock(x, -64, z, Material.Bedrock);
+        chunkData.SetBlock(x, -63, z, Material.Dirt);
+        chunkData.SetBlock(x, -62, z, Material.Dirt);
+        chunkData.SetBlock(x, -61, z, Material.Dirt);
+        chunkData.SetBlock(x, -60, z, Material.GrassBlock);
     }
 }
