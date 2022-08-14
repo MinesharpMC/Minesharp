@@ -16,7 +16,7 @@ public sealed class NetworkServer
 
     private IChannel channel;
 
-    public NetworkServer(PacketFactory packetFactory, PacketProcessorManager processorManager, NetworkConfiguration configuration)
+    public NetworkServer(PacketFactory packetFactory, PacketProcessorManager processorManager, NetworkConfiguration configuration, SessionManager sessionManager)
     {
         this.configuration = configuration;
         bossGroup = new MultithreadEventLoopGroup(1);
@@ -35,7 +35,7 @@ public sealed class NetworkServer
                 pipeline.AddLast(new PacketDecoder(session, packetFactory));
                 pipeline.AddLast(new PacketEncoder(session, packetFactory));
                 pipeline.AddLast(new PacketHandler(session, processorManager));
-                pipeline.AddLast(new SessionHandler(session));
+                pipeline.AddLast(new SessionHandler(session, sessionManager));
             }));
     }
 

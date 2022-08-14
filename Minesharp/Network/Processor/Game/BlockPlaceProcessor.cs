@@ -1,6 +1,7 @@
 using System.Numerics;
 using Minesharp.Common.Enum;
 using Minesharp.Packet.Game.Client;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Network.Processor.Game;
 
@@ -16,5 +17,10 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         {
             target.Type = Material.Stone;
         }
+
+        session.SendPacket(new AckBlockChangePacket
+        {
+            Sequence = packet.Sequence
+        });
     }
 }

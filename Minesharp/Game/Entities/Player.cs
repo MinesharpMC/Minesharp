@@ -9,8 +9,8 @@ namespace Minesharp.Game.Entities;
 
 public sealed class Player
 {
-    private readonly ChunkProcessor chunkProcessor;
     private readonly NetworkSession session;
+    private readonly ChunkProcessor chunkProcessor;
 
     public Player(NetworkSession session)
     {
@@ -25,8 +25,10 @@ public sealed class Player
     public Rotation Rotation { get; set; }
     public World World { get; set; }
     public Server Server { get; init; }
-    public Setting Setting { get; set; } = Setting.Default;
-    public int ViewDistance => Math.Min(Setting.ViewDistance, Server.ViewDistance + 1);
+    public GameMode GameMode { get; set; }
+    public string Locale { get; set; }
+    public byte ViewDistance { get; set; }
+    public Hand MainHand { get; set; }
 
     public void SendPacket(IPacket packet)
     {
@@ -35,7 +37,6 @@ public sealed class Player
 
     public void Tick()
     {
-        session.Tick();
         chunkProcessor.Tick();
     }
 }

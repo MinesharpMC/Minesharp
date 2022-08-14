@@ -12,6 +12,9 @@ public class ChunkProcessor
     private readonly Player player;
     private readonly HashSet<ChunkKey> knownChunks = new();
 
+    private int previousCentralX;
+    private int previousCentralZ;
+    
     public ChunkProcessor(Player player)
     {
         this.player = player;
@@ -87,6 +90,18 @@ public class ChunkProcessor
             
             knownChunks.Add(key);
         }
+
+        if (centralX != previousCentralX || centralZ != previousCentralZ)
+        {
+            player.SendPacket(new SetCenterChunkPacket
+            {
+                ChunkX = centralX,
+                ChunkZ = centralZ
+            });
+        }
+
+        previousCentralX = centralX;
+        previousCentralZ = centralZ;
     }
 
     private void ProcessBlocks()

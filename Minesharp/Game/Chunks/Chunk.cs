@@ -83,11 +83,6 @@ public sealed class Chunk : IEquatable<Chunk>
         });
     }
 
-    public void ClearModifiedBlocks()
-    {
-        modifiedBlocks.Clear();
-    }
-
     public bool Equals(Chunk other)
     {
         if (ReferenceEquals(null, other))
@@ -121,5 +116,10 @@ public sealed class Chunk : IEquatable<Chunk>
     public static bool operator !=(Chunk left, Chunk right)
     {
         return !Equals(left, right);
+    }
+
+    public void Tick()
+    {
+        modifiedBlocks.Clear();
     }
 }

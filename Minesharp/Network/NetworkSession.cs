@@ -20,6 +20,7 @@ public sealed class NetworkSession
         this.processorManager = processorManager;
     }
 
+    public Guid Id { get; } = Guid.NewGuid();
     public Protocol Protocol { get; set; }
     public Player Player { get; set; }
 

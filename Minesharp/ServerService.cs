@@ -1,3 +1,4 @@
+using Minesharp.Common.Enum;
 using Minesharp.Game;
 using Minesharp.Game.Chunks.Generator;
 using Minesharp.Game.Worlds;
@@ -23,11 +24,13 @@ public class ServerService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Creating world");
-        var world = server.CreateWorld(new WorldCreator
+        var world = server.WorldManager.CreateWorld(new WorldCreator
         {
             Name = "Debug World",
             Border = new WorldBorder(),
-            ChunkGenerator = new SuperflatGenerator()
+            ChunkGenerator = new SuperflatGenerator(),
+            Difficulty = Difficulty.Normal,
+            GameMode = GameMode.Creative
         });
 
         if (world is null)

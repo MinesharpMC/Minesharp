@@ -1,4 +1,6 @@
 using System.Net.Sockets;
+using Minesharp.Chat;
+using Minesharp.Chat.Component;
 using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Extension;
@@ -22,15 +24,17 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 
     protected override void Process(NetworkSession session, LoginStartPacket packet)
     {
-        var world = server.GetDefaultWorld();
+        var world = server.WorldManager.GetDefaultWorld();
         var player = session.Player = new Player(session)
         {
             Id = server.GetNextEntityId(),
             UniqueId = Guid.NewGuid(),
             Username = packet.Username,
-            Position = new Position(0, 50, 0),
+            Position = new Position(0, -59, 0),
             Rotation = new Rotation(0, 0),
-            Server = server
+            Server = server,
+            GameMode = world.GameMode,
+            World = world
         };
 
         player.SendPacket(new LoginSuccessPacket
@@ -45,7 +49,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         {
             Id = player.Id,
             IsHardcore = false,
-            GameMode = GameMode.Creative,
+            GameMode = player.GameMode,
             PreviousGameMode = GameMode.None,
             Dimensions = new[]
             {
@@ -64,9 +68,18 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             IsFlat = true,
             HasDeathLocation = false
         });
-
-        world.Add(player);
         
-        player.SendPosition();
+        world.Players.Add(player);
+
+        server.BroadcastMessage(new TextComponent
+        {
+            Text = $"{player.Username} joined the game",
+            Color = ChatColor.Yellow
+        });
+        
+        server.Scheduler.Schedule(() =>
+        {
+            player.SendPosition();  
+        });
     }
 }

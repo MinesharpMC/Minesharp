@@ -12,8 +12,6 @@ public sealed class World
 {
     private readonly ChunkFactory chunkFactory;
     private readonly ConcurrentDictionary<ChunkKey, Chunk> chunks;
-    private readonly ConcurrentDictionary<Guid, Player> playersById;
-    private readonly ConcurrentDictionary<string, Player> playersByName;
 
     public World(WorldCreator creator)
     {
@@ -21,11 +19,9 @@ public sealed class World
         Name = creator.Name;
         Border = creator.Border;
         Difficulty = creator.Difficulty;
+        GameMode = creator.GameMode;
 
         chunkFactory = new ChunkFactory(creator.ChunkGenerator, this);
-
-        playersById = new ConcurrentDictionary<Guid, Player>();
-        playersByName = new ConcurrentDictionary<string, Player>();
         chunks = new ConcurrentDictionary<ChunkKey, Chunk>();
     }
 
@@ -33,7 +29,9 @@ public sealed class World
     public string Name { get; }
     public WorldBorder Border { get; }
     public Difficulty Difficulty { get; }
-
+    public GameMode GameMode { get; }
+    public List<Player> Players { get; } = new();
+    
     public Block GetBlockAt(int x, int y, int z)
     {
         return new Block
@@ -93,45 +91,6 @@ public sealed class World
         return chunk;
     }
 
-    public Player GetPlayer(string name)
-    {
-        return playersByName.GetValueOrDefault(name);
-    }
-
-    public Player GetPlayer(Guid playerId)
-    {
-        return playersById.GetValueOrDefault(playerId);
-    }
-
-    public void Add(Player player)
-    {
-        player.World = this;
-
-        playersById[player.UniqueId] = player;
-        playersByName[player.Username] = player;
-    }
-
-    public void Remove(Player player)
-    {
-        player.World = null;
-
-        playersById.Remove(player.UniqueId, out _);
-        playersByName.Remove(player.Username, out _);
-    }
-
-    public void Broadcast(IPacket packet)
-    {
-        foreach (var player in GetPlayers())
-        {
-            player.SendPacket(packet);
-        }
-    }
-
-    public IEnumerable<Player> GetPlayers()
-    {
-        return playersById.Values;
-    }
-
     public IEnumerable<Chunk> GetChunks()
     {
         return chunks.Values;
@@ -139,14 +98,14 @@ public sealed class World
 
     public void Tick()
     {
-        foreach (var player in GetPlayers())
+        foreach (var player in Players)
         {
             player.Tick();
         }
-        
-        foreach (var chunk in GetChunks())
+
+        foreach (var chunk in chunks.Values)
         {
-            chunk.ClearModifiedBlocks();
+            chunk.Tick();
         }
     }
 }

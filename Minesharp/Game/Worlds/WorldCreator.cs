@@ -9,4 +9,5 @@ public class WorldCreator
     public WorldBorder Border { get; init; }
     public ChunkGenerator ChunkGenerator { get; init; }
     public Difficulty Difficulty { get; init; }
+    public GameMode GameMode { get; init; }
 }
