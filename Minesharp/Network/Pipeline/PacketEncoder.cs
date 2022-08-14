@@ -1,5 +1,6 @@
 using DotNetty.Buffers;
 using DotNetty.Codecs;
+using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
 using Minesharp.Packet;
 using Minesharp.Packet.Extension;
@@ -21,12 +22,14 @@ public class PacketEncoder : MessageToByteEncoder<IPacket>
 
     protected override void Encode(IChannelHandlerContext context, IPacket message, IByteBuffer output)
     {
-        var buffer = Unpooled.Buffer();
+        var buffer = context.Allocator.Buffer();
 
         factory.Encode(session.Protocol, buffer, message);
 
         output.WriteVarInt(buffer.ReadableBytes);
         output.WriteBytes(buffer);
+
+        buffer.Release();
         
         Log.Debug("Sending packet: {message}", message.GetType().Name);
     }

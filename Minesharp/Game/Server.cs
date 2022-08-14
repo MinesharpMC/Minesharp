@@ -5,6 +5,7 @@ using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Packet.Game.Server;
+using Serilog;
 
 namespace Minesharp.Game;
 
@@ -19,6 +20,10 @@ public sealed class Server
     public const int Protocol = 759;
 
     private int lastEntityId;
+    private byte tick;
+    
+    public byte Tps { get; private set; }
+    public DateTime LastTpsUpdate { get; private set; }
     
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
@@ -67,5 +72,14 @@ public sealed class Server
         }
         
         scheduler.Tick();
+
+        if (LastTpsUpdate.AddSeconds(1) <= DateTime.UtcNow)
+        {
+            Tps = tick;
+            LastTpsUpdate = DateTime.UtcNow;
+            tick = 0;
+        }
+
+        tick++;
     }
 }

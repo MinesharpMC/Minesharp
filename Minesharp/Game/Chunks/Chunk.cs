@@ -17,12 +17,28 @@ public sealed class Chunk : IEquatable<Chunk>
     public ChunkKey Key { get; }
     public int X => Key.X;
     public int Z => Key.Z;
-    public Dictionary<int, ChunkSection> Sections { get; init; }
-    public sbyte[] Heightmap { get; init; }
-    public World World { get; }
+    public Dictionary<int, ChunkSection> Sections { get; set; }
+    public sbyte[] Heightmap { get; set; }
+    public World World { get; private set; }
 
+    public bool IsLocked => lockCount > 0;
+
+    private int lockCount;
     private readonly List<ModifiedBlock> modifiedBlocks = new();
+    
+    public void Lock()
+    {
+        lockCount++;
+    }
 
+    public void Unlock()
+    {
+        if (IsLocked)
+        {
+            lockCount--;
+        }
+    }
+    
     public IEnumerable<ModifiedBlock> GetModifiedBlocks()
     {
         return modifiedBlocks;
@@ -95,7 +111,7 @@ public sealed class Chunk : IEquatable<Chunk>
             return true;
         }
 
-        return Key.Equals(other.Key) && Equals(World, other.World);
+        return Key.Equals(other.Key);
     }
 
     public override bool Equals(object obj)
@@ -105,7 +121,7 @@ public sealed class Chunk : IEquatable<Chunk>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Key, World);
+        return HashCode.Combine(Key);
     }
 
     public static bool operator ==(Chunk left, Chunk right)

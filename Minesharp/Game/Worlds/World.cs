@@ -5,6 +5,7 @@ using Minesharp.Game.Blocks;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
 using Minesharp.Packet;
+using Serilog;
 
 namespace Minesharp.Game.Worlds;
 
@@ -79,16 +80,21 @@ public sealed class World
     {
         return GetChunk(ChunkKey.Of(x >> 4, z >> 4));
     }
-    
-    public Chunk GetChunk(ChunkKey key)
+
+    public Chunk LoadChunk(ChunkKey key)
     {
-        var chunk = chunks.GetValueOrDefault(key);
+        var chunk = GetChunk(key);
         if (chunk is null)
         {
             chunks[key] = chunk = chunkFactory.Create(key);
         }
 
         return chunk;
+    }
+
+    public Chunk GetChunk(ChunkKey key)
+    {
+        return chunks.GetValueOrDefault(key);
     }
 
     public IEnumerable<Chunk> GetChunks()
@@ -103,8 +109,14 @@ public sealed class World
             player.Tick();
         }
 
-        foreach (var chunk in chunks.Values)
+        foreach (var (chunkKey, chunk) in chunks)
         {
+            if (!chunk.IsLocked)
+            {
+                chunks.Remove(chunkKey, out _);
+                continue;
+            }
+            
             chunk.Tick();
         }
     }

@@ -23,7 +23,7 @@ public sealed class ChunkSection
     
     public ChunkSection(IList<int> types)
     {
-        this.palette = new HashSet<int>(types).ToList();
+        this.palette = new List<int>();
         this.bits = palette.GetBitsSize();
         this.mask = (1L << bits) - 1L;
         this.mapping = new Dictionary<int, long>();
@@ -33,6 +33,11 @@ public sealed class ChunkSection
             if (types[i] != 0)
             {
                 blockCount++;
+            }
+
+            if (!palette.Contains(types[i]))
+            {
+                palette.Add(types[i]);
             }
             
             mapping.Set(i, bits > 8 ? types[i] : palette.IndexOf(types[i]), bits, mask);

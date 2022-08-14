@@ -1,9 +1,7 @@
 using Minesharp.Common.Collection;
-using Minesharp.Common.Enum;
 using Minesharp.Game.Entities;
 using Minesharp.Nbt;
 using Minesharp.Packet.Game.Server;
-using Serilog;
 
 namespace Minesharp.Game.Chunks;
 
@@ -23,27 +21,35 @@ public class ChunkProcessor
     private void ProcessChunks()
     {
         var world = player.World;
-        var newChunks = new List<ChunkKey>();
+        
+        var newChunks = new HashSet<ChunkKey>();
+        var oldChunks = new HashSet<ChunkKey>(knownChunks);
 
         var position = player.Position;
         
         var centralX = position.BlockX >> 4;
         var centralZ = position.BlockZ >> 4;
         var radius = 5;
-
+        
         for (var x = centralX - radius; x <= centralX + radius; x++)
         for (var z = centralZ - radius; z <= centralZ + radius; z++)
         {
             var key = ChunkKey.Of(x, z);
             if (!knownChunks.Contains(key))
             {
-                newChunks.Add(ChunkKey.Of(x, z));
+                newChunks.Add(key);
+            }
+            else
+            {
+                oldChunks.Remove(key);
             }
         }
-
+        
         foreach (var key in newChunks)
         {
-            var chunk = world.GetChunk(key);
+            var chunk = world.LoadChunk(key);
+            
+            chunk.Lock();
 
             var sections = chunk.Sections
                 .OrderBy(x => x.Key)
@@ -89,6 +95,24 @@ public class ChunkProcessor
             });
             
             knownChunks.Add(key);
+        }
+        
+        foreach (var chunkKey in oldChunks)
+        {
+            var chunk = world.GetChunk(chunkKey);
+            if (chunk is null)
+            {
+                continue;
+            }
+            
+            player.SendPacket(new UnloadChunkPacket
+            {
+                ChunkX = chunk.X,
+                ChunkZ = chunk.Z
+            });
+
+            knownChunks.Remove(chunk.Key);
+            chunk.Unlock();
         }
 
         if (centralX != previousCentralX || centralZ != previousCentralZ)
