@@ -1,5 +1,6 @@
 using Minesharp.Configuration;
 using Minesharp.Game;
+using Minesharp.Game.Scheduling;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Network.Processor;

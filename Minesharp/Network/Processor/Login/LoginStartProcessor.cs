@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Net.Sockets;
 using Minesharp.Chat;
 using Minesharp.Chat.Component;
@@ -6,6 +7,7 @@ using Minesharp.Common.Enum;
 using Minesharp.Extension;
 using Minesharp.Game;
 using Minesharp.Game.Entities;
+using Minesharp.Packet.Game.Client;
 using Minesharp.Packet.Game.Server;
 using Minesharp.Packet.Login.Client;
 using Minesharp.Packet.Login.Server;
@@ -27,10 +29,10 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         var world = server.WorldManager.GetDefaultWorld();
         var player = session.Player = new Player(session)
         {
-            Id = server.GetNextEntityId(),
+            Id = 1,
             UniqueId = Guid.NewGuid(),
             Username = packet.Username,
-            Position = new Position(0, -59, 0),
+            Position = new Position(10, -55, 10),
             Rotation = new Rotation(0, 0),
             Server = server,
             GameMode = world.GameMode,
@@ -70,16 +72,13 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         });
         
         world.Players.Add(player);
-
+        
         server.BroadcastMessage(new TextComponent
         {
             Text = $"{player.Username} joined the game",
             Color = ChatColor.Yellow
         });
         
-        server.Scheduler.Schedule(() =>
-        {
-            player.SendPosition();  
-        });
+        player.SendPosition();
     }
 }
