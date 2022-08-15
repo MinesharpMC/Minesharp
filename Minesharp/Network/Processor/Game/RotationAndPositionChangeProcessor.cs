@@ -8,5 +8,6 @@ public class RotationAndPositionChangeProcessor : PacketProcessor<RotationAndPos
     {
         session.Player.Position = packet.Position;
         session.Player.Rotation = packet.Rotation;
+        session.Player.IsGrounded = packet.IsGrounded;
     }
 }

@@ -14,8 +14,9 @@ public sealed class Player : Entity, IEquatable<Player>
     private readonly ChunkProcessor chunkProcessor;
     private readonly EntityProcessor entityProcessor;
 
-    public IEnumerable<ChunkKey> KnownChunks => chunkProcessor.KnownChunks;
-    public IEnumerable<ChunkKey> OutdatedChunks => chunkProcessor.OutdatedChunks;
+    public IReadOnlySet<ChunkKey> KnownChunks => chunkProcessor.KnownChunks;
+    public IReadOnlySet<ChunkKey> OutdatedChunks => chunkProcessor.OutdatedChunks;
+    public IReadOnlySet<int> KnownEntities => entityProcessor.KnownEntities;
 
     public Player(NetworkSession session) : base(EntityType.Player)
     {
@@ -40,8 +41,6 @@ public sealed class Player : Entity, IEquatable<Player>
     {
         chunkProcessor.Tick();
         entityProcessor.Tick();
-
-        base.Tick();
     }
 
     public bool Equals(Player other)

@@ -1,3 +1,4 @@
+using Minesharp.Common.Extension;
 using Minesharp.Game.Entities;
 using Minesharp.Packet.Game.Server;
 
@@ -10,7 +11,18 @@ public static class PlayerExtensions
         player.SendPacket(new SyncPositionPacket
         {
             Position = player.Position,
-            Rotation = player.Rotation
+            Rotation = player.Rotation,
+        });
+    }
+
+    public static void SendEntityTeleport(this Player player, Entity entity)
+    {
+        player.SendPacket(new EntityTeleportPacket
+        {
+            EntityId = entity.Id,
+            Position = entity.Position,
+            Angle = entity.Rotation,
+            IsGrounded = entity.IsGrounded
         });
     }
 
@@ -21,7 +33,13 @@ public static class PlayerExtensions
             EntityId = entity.Id,
             Delta = entity.Position.Delta(entity.LastPosition),
             Angle = entity.Rotation,
-            IsGrounded = true
+            IsGrounded = entity.IsGrounded
+        });
+        
+        player.SendPacket(new HeadRotationPacket
+        {
+            EntityId = entity.Id,
+            Yaw = entity.Rotation.GetIntYaw()
         });
     }
 
@@ -31,7 +49,7 @@ public static class PlayerExtensions
         {
             EntityId = entity.Id,
             Delta = entity.Position.Delta(entity.LastPosition),
-            IsGrounded = true
+            IsGrounded = entity.IsGrounded
         });
     }
 
@@ -49,7 +67,13 @@ public static class PlayerExtensions
         {
             EntityId = entity.Id,
             Angle = entity.Rotation,
-            IsGrounded = true
+            IsGrounded = entity.IsGrounded
+        });
+        
+        player.SendPacket(new HeadRotationPacket
+        {
+            EntityId = entity.Id,
+            Yaw = entity.Rotation.GetIntYaw()
         });
     }
 

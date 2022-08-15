@@ -29,7 +29,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Id = Server.GetNextEntityId(),
             UniqueId = Guid.NewGuid(),
             Username = packet.Username,
-            Position = new Position(10, -55, 10),
+            Position = new Position(0, -55, 0),
             Rotation = new Rotation(0, 0),
             Server = server,
             GameMode = world.GameMode,
@@ -74,7 +74,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         server.BroadcastMessage($"{player.Username} joined the game", ChatColor.Yellow);
         server.BroadcastPlayerListAdd(player);
         
-        player.SendPosition();
         player.SendPlayerList();
+        player.SendPosition();
     }
 }

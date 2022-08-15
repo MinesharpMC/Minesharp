@@ -26,6 +26,8 @@ public sealed class Server
 
     private static int lastEntityId;
 
+    public Scheduler Scheduler => scheduler;
+    
     public Server(ServerConfiguration configuration, SessionManager sessionManager)
     {
         this.configuration = configuration;

@@ -9,11 +9,12 @@ public abstract class Entity : IEquatable<Entity>
     public int Id { get; init; }
     public Guid UniqueId { get; init; }
     public Position Position { get; set; }
-    public Position LastPosition { get; private set; }
+    public Position LastPosition { get; set; }
     public Rotation Rotation { get; set; }
-    public Rotation LastRotation { get; private set; }
+    public Rotation LastRotation { get; set; }
     public World World { get; set; }
     public EntityType Type { get; }
+    public bool IsGrounded { get; set; }
 
     public bool Moved => Position != LastPosition;
     public bool Rotated => Rotation != LastRotation;
@@ -73,9 +74,5 @@ public abstract class Entity : IEquatable<Entity>
         return !Equals(left, right);
     }
 
-    public virtual void Tick()
-    {
-        LastPosition = Position;
-        LastRotation = Rotation;
-    }
+    public abstract void Tick();
 }

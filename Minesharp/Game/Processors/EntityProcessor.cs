@@ -11,7 +11,9 @@ namespace Minesharp.Game.Processors;
 public class EntityProcessor
 {
     private readonly Player player;
-    private readonly HashSet<Guid> knownEntities = new();
+    private readonly HashSet<int> knownEntities = new();
+
+    public IReadOnlySet<int> KnownEntities => knownEntities;
 
     public EntityProcessor(Player player)
     {
@@ -27,7 +29,7 @@ public class EntityProcessor
             var entities = chunk.GetEntities();
             foreach (var entity in entities)
             {
-                if (entity == player || knownEntities.Contains(entity.UniqueId))
+                if (entity == player || knownEntities.Contains(entity.Id))
                 {
                     continue;
                 }
@@ -42,11 +44,12 @@ public class EntityProcessor
                         Rotation = entity.Rotation
                     });
                     
-                    knownEntities.Add(entity.UniqueId);
+                    knownEntities.Add(entity.Id);
                 }
             }
         }
 
+        var removedEntities = new List<int>();
         foreach (var chunkKey in player.OutdatedChunks)
         {
             var chunk = world.GetChunk(chunkKey);
@@ -57,18 +60,13 @@ public class EntityProcessor
             }
             
             var entities = chunk.GetEntities();
-            var removedEntities = new List<int>();
             foreach (var entity in entities)
             {
-                if (entity == player || !knownEntities.Contains(entity.UniqueId))
+                if (knownEntities.Contains(entity.Id))
                 {
-                    continue;
+                    removedEntities.Add(entity.Id);
                 }
-                
-                removedEntities.Add(entity.Id);
             }
-            
-            player.SendRemoveEntities(removedEntities);
         }
 
         foreach (var entityId in knownEntities)
@@ -76,20 +74,37 @@ public class EntityProcessor
             var entity = world.GetEntity(entityId);
             if (entity is null)
             {
+                removedEntities.Add(entityId);
                 continue;
             }
-            
-            if (entity.Moved && entity.Rotated)
+
+            var delta = entity.Position.Delta(entity.LastPosition);
+            var teleport = delta.X > short.MaxValue || delta.Y > short.MaxValue || delta.Z > short.MaxValue 
+                           || delta.X < short.MinValue || delta.Y < short.MinValue || delta.Z < short.MinValue;
+
+            switch (entity.Moved)
             {
-                player.SendEntityMoveAndRotate(entity);
+                case true when teleport:
+                    player.SendEntityTeleport(entity);
+                    break;
+                case true when entity.Rotated:
+                    player.SendEntityMoveAndRotate(entity);
+                    break;
+                case true:
+                    player.SendEntityMove(entity);
+                    break;
+                case false when entity.Rotated:
+                    player.SendEntityRotate(entity);
+                    break;
             }
-            else if (entity.Moved)
+        }
+
+        if (removedEntities.Any())
+        {
+            player.SendRemoveEntities(removedEntities);
+            foreach (var removedEntity in removedEntities)
             {
-                player.SendEntityMove(entity);
-            }
-            else if (entity.Rotated)
-            {
-                player.SendEntityRotate(entity);
+                knownEntities.Remove(removedEntity);
             }
         }
     }

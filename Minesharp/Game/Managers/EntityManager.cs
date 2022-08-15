@@ -13,6 +13,11 @@ public class EntityManager
         return entitiesByUniqueId.GetValueOrDefault(id);
     }
     
+    public Entity GetEntity(int id)
+    {
+        return entitiesById.GetValueOrDefault(id);
+    }
+    
     public IEnumerable<Entity> GetEntities()
     {
         return entitiesByUniqueId.Values;

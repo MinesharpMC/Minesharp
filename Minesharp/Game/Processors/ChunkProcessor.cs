@@ -15,8 +15,8 @@ public class ChunkProcessor
     private int previousCentralX;
     private int previousCentralZ;
 
-    public IEnumerable<ChunkKey> KnownChunks => knownChunks;
-    public IEnumerable<ChunkKey> OutdatedChunks => outdatedChunks;
+    public IReadOnlySet<ChunkKey> KnownChunks => knownChunks;
+    public IReadOnlySet<ChunkKey> OutdatedChunks => outdatedChunks;
 
     public ChunkProcessor(Player player)
     {

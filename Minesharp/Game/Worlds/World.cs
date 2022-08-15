@@ -125,12 +125,23 @@ public sealed class World
         return entityManager.GetEntity(id);
     }
 
+    public Entity GetEntity(int id)
+    {
+        return entityManager.GetEntity(id);
+    }
+
     public void Tick()
     {
         var entities = entityManager.GetEntities();
         foreach (var entity in entities)
         {
             entity.Tick();
+        }
+
+        foreach (var entity in entities) // Update all entities last position (need to be done after all entities tick)
+        {
+            entity.LastPosition = entity.Position;
+            entity.LastRotation = entity.Rotation;
         }
         
         var chunks = chunkManager.GetChunks();
