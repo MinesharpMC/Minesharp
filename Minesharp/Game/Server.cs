@@ -19,14 +19,19 @@ public sealed class Server
 
     public const string Version = "1.19";
     public const int Protocol = 759;
+    public const int TickRate = 40;
 
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
 
-    private static int lastEntityId;
+    private int lastEntityId;
+    private int tickCounter;
 
     public Scheduler Scheduler => scheduler;
+    
+    public int Tps { get; private set; }
+    public DateTime LastTpsUpdate { get; private set; }
     
     public Server(ServerConfiguration configuration, SessionManager sessionManager)
     {
@@ -37,7 +42,7 @@ public sealed class Server
         this.playerManager = new PlayerManager();
     }
 
-    public static int GetNextEntityId()
+    public int GetNextEntityId()
     {
         return ++lastEntityId;
     }
@@ -102,7 +107,7 @@ public sealed class Server
         {
             session.Tick();
         }
-
+        
         var worlds = worldManager.GetWorlds();
         foreach (var world in worlds)
         {
@@ -110,5 +115,14 @@ public sealed class Server
         }
         
         scheduler.Tick();
+        
+        tickCounter++;
+        if (LastTpsUpdate.AddSeconds(1) < DateTime.UtcNow)
+        {
+            Tps = tickCounter;
+            LastTpsUpdate = DateTime.UtcNow;
+            
+            tickCounter = 0;
+        }
     }
 }

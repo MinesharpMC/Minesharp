@@ -2,15 +2,17 @@ using System.Collections.Concurrent;
 using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Game.Blocks;
+using Minesharp.Game.Broadcast;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Managers;
 using Minesharp.Packet;
+using Minesharp.Packet.Game;
 using Serilog;
 
 namespace Minesharp.Game.Worlds;
 
-public sealed class World
+public sealed class World : IEquatable<World>
 {
     private readonly PlayerManager playerManager;
     private readonly EntityManager entityManager;
@@ -40,9 +42,7 @@ public sealed class World
         return new Block
         {
             World = this,
-            X = x,
-            Y = y,
-            Z = z
+            Position = new Position(x, y, z)
         };
     }
 
@@ -114,6 +114,20 @@ public sealed class World
         entityManager.Add(player);
     }
 
+    public void Broadcast(GamePacket packet, params IBroadcastRule[] rules)
+    {
+        var players = playerManager.GetPlayers();
+        foreach (var player in players)
+        {
+            if (!rules.All(x => x.IsAllowed(player)))
+            {
+                continue;
+            }
+            
+            player.SendPacket(packet);
+        }
+    }
+
     public void RemovePlayer(Player player)
     {
         playerManager.Remove(player);
@@ -133,27 +147,59 @@ public sealed class World
     public void Tick()
     {
         var entities = entityManager.GetEntities();
-        foreach (var entity in entities)
+        foreach (var entity in entities) 
         {
             entity.Tick();
         }
-
-        foreach (var entity in entities) // Update all entities last position (need to be done after all entities tick)
-        {
-            entity.LastPosition = entity.Position;
-            entity.LastRotation = entity.Rotation;
-        }
         
+        foreach (var entity in entities)
+        {
+            entity.LateTick();
+        }
+
         var chunks = chunkManager.GetChunks();
         foreach (var chunk in chunks)
         {
+            chunk.Tick();
             if (!chunk.IsLocked)
             {
                 chunkManager.UnloadChunk(chunk);
-                continue;
             }
-            
-            chunk.Tick();
         }
+    }
+
+    public bool Equals(World other)
+    {
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Id.Equals(other.Id);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return ReferenceEquals(this, obj) || obj is World other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+
+    public static bool operator ==(World left, World right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(World left, World right)
+    {
+        return !Equals(left, right);
     }
 }

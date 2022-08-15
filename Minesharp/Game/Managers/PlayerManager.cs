@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
+using Minesharp.Game.Entities;
 
-namespace Minesharp.Game.Entities;
+namespace Minesharp.Game.Managers;
 
 public class PlayerManager
 {

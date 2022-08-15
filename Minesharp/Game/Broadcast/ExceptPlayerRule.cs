@@ -2,11 +2,11 @@ using Minesharp.Game.Entities;
 
 namespace Minesharp.Game.Broadcast;
 
-public class ExceptPlayerBroadcastRule : IBroadcastRule
+public class ExceptPlayerRule : IBroadcastRule
 {
     private readonly Player player;
 
-    public ExceptPlayerBroadcastRule(Player player)
+    public ExceptPlayerRule(Player player)
     {
         this.player = player;
     }

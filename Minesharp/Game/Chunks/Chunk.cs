@@ -4,6 +4,7 @@ using Minesharp.Extension;
 using Minesharp.Game.Blocks;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game.Chunks;
 
@@ -113,35 +114,6 @@ public sealed class Chunk : IEquatable<Chunk>
         }
 
         return Key.Equals(other.Key);
-    }
-
-    public IEnumerable<Player> GetPlayers()
-    {
-        var output = new List<Player>();
-        foreach (var player in World.GetPlayers())
-        {
-            var chunk = World.GetChunkAt(player.Position);
-            if (chunk == this)
-            {
-                output.Add(player);
-            }
-        }
-
-        return output;
-    }
-
-    public IEnumerable<Entity> GetEntities()
-    {
-        var output = new List<Entity>();
-        foreach (var entity in World.GetEntities())
-        {
-            var chunk = World.GetChunkAt(entity.Position);
-            if (chunk == this)
-            {
-                output.Add(entity);
-            }
-        }
-        return output;
     }
 
     public override bool Equals(object obj)

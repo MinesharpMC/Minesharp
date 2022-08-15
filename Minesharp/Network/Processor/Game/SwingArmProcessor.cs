@@ -13,7 +13,7 @@ public class SwingArmProcessor : PacketProcessor<SwingArmPacket>
         var players = world.GetPlayers();
         foreach (var player in players)
         {
-            if (!player.Known(session.Player))
+            if (!player.CanSee(session.Player))
             {
                 continue;
             }

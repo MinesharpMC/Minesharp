@@ -13,37 +13,16 @@ public class ActionProcessor : PacketProcessor<ActionPacket>
         var world = player.World;
         var block = world.GetBlockAt(packet.Position);
 
-        if (block.Type == Material.Air)
-        {
-            return;
-        }
-
         switch (packet.Status)
         {
-            case ActionStatus.StartDigging:
-                if (player.GameMode == GameMode.Creative)
-                {
-                    block.Type = Material.Air;
-                }
-                break;
-            case ActionStatus.FinishDigging:
-                block.Type = Material.Air;
+            case ActionStatus.Digging:
+                player.Dig(block);
                 break;
             case ActionStatus.CancelDigging:
+                player.Dig(null);
                 break;
-            case ActionStatus.DropItemStack:
-                break;
-            case ActionStatus.DropItem:
-                break;
-            case ActionStatus.ShootArrow:
-                break;
-            case ActionStatus.SwapItem:
+            case ActionStatus.FinishDigging:
                 break;
         }
-        
-        session.SendPacket(new AckBlockChangePacket
-        {
-            Sequence = packet.Sequence
-        });
     }
 }

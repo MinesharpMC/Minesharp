@@ -1,5 +1,6 @@
 using Minesharp.Common;
 using Minesharp.Common.Enum;
+using Minesharp.Game.Blocks;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Processors;
 using Minesharp.Game.Worlds;
@@ -13,16 +14,14 @@ public sealed class Player : Entity, IEquatable<Player>
     private readonly NetworkSession session;
     private readonly ChunkProcessor chunkProcessor;
     private readonly EntityProcessor entityProcessor;
-
-    public IReadOnlySet<ChunkKey> KnownChunks => chunkProcessor.KnownChunks;
-    public IReadOnlySet<ChunkKey> OutdatedChunks => chunkProcessor.OutdatedChunks;
-    public IReadOnlySet<int> KnownEntities => entityProcessor.KnownEntities;
+    private readonly DiggingProcessor diggingProcessor;
 
     public Player(NetworkSession session) : base(EntityType.Player)
     {
         this.session = session;
         this.chunkProcessor = new ChunkProcessor(this);
         this.entityProcessor = new EntityProcessor(this);
+        this.diggingProcessor = new DiggingProcessor(this);
     }
     
     public string Username { get; set; }
@@ -37,17 +36,53 @@ public sealed class Player : Entity, IEquatable<Player>
         session.SendPacket(packet);
     }
 
-    public bool Known(Entity entity)
+    public void Dig(Block block)
     {
-        return KnownEntities.Contains(entity.Id);
+        diggingProcessor.Dig(block);
     }
+
+    public bool CanSee(Entity entity)
+    {
+        if (entity == this)
+        {
+            return false;
+        }
+        
+        var chunk = World.GetChunkAt(entity.Position);
+        if (chunk is null)
+        {
+            return false;
+        }
+
+        return chunkProcessor.HasLoaded(chunk.Key);
+    }
+
+    public bool CanSee(Block block)
+    {
+        var chunk = World.GetChunkAt(block.Position);
+        if (chunk is null)
+        {
+            return false;
+        }
+
+        return chunkProcessor.HasLoaded(chunk.Key);
+    }
+    
 
     public override void Tick()
     {
+        diggingProcessor.Tick();
         chunkProcessor.Tick();
         entityProcessor.Tick();
     }
 
+    public override void LateTick()
+    {
+        chunkProcessor.LateTick();
+        
+        LastPosition = Position;
+        LastRotation = Rotation;
+    }
     public bool Equals(Player other)
     {
         if (ReferenceEquals(null, other))

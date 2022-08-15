@@ -44,7 +44,7 @@ public static class ServerExtensions
                     GameMode = player.GameMode
                 }
             }
-        }, new ExceptPlayerBroadcastRule(player));
+        }, new ExceptPlayerRule(player));
     }
 
     public static void BroadcastPlayerListRemove(this Server server, Player player)
@@ -59,6 +59,6 @@ public static class ServerExtensions
                     Id = player.UniqueId,
                 }
             }
-        }, new ExceptPlayerBroadcastRule(player));
+        }, new ExceptPlayerRule(player));
     }
 }

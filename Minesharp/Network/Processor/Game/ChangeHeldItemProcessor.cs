@@ -12,7 +12,7 @@ public class ChangeHeldItemProcessor : PacketProcessor<ChangeHeldItemPacket>
         var players = world.GetPlayers();
         foreach (var player in players)
         {
-            if (!player.Known(session.Player))
+            if (!player.CanSee(session.Player))
             {
                 continue;
             }

@@ -15,15 +15,39 @@ public class ChunkProcessor
     private int previousCentralX;
     private int previousCentralZ;
 
-    public IReadOnlySet<ChunkKey> KnownChunks => knownChunks;
-    public IReadOnlySet<ChunkKey> OutdatedChunks => outdatedChunks;
-
     public ChunkProcessor(Player player)
     {
         this.player = player;
     }
 
-    private void ProcessChunks()
+    public bool HasLoaded(ChunkKey key)
+    {
+        return knownChunks.Contains(key);
+    }
+
+    public void LateTick()
+    {
+        foreach (var chunkKey in knownChunks)
+        {
+            var chunk = player.World.GetChunk(chunkKey);
+            if (chunk is null)
+            {
+                continue;
+            }
+
+            var modifiedBlocks = chunk.GetModifiedBlocks();
+            foreach (var modifiedBlock in modifiedBlocks)
+            {
+                player.SendPacket(new BlockChangePacket
+                {
+                    Position = modifiedBlock.Position,
+                    Type = modifiedBlock.Type
+                });
+            }
+        }
+    }
+    
+    public void Tick()
     {
         outdatedChunks = new HashSet<ChunkKey>(knownChunks);
 
@@ -131,30 +155,5 @@ public class ChunkProcessor
 
         previousCentralX = centralX;
         previousCentralZ = centralZ;
-    }
-
-    private void ProcessBlocks()
-    {
-        var world = player.World;
-        foreach (var chunkKey in knownChunks)
-        {
-            var chunk = world.GetChunk(chunkKey);
-            var blocks = chunk.GetModifiedBlocks();
-
-            foreach (var block in blocks)
-            {
-                player.SendPacket(new BlockChangePacket
-                {
-                    Position = block.Position,
-                    Type = block.Type
-                });
-            }
-        }
-    }
-
-    public void Tick()
-    {
-        ProcessChunks();
-        ProcessBlocks();
     }
 }

@@ -73,6 +73,7 @@ public abstract class Entity : IEquatable<Entity>
     {
         return !Equals(left, right);
     }
-
+    
     public abstract void Tick();
+    public abstract void LateTick();
 }
