@@ -1,29 +1,30 @@
 using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Game.Chunks;
+using Minesharp.Game.Processors;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Packet;
 
 namespace Minesharp.Game.Entities;
 
-public sealed class Player : IEquatable<Player>
+public sealed class Player : Entity, IEquatable<Player>
 {
     private readonly NetworkSession session;
     private readonly ChunkProcessor chunkProcessor;
+    private readonly EntityProcessor entityProcessor;
 
-    public Player(NetworkSession session)
+    public IEnumerable<ChunkKey> KnownChunks => chunkProcessor.KnownChunks;
+    public IEnumerable<ChunkKey> OutdatedChunks => chunkProcessor.OutdatedChunks;
+
+    public Player(NetworkSession session) : base(EntityType.Player)
     {
         this.session = session;
         this.chunkProcessor = new ChunkProcessor(this);
+        this.entityProcessor = new EntityProcessor(this);
     }
-
-    public int Id { get; init; }
-    public Guid UniqueId { get; init; }
+    
     public string Username { get; set; }
-    public Position Position { get; set; }
-    public Rotation Rotation { get; set; }
-    public World World { get; set; }
     public Server Server { get; init; }
     public GameMode GameMode { get; set; }
     public string Locale { get; set; }
@@ -35,9 +36,12 @@ public sealed class Player : IEquatable<Player>
         session.SendPacket(packet);
     }
 
-    public void Tick()
+    public override void Tick()
     {
         chunkProcessor.Tick();
+        entityProcessor.Tick();
+
+        base.Tick();
     }
 
     public bool Equals(Player other)

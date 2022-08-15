@@ -4,6 +4,7 @@ using Minesharp.Common.Enum;
 using Minesharp.Game.Blocks;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
+using Minesharp.Game.Managers;
 using Minesharp.Packet;
 using Serilog;
 
@@ -11,9 +12,9 @@ namespace Minesharp.Game.Worlds;
 
 public sealed class World
 {
-    private readonly ChunkFactory chunkFactory;
-    private readonly ConcurrentDictionary<ChunkKey, Chunk> chunks;
     private readonly PlayerManager playerManager;
+    private readonly EntityManager entityManager;
+    private readonly ChunkManager chunkManager;
 
     public World(WorldCreator creator)
     {
@@ -22,10 +23,10 @@ public sealed class World
         Border = creator.Border;
         Difficulty = creator.Difficulty;
         GameMode = creator.GameMode;
-
-        chunkFactory = new ChunkFactory(creator.ChunkGenerator, this);
-        chunks = new ConcurrentDictionary<ChunkKey, Chunk>();
+        
         playerManager = new PlayerManager();
+        entityManager = new EntityManager();
+        chunkManager = new ChunkManager(new ChunkFactory(creator.ChunkGenerator, this));
     }
 
     public Guid Id { get; }
@@ -84,23 +85,17 @@ public sealed class World
 
     public Chunk LoadChunk(ChunkKey key)
     {
-        var chunk = GetChunk(key);
-        if (chunk is null)
-        {
-            chunks[key] = chunk = chunkFactory.Create(key);
-        }
-
-        return chunk;
+        return chunkManager.LoadChunk(key);
     }
 
     public Chunk GetChunk(ChunkKey key)
     {
-        return chunks.GetValueOrDefault(key);
+        return chunkManager.GetChunk(key);
     }
 
     public IEnumerable<Chunk> GetChunks()
     {
-        return chunks.Values;
+        return chunkManager.GetChunks();
     }
 
     public IEnumerable<Player> GetPlayers()
@@ -108,23 +103,42 @@ public sealed class World
         return playerManager.GetPlayers();
     }
 
+    public IEnumerable<Entity> GetEntities()
+    {
+        return entityManager.GetEntities();
+    }
+
     public void AddPlayer(Player player)
     {
         playerManager.Add(player);
+        entityManager.Add(player);
     }
 
     public void RemovePlayer(Player player)
     {
         playerManager.Remove(player);
+        entityManager.Remove(player);
+    }
+
+    public Entity GetEntity(Guid id)
+    {
+        return entityManager.GetEntity(id);
     }
 
     public void Tick()
     {
-        foreach (var (chunkKey, chunk) in chunks)
+        var entities = entityManager.GetEntities();
+        foreach (var entity in entities)
+        {
+            entity.Tick();
+        }
+        
+        var chunks = chunkManager.GetChunks();
+        foreach (var chunk in chunks)
         {
             if (!chunk.IsLocked)
             {
-                chunks.Remove(chunkKey, out _);
+                chunkManager.UnloadChunk(chunk);
                 continue;
             }
             

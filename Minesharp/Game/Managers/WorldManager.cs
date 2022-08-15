@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
+using Minesharp.Game.Worlds;
 
-namespace Minesharp.Game.Worlds;
+namespace Minesharp.Game.Managers;
 
 public class WorldManager
 {

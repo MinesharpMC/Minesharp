@@ -26,7 +26,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         var world = server.GetDefaultWorld();
         var player = session.Player = new Player(session)
         {
-            Id = 1,
+            Id = Server.GetNextEntityId(),
             UniqueId = Guid.NewGuid(),
             Username = packet.Username,
             Position = new Position(10, -55, 10),

@@ -1,6 +1,7 @@
 using Minesharp.Configuration;
 using Minesharp.Game.Broadcast;
 using Minesharp.Game.Entities;
+using Minesharp.Game.Managers;
 using Minesharp.Game.Schedule;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
@@ -23,6 +24,8 @@ public sealed class Server
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
 
+    private static int lastEntityId;
+
     public Server(ServerConfiguration configuration, SessionManager sessionManager)
     {
         this.configuration = configuration;
@@ -30,6 +33,11 @@ public sealed class Server
         this.worldManager = new WorldManager();
         this.scheduler = new Scheduler();
         this.playerManager = new PlayerManager();
+    }
+
+    public static int GetNextEntityId()
+    {
+        return ++lastEntityId;
     }
 
     public World CreateWorld(WorldCreator creator)
@@ -93,12 +101,6 @@ public sealed class Server
             session.Tick();
         }
 
-        var players = playerManager.GetPlayers();
-        foreach (var player in players)
-        {
-            player.Tick();
-        }
-        
         var worlds = worldManager.GetWorlds();
         foreach (var world in worlds)
         {

@@ -1,4 +1,3 @@
-using Minesharp.Game;
 using Minesharp.Game.Entities;
 using Minesharp.Packet.Game.Server;
 
@@ -12,6 +11,45 @@ public static class PlayerExtensions
         {
             Position = player.Position,
             Rotation = player.Rotation
+        });
+    }
+
+    public static void SendEntityMoveAndRotate(this Player player, Entity entity)
+    {
+        player.SendPacket(new UpdateEntityPositionAndRotationPacket
+        {
+            EntityId = entity.Id,
+            Delta = entity.Position.Delta(entity.LastPosition),
+            Angle = entity.Rotation,
+            IsGrounded = true
+        });
+    }
+
+    public static void SendEntityMove(this Player player, Entity entity)
+    {
+        player.SendPacket(new UpdateEntityPositionPacket
+        {
+            EntityId = entity.Id,
+            Delta = entity.Position.Delta(entity.LastPosition),
+            IsGrounded = true
+        });
+    }
+
+    public static void SendRemoveEntities(this Player player, IList<int> entities)
+    {
+        player.SendPacket(new RemoveEntitiesPacket
+        {
+            Entities = entities
+        });
+    }
+    
+    public static void SendEntityRotate(this Player player, Entity entity)
+    {
+        player.SendPacket(new UpdateEntityRotationPacket
+        {
+            EntityId = entity.Id,
+            Angle = entity.Rotation,
+            IsGrounded = true
         });
     }
 

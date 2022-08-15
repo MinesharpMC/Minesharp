@@ -1,18 +1,23 @@
 using Minesharp.Common.Collection;
+using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
 using Minesharp.Nbt;
 using Minesharp.Packet.Game.Server;
 
-namespace Minesharp.Game.Chunks;
+namespace Minesharp.Game.Processors;
 
 public class ChunkProcessor
 {
     private readonly Player player;
     private readonly HashSet<ChunkKey> knownChunks = new();
+    private HashSet<ChunkKey> outdatedChunks = new();
 
     private int previousCentralX;
     private int previousCentralZ;
-    
+
+    public IEnumerable<ChunkKey> KnownChunks => knownChunks;
+    public IEnumerable<ChunkKey> OutdatedChunks => outdatedChunks;
+
     public ChunkProcessor(Player player)
     {
         this.player = player;
@@ -20,16 +25,16 @@ public class ChunkProcessor
 
     private void ProcessChunks()
     {
-        var world = player.World;
-        
-        var newChunks = new HashSet<ChunkKey>();
-        var oldChunks = new HashSet<ChunkKey>(knownChunks);
+        outdatedChunks = new HashSet<ChunkKey>(knownChunks);
 
+        var world = player.World;
         var position = player.Position;
         
         var centralX = position.BlockX >> 4;
         var centralZ = position.BlockZ >> 4;
         var radius = 5;
+        
+        var newChunks = new HashSet<ChunkKey>();
         
         for (var x = centralX - radius; x <= centralX + radius; x++)
         for (var z = centralZ - radius; z <= centralZ + radius; z++)
@@ -41,7 +46,7 @@ public class ChunkProcessor
             }
             else
             {
-                oldChunks.Remove(key);
+                outdatedChunks.Remove(key);
             }
         }
         
@@ -97,7 +102,7 @@ public class ChunkProcessor
             knownChunks.Add(key);
         }
         
-        foreach (var chunkKey in oldChunks)
+        foreach (var chunkKey in outdatedChunks)
         {
             var chunk = world.GetChunk(chunkKey);
             if (chunk is null)
