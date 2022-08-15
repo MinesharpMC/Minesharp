@@ -1,12 +1,10 @@
-using System.Collections.Concurrent;
-using Minesharp.Chat.Component;
 using Minesharp.Configuration;
+using Minesharp.Game.Broadcast;
 using Minesharp.Game.Entities;
-using Minesharp.Game.Scheduling;
+using Minesharp.Game.Schedule;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
-using Minesharp.Packet.Game.Server;
-using Serilog;
+using Minesharp.Packet;
 
 namespace Minesharp.Game;
 
@@ -15,41 +13,63 @@ public sealed class Server
     private readonly WorldManager worldManager;
     private readonly Scheduler scheduler;
     private readonly SessionManager sessionManager;
+    private readonly PlayerManager playerManager;
     private readonly ServerConfiguration configuration;
 
     public const string Version = "1.19";
     public const int Protocol = 759;
-    
-    private byte tickCount;
-    
-    public byte Tps { get; private set; }
-    public DateTime LastTpsUpdate { get; private set; }
-    
+
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
 
     public Scheduler Scheduler => scheduler;
     public WorldManager WorldManager => worldManager;
-    
-    public Server(ServerConfiguration configuration, Scheduler scheduler, WorldManager worldManager, SessionManager sessionManager)
+    public PlayerManager PlayerManager => playerManager;
+
+    public Server(ServerConfiguration configuration, SessionManager sessionManager)
     {
         this.configuration = configuration;
-        this.scheduler = scheduler;
-        this.worldManager = worldManager;
         this.sessionManager = sessionManager;
+        this.worldManager = new WorldManager();
+        this.scheduler = new Scheduler();
+        this.playerManager = new PlayerManager();
+    }
+
+    public void Broadcast(IPacket packet)
+    {
+        var players = playerManager.GetPlayers();
+        foreach (var player in players)
+        {
+            player.SendPacket(packet);
+        }
+    }
+    
+    public void Broadcast(IPacket packet, params IBroadcastRule[] rules)
+    {
+        var players = playerManager.GetPlayers();
+        foreach (var player in players)
+        {
+            if (rules.Any(x => !x.IsAllowed(player)))
+            {
+                player.SendPacket(packet);
+            }
+        }
     }
 
     public IEnumerable<Player> GetPlayers()
     {
-        var output = new List<Player>();
-        var worlds = worldManager.GetWorlds();
-        foreach (var world in worlds)
-        {
-            output.AddRange(world.Players);
-        }
+        return playerManager.GetPlayers();
+    }
 
-        return output;
+    public IEnumerable<World> GetWorlds()
+    {
+        return worldManager.GetWorlds();
+    }
+
+    public World GetDefaultWorld()
+    {
+        return worldManager.GetDefaultWorld();
     }
 
     public void Tick()
@@ -59,6 +79,12 @@ public sealed class Server
         {
             session.Tick();
         }
+
+        var players = playerManager.GetPlayers();
+        foreach (var player in players)
+        {
+            player.Tick();
+        }
         
         var worlds = worldManager.GetWorlds();
         foreach (var world in worlds)
@@ -67,14 +93,5 @@ public sealed class Server
         }
         
         scheduler.Tick();
-
-        if (LastTpsUpdate.AddSeconds(1) <= DateTime.UtcNow)
-        {
-            Tps = tickCount;
-            LastTpsUpdate = DateTime.UtcNow;
-            tickCount = 0;
-        }
-
-        tickCount++;
     }
 }

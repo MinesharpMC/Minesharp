@@ -13,6 +13,7 @@ public sealed class World
 {
     private readonly ChunkFactory chunkFactory;
     private readonly ConcurrentDictionary<ChunkKey, Chunk> chunks;
+    private readonly PlayerManager playerManager;
 
     public World(WorldCreator creator)
     {
@@ -24,6 +25,7 @@ public sealed class World
 
         chunkFactory = new ChunkFactory(creator.ChunkGenerator, this);
         chunks = new ConcurrentDictionary<ChunkKey, Chunk>();
+        playerManager = new PlayerManager();
     }
 
     public Guid Id { get; }
@@ -31,8 +33,8 @@ public sealed class World
     public WorldBorder Border { get; }
     public Difficulty Difficulty { get; }
     public GameMode GameMode { get; }
-    public List<Player> Players { get; } = new();
-    
+    public PlayerManager PlayerManager => playerManager;
+
     public Block GetBlockAt(int x, int y, int z)
     {
         return new Block
@@ -102,13 +104,13 @@ public sealed class World
         return chunks.Values;
     }
 
+    public IEnumerable<Player> GetPlayers()
+    {
+        return playerManager.GetPlayers();
+    }
+
     public void Tick()
     {
-        foreach (var player in Players)
-        {
-            player.Tick();
-        }
-
         foreach (var (chunkKey, chunk) in chunks)
         {
             if (!chunk.IsLocked)

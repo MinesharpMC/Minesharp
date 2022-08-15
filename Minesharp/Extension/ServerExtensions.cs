@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Hosting.Server;
+using Minesharp.Chat;
 using Minesharp.Chat.Component;
 using Minesharp.Game;
+using Minesharp.Game.Broadcast;
+using Minesharp.Game.Entities;
 using Minesharp.Packet;
 using Minesharp.Packet.Game.Server;
 
@@ -16,12 +20,30 @@ public static class ServerExtensions
         });
     }
 
-    public static void Broadcast(this Server server, IPacket packet)
+    public static void BroadcastMessage(this Server server, string message, ChatColor color)
     {
-        var players = server.GetPlayers();
-        foreach (var player in players)
+        server.BroadcastMessage(new TextComponent
         {
-            player.SendPacket(packet);
-        }
+            Text = message,
+            Color = color
+        });
+    }
+
+    public static void BroadcastPlayerListAdd(this Server server, Player player)
+    {
+        server.Broadcast(new PlayerListPacket
+        {
+            Action = PlayerListAction.AddPlayer,
+            Players = new List<PlayerInfo>
+            {
+                new()
+                {
+                    Id = player.UniqueId,
+                    Ping = 5,
+                    Username = player.Username,
+                    GameMode = player.GameMode
+                }
+            }
+        }, new ExceptPlayerBroadcastRule(player));
     }
 }

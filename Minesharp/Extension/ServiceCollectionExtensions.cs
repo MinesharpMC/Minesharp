@@ -1,6 +1,5 @@
 using Minesharp.Configuration;
 using Minesharp.Game;
-using Minesharp.Game.Scheduling;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Network.Processor;
@@ -15,20 +14,10 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<ServerService>();
     }
 
-    public static void AddServerDependencies(this IServiceCollection services)
-    {
-        services.AddSingleton<Scheduler>();
-        services.AddSingleton<WorldManager>();
-    }
-
-    public static void AddNetworkServerDependencies(this IServiceCollection services)
-    {
-        services.AddSingleton<SessionManager>();
-    }
-
     public static void AddNetworkServer(this IServiceCollection services)
     {
         services.AddSingleton<NetworkServer>();
+        services.AddSingleton<SessionManager>();
     }
 
     public static void AddNetworkConfiguration(this IServiceCollection services, IConfiguration configuration)

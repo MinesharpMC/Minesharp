@@ -1,5 +1,3 @@
-using System.Drawing;
-using System.Net.Sockets;
 using Minesharp.Chat;
 using Minesharp.Chat.Component;
 using Minesharp.Common;
@@ -7,7 +5,6 @@ using Minesharp.Common.Enum;
 using Minesharp.Extension;
 using Minesharp.Game;
 using Minesharp.Game.Entities;
-using Minesharp.Packet.Game.Client;
 using Minesharp.Packet.Game.Server;
 using Minesharp.Packet.Login.Client;
 using Minesharp.Packet.Login.Server;
@@ -26,7 +23,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 
     protected override void Process(NetworkSession session, LoginStartPacket packet)
     {
-        var world = server.WorldManager.GetDefaultWorld();
+        var world = server.GetDefaultWorld();
         var player = session.Player = new Player(session)
         {
             Id = 1,
@@ -71,14 +68,13 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
         
-        world.Players.Add(player);
-        
-        server.BroadcastMessage(new TextComponent
-        {
-            Text = $"{player.Username} joined the game",
-            Color = ChatColor.Yellow
-        });
+        world.PlayerManager.Add(player);
+        server.PlayerManager.Add(player);
+
+        server.BroadcastMessage($"{player.Username} joined the game", ChatColor.Yellow);
+        server.BroadcastPlayerListAdd(player);
         
         player.SendPosition();
+        player.SendPlayerList();
     }
 }

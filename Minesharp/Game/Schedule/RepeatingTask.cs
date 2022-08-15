@@ -1,4 +1,4 @@
-namespace Minesharp.Game.Scheduling;
+namespace Minesharp.Game.Schedule;
 
 public class RepeatingTask : ScheduledTask
 {

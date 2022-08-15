@@ -33,7 +33,8 @@ public class SessionHandler : ChannelHandlerAdapter
         var player = session.Player;
         if (player is not null)
         {
-            player.World.Players.Remove(player);
+            player.World.PlayerManager.Remove(player);
+            player.Server.PlayerManager.Remove(player);
 
             Log.Information("{name} disconnected", session.Player.Username);
         }

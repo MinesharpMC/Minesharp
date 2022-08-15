@@ -15,11 +15,9 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddServer();
-        services.AddServerDependencies();
         services.AddServerConfiguration(configuration);
         
         services.AddNetworkServer();
-        services.AddNetworkServerDependencies();
         services.AddNetworkConfiguration(configuration);
         
         services.AddPacketFactory();

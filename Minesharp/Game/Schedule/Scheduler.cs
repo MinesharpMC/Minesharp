@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Minesharp.Game.Scheduling;
+namespace Minesharp.Game.Schedule;
 
 public sealed class Scheduler
 {
