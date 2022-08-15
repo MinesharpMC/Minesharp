@@ -32,7 +32,7 @@ public class ChunkProcessor
         
         var centralX = position.BlockX >> 4;
         var centralZ = position.BlockZ >> 4;
-        var radius = 5;
+        var radius = player.ViewDistance + 1;
         
         var newChunks = new HashSet<ChunkKey>();
         
@@ -54,7 +54,7 @@ public class ChunkProcessor
         {
             var chunk = world.LoadChunk(key);
             
-            chunk.Lock();
+            chunk.AddLock();
 
             var sections = chunk.Sections
                 .OrderBy(x => x.Key)
@@ -117,7 +117,7 @@ public class ChunkProcessor
             });
 
             knownChunks.Remove(chunk.Key);
-            chunk.Unlock();
+            chunk.RemoveLock();
         }
 
         if (centralX != previousCentralX || centralZ != previousCentralZ)

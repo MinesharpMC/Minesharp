@@ -33,7 +33,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Rotation = new Rotation(0, 0),
             Server = server,
             GameMode = world.GameMode,
-            World = world
+            World = world,
+            ViewDistance = server.ViewDistance
         };
 
         player.SendPacket(new LoginSuccessPacket
@@ -59,8 +60,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             DimensionType = "minecraft:overworld",
             SeedHash = new byte[8],
             MaxPlayers = 1000,
-            ViewDistance = 5,
-            SimulationDistance = 5,
+            ViewDistance = player.ViewDistance,
+            SimulationDistance = player.ViewDistance,
             ReducedDebug = false,
             EnabledRespawnScreen = true,
             IsDebug = false,

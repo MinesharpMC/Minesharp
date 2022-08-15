@@ -27,14 +27,14 @@ public sealed class Chunk : IEquatable<Chunk>
     private int lockCount;
     private readonly List<ModifiedBlock> modifiedBlocks = new();
     
-    public void Lock()
+    public void AddLock()
     {
         lockCount++;
     }
 
-    public void Unlock()
+    public void RemoveLock()
     {
-        if (IsLocked)
+        if (lockCount > 0)
         {
             lockCount--;
         }
