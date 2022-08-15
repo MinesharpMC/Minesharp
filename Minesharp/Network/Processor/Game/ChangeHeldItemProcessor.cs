@@ -12,20 +12,21 @@ public class ChangeHeldItemProcessor : PacketProcessor<ChangeHeldItemPacket>
         var players = world.GetPlayers();
         foreach (var player in players)
         {
-            var knownEntities = player.KnownEntities;
-            if (knownEntities.Contains(session.Player.Id))
+            if (!player.Known(session.Player))
             {
-                player.SendPacket(new EquipmentPacket
-                {
-                    EntityId = session.Player.Id,
-                    Slot = EquipmentSlot.MainHand,
-                    Item = new ItemInfo
-                    {
-                        Amount = 1,
-                        Material = Material.Stone
-                    }
-                });
+                continue;
             }
+            
+            player.SendPacket(new EquipmentPacket
+            {
+                EntityId = session.Player.Id,
+                Slot = EquipmentSlot.MainHand,
+                Item = new ItemInfo
+                {
+                    Amount = 1,
+                    Material = Material.Stone
+                }
+            });
         }
     }
 }

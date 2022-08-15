@@ -1,3 +1,4 @@
+using Minesharp.Common.Enum;
 using Minesharp.Common.Extension;
 using Minesharp.Game.Entities;
 using Minesharp.Packet.Game.Server;
@@ -12,6 +13,15 @@ public static class PlayerExtensions
         {
             Position = player.Position,
             Rotation = player.Rotation,
+        });
+    }
+
+    public static void SendEntityAnimation(this Player player, Entity entity, Animation animation)
+    {
+        player.SendPacket(new EntityAnimationPacket
+        {
+            EntityId = entity.Id,
+            Animation = animation
         });
     }
 

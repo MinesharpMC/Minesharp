@@ -1,4 +1,5 @@
 using Minesharp.Common.Enum;
+using Minesharp.Extension;
 using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Network.Processor.Game;
@@ -12,15 +13,12 @@ public class SwingArmProcessor : PacketProcessor<SwingArmPacket>
         var players = world.GetPlayers();
         foreach (var player in players)
         {
-            var knownEntities = player.KnownEntities;
-            if (knownEntities.Contains(session.Player.Id))
+            if (!player.Known(session.Player))
             {
-                player.SendPacket(new EntityAnimationPacket
-                {
-                    EntityId = session.Player.Id,
-                    Animation = Animation.SwingMainHand
-                });
+                continue;
             }
+            
+            player.SendEntityAnimation(session.Player, Animation.SwingMainHand);
         }
     }
 }

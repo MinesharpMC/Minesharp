@@ -37,6 +37,11 @@ public sealed class Player : Entity, IEquatable<Player>
         session.SendPacket(packet);
     }
 
+    public bool Known(Entity entity)
+    {
+        return KnownEntities.Contains(entity.Id);
+    }
+
     public override void Tick()
     {
         chunkProcessor.Tick();
