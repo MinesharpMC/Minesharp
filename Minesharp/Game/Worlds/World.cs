@@ -33,8 +33,7 @@ public sealed class World
     public WorldBorder Border { get; }
     public Difficulty Difficulty { get; }
     public GameMode GameMode { get; }
-    public PlayerManager PlayerManager => playerManager;
-
+    
     public Block GetBlockAt(int x, int y, int z)
     {
         return new Block
@@ -107,6 +106,16 @@ public sealed class World
     public IEnumerable<Player> GetPlayers()
     {
         return playerManager.GetPlayers();
+    }
+
+    public void AddPlayer(Player player)
+    {
+        playerManager.Add(player);
+    }
+
+    public void RemovePlayer(Player player)
+    {
+        playerManager.Remove(player);
     }
 
     public void Tick()

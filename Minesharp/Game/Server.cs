@@ -23,10 +23,6 @@ public sealed class Server
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
 
-    public Scheduler Scheduler => scheduler;
-    public WorldManager WorldManager => worldManager;
-    public PlayerManager PlayerManager => playerManager;
-
     public Server(ServerConfiguration configuration, SessionManager sessionManager)
     {
         this.configuration = configuration;
@@ -36,6 +32,11 @@ public sealed class Server
         this.playerManager = new PlayerManager();
     }
 
+    public World CreateWorld(WorldCreator creator)
+    {
+        return worldManager.CreateWorld(creator);
+    }
+    
     public void Broadcast(IPacket packet)
     {
         var players = playerManager.GetPlayers();
@@ -52,8 +53,10 @@ public sealed class Server
         {
             if (rules.Any(x => !x.IsAllowed(player)))
             {
-                player.SendPacket(packet);
+                continue;
             }
+            
+            player.SendPacket(packet);
         }
     }
 
@@ -70,6 +73,16 @@ public sealed class Server
     public World GetDefaultWorld()
     {
         return worldManager.GetDefaultWorld();
+    }
+
+    public void AddPlayer(Player player)
+    {
+        playerManager.Add(player);
+    }
+
+    public void RemovePlayer(Player player)
+    {
+        playerManager.Remove(player);
     }
 
     public void Tick()

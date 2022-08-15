@@ -12,7 +12,7 @@ public class ServerService : BackgroundService
     private readonly ILogger<ServerService> logger;
     private readonly NetworkServer networkServer;
     private readonly Server server;
-    private readonly PeriodicTimer timer = new(TimeSpan.FromMilliseconds(50));
+    private readonly PeriodicTimer timer = new(TimeSpan.FromMilliseconds(25));
 
     public ServerService(Server server, ILogger<ServerService> logger, NetworkServer networkServer)
     {
@@ -24,7 +24,7 @@ public class ServerService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Creating world");
-        var world = server.WorldManager.CreateWorld(new WorldCreator
+        var world = server.CreateWorld(new WorldCreator
         {
             Name = "Debug World",
             Border = new WorldBorder(),

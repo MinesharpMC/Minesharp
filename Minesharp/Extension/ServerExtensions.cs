@@ -46,4 +46,19 @@ public static class ServerExtensions
             }
         }, new ExceptPlayerBroadcastRule(player));
     }
+
+    public static void BroadcastPlayerListRemove(this Server server, Player player)
+    {
+        server.Broadcast(new PlayerListPacket
+        {
+            Action = PlayerListAction.RemovePlayer,
+            Players = new List<PlayerInfo>
+            {
+                new()
+                {
+                    Id = player.UniqueId,
+                }
+            }
+        }, new ExceptPlayerBroadcastRule(player));
+    }
 }

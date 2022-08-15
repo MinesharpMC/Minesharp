@@ -68,8 +68,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
         
-        world.PlayerManager.Add(player);
-        server.PlayerManager.Add(player);
+        world.AddPlayer(player);
+        server.AddPlayer(player);
 
         server.BroadcastMessage($"{player.Username} joined the game", ChatColor.Yellow);
         server.BroadcastPlayerListAdd(player);
