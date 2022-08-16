@@ -19,63 +19,60 @@ public class EntityProcessor
     public void Tick()
     {
         var world = player.World;
-        var removedEntities = new List<int>();
-        
+
+        var removedEntities = new HashSet<int>(knownEntities);
+
         var entities = world.GetEntities();
         foreach (var entity in entities)
         {
             var canSee = player.CanSee(entity);
-            if (canSee)
+            if (!canSee)
             {
-                if (!knownEntities.Contains(entity.Id))
+                continue;
+            }
+
+            if (!knownEntities.Contains(entity.Id))
+            {
+                if (entity.Type == EntityType.Player)
                 {
-                    if (entity.Type == EntityType.Player)
+                    player.SendPacket(new SpawnPlayerPacket
                     {
-                        player.SendPacket(new SpawnPlayerPacket
-                        {
-                            Id = entity.Id,
-                            UniqueId = entity.UniqueId,
-                            Position = entity.Position,
-                            Rotation = entity.Rotation
-                        });
-                    }
-                    
-                    knownEntities.Add(entity.Id);
+                        Id = entity.Id,
+                        UniqueId = entity.UniqueId,
+                        Position = entity.Position,
+                        Rotation = entity.Rotation
+                    });
                 }
-                
-                var delta = entity.Position.Delta(entity.LastPosition);
-                var teleport = delta.X > short.MaxValue || delta.Y > short.MaxValue || delta.Z > short.MaxValue 
-                               || delta.X < short.MinValue || delta.Y < short.MinValue || delta.Z < short.MinValue;
 
-                switch (entity.Moved)
-                {
-                    case true when teleport:
-                        player.SendEntityTeleport(entity);
-                        break;
-                    case true when entity.Rotated:
-                        player.SendEntityMoveAndRotate(entity);
-                        break;
-                    case true:
-                        player.SendEntityMove(entity);
-                        break;
-                    case false when entity.Rotated:
-                        player.SendEntityRotate(entity);
-                        break;
-                }
+                knownEntities.Add(entity.Id);
             }
-            else
+            
+            var delta = entity.Position.Delta(entity.LastPosition);
+            var teleport = delta.X > short.MaxValue || delta.Y > short.MaxValue || delta.Z > short.MaxValue 
+                           || delta.X < short.MinValue || delta.Y < short.MinValue || delta.Z < short.MinValue;
+
+            switch (entity.Moved)
             {
-                if (knownEntities.Contains(entity.Id))
-                {
-                    removedEntities.Add(entity.Id);
-                    knownEntities.Remove(entity.Id);
-                }
+                case true when teleport:
+                    player.SendEntityTeleport(entity);
+                    break;
+                case true when entity.Rotated:
+                    player.SendEntityMoveAndRotate(entity);
+                    break;
+                case true:
+                    player.SendEntityMove(entity);
+                    break;
+                case false when entity.Rotated:
+                    player.SendEntityRotate(entity);
+                    break;
             }
-        }
 
+            removedEntities.Remove(entity.Id);
+        }
+        
         if (removedEntities.Any())
         {
-            player.SendRemoveEntities(removedEntities);
+            player.SendRemoveEntities(removedEntities.ToList());
         }
     }
 }

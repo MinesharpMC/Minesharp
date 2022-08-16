@@ -6,6 +6,7 @@ using Minesharp.Game.Schedule;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Packet;
+using Serilog;
 
 namespace Minesharp.Game;
 
@@ -19,20 +20,22 @@ public sealed class Server
 
     public const string Version = "1.19";
     public const int Protocol = 759;
-    public const int TickRate = 40;
+    public const int TickRate = 125;
+    
+    private readonly long[] ticks = new long[TickRate];
 
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
 
-    private int lastEntityId;
+    private int entityId;
+    private long nextTick;
     private int tickCounter;
 
     public Scheduler Scheduler => scheduler;
     
     public int Tps { get; private set; }
-    public DateTime LastTpsUpdate { get; private set; }
-    
+
     public Server(ServerConfiguration configuration, SessionManager sessionManager)
     {
         this.configuration = configuration;
@@ -44,7 +47,7 @@ public sealed class Server
 
     public int GetNextEntityId()
     {
-        return ++lastEntityId;
+        return ++entityId;
     }
 
     public World CreateWorld(WorldCreator creator)
@@ -66,7 +69,7 @@ public sealed class Server
         var players = playerManager.GetPlayers();
         foreach (var player in players)
         {
-            if (rules.Any(x => !x.IsAllowed(player)))
+            if (!rules.All(x => x.IsAllowed(player)))
             {
                 continue;
             }
@@ -102,6 +105,14 @@ public sealed class Server
 
     public void Tick()
     {
+        var current = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var elapsed = current - nextTick;
+
+        if (elapsed < (1000 / TickRate))
+        {
+            return;
+        }
+
         var sessions = sessionManager.GetSessions();
         foreach (var session in sessions)
         {
@@ -116,12 +127,14 @@ public sealed class Server
         
         scheduler.Tick();
         
+        nextTick = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        
+        ticks[tickCounter] = elapsed;
         tickCounter++;
-        if (LastTpsUpdate.AddSeconds(1) < DateTime.UtcNow)
+        
+        if (tickCounter >= ticks.Length)
         {
-            Tps = tickCounter;
-            LastTpsUpdate = DateTime.UtcNow;
-            
+            Tps = (int)(1000 / ticks.Average());
             tickCounter = 0;
         }
     }

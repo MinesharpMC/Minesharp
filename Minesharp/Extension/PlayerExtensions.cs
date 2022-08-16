@@ -1,3 +1,4 @@
+using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Common.Extension;
 using Minesharp.Game.Entities;
@@ -70,7 +71,7 @@ public static class PlayerExtensions
             Entities = entities
         });
     }
-    
+
     public static void SendEntityRotate(this Player player, Entity entity)
     {
         player.SendPacket(new UpdateEntityRotationPacket

@@ -16,10 +16,10 @@ public class ActionProcessor : PacketProcessor<ActionPacket>
         switch (packet.Status)
         {
             case ActionStatus.Digging:
-                player.Dig(block);
+                player.StartDigging(block);
                 break;
             case ActionStatus.CancelDigging:
-                player.Dig(null);
+                player.StopDigging();
                 break;
             case ActionStatus.FinishDigging:
                 break;

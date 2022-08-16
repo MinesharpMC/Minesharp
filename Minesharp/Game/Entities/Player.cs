@@ -36,9 +36,14 @@ public sealed class Player : Entity, IEquatable<Player>
         session.SendPacket(packet);
     }
 
-    public void Dig(Block block)
+    public void StartDigging(Block block)
     {
-        diggingProcessor.Dig(block);
+        diggingProcessor.Start(block);
+    }
+
+    public void StopDigging()
+    {
+        diggingProcessor.Stop();
     }
 
     public bool CanSee(Entity entity)
@@ -83,6 +88,7 @@ public sealed class Player : Entity, IEquatable<Player>
         LastPosition = Position;
         LastRotation = Rotation;
     }
+    
     public bool Equals(Player other)
     {
         if (ReferenceEquals(null, other))

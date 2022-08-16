@@ -12,7 +12,6 @@ public class ServerService : BackgroundService
     private readonly ILogger<ServerService> logger;
     private readonly NetworkServer networkServer;
     private readonly Server server;
-    private readonly PeriodicTimer timer = new(TimeSpan.FromMilliseconds(1000 / Server.TickRate));
 
     public ServerService(Server server, ILogger<ServerService> logger, NetworkServer networkServer)
     {
@@ -44,6 +43,7 @@ public class ServerService : BackgroundService
 
         logger.LogInformation("Server is now running");
 
+        
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -53,10 +53,6 @@ public class ServerService : BackgroundService
             catch (Exception e)
             {
                 Log.Error(e, "Something happened when ticking server");
-            }
-            finally
-            {
-                await timer.WaitForNextTickAsync();
             }
         }
 
