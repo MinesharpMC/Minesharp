@@ -6,5 +6,5 @@ namespace Minesharp.Game.Blocks;
 public class ModifiedBlock
 {
     public Position Position { get; init; }
-    public Material Type { get; init; }
+    public int Type { get; init; }
 }

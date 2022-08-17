@@ -18,7 +18,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             target.Type = Material.Stone;
         }
 
-        session.SendPacket(new AckBlockChangePacket
+        session.SendPacket(new AckActionPacket
         {
             Sequence = packet.Sequence
         });

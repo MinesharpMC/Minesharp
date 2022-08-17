@@ -5,6 +5,7 @@ using Minesharp.Common.Enum;
 using Minesharp.Extension;
 using Minesharp.Game;
 using Minesharp.Game.Entities;
+using Minesharp.Game.Inventories;
 using Minesharp.Packet.Game.Server;
 using Minesharp.Packet.Login.Client;
 using Minesharp.Packet.Login.Server;
@@ -34,7 +35,14 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Server = server,
             GameMode = world.GameMode,
             World = world,
-            ViewDistance = server.ViewDistance
+            ViewDistance = server.ViewDistance,
+            Inventory = new PlayerInventory
+            {
+                [36] = new(Material.Stone),
+                [37] = new(Material.GrassBlock),
+                [38] = new(Material.Dirt),
+                [39] = new(Material.Bedrock)
+            }
         };
 
         player.SendPacket(new LoginSuccessPacket
@@ -75,7 +83,10 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         server.BroadcastMessage($"{player.Username} joined the game", ChatColor.Yellow);
         server.BroadcastPlayerListAdd(player);
         
+        player.UpdateChunks();
+        
         player.SendPlayerList();
+        player.SendInventory();
         player.SendPosition();
     }
 }

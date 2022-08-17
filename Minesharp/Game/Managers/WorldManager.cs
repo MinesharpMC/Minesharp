@@ -1,12 +1,19 @@
 using System.Collections.Concurrent;
+using Minesharp.Game.Blocks;
 using Minesharp.Game.Worlds;
 
 namespace Minesharp.Game.Managers;
 
 public class WorldManager
 {
+    private readonly Server server;
     private readonly ConcurrentDictionary<string, World> worlds = new();
-    
+
+    public WorldManager(Server server)
+    {
+        this.server = server;
+    }
+
     public World GetDefaultWorld()
     {
         return worlds.Values.First();
@@ -25,7 +32,7 @@ public class WorldManager
             return world;
         }
 
-        return worlds[creator.Name] = new World(creator);
+        return worlds[creator.Name] = new World(creator, server);
     }
 
     public World GetWorld(string name)

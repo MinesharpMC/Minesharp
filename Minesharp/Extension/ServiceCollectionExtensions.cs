@@ -1,5 +1,7 @@
 using Minesharp.Configuration;
 using Minesharp.Game;
+using Minesharp.Game.Blocks;
+using Minesharp.Game.Managers;
 using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Network.Processor;
@@ -12,6 +14,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<Server>();
         services.AddHostedService<ServerService>();
+    }
+
+    public static void AddRegistry(this IServiceCollection services)
+    {
+        services.AddSingleton<BlockRegistry>();
     }
 
     public static void AddNetworkServer(this IServiceCollection services)

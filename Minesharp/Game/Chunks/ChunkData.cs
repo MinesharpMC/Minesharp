@@ -1,11 +1,17 @@
 using Minesharp.Common.Enum;
+using Minesharp.Common.Extension;
+using Minesharp.Game.Worlds;
 
 namespace Minesharp.Game.Chunks;
 
 public class ChunkData
 {
-    public ChunkData()
+    private readonly Server server;
+    
+    public ChunkData(Server server)
     {
+        this.server = server;
+        
         Sections = new Dictionary<int, int[]>();
     }
 
@@ -29,6 +35,12 @@ public class ChunkData
 
     public void SetBlock(int x, int y, int z, Material material)
     {
-        SetBlock(x, y, z, (int)material);
+        if (!material.IsBlock)
+        {
+            return;
+        }
+
+        var blockId = server.BlockRegistry.GetBlockType(material);
+        SetBlock(x, y, z, blockId);
     }
 }

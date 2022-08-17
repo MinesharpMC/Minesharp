@@ -6,7 +6,7 @@ public class SuperflatGenerator : ChunkGenerator
 {
     public override ChunkData Generate(int chunkX, int chunkZ)
     {
-        var chunkData = new ChunkData();
+        var chunkData = CreateChunkData();
 
         int cx = chunkX << 4;
         int cz = chunkZ << 4;
@@ -30,5 +30,9 @@ public class SuperflatGenerator : ChunkGenerator
         chunkData.SetBlock(x, -62, z, Material.Dirt);
         chunkData.SetBlock(x, -61, z, Material.Dirt);
         chunkData.SetBlock(x, -60, z, Material.GrassBlock);
+    }
+
+    public SuperflatGenerator(Server server) : base(server)
+    {
     }
 }

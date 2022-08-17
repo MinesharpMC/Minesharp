@@ -1,7 +1,6 @@
 using Minesharp.Common.Enum;
 using Minesharp.Packet.Game.Client;
 using Minesharp.Packet.Game.Server;
-using Serilog;
 
 namespace Minesharp.Network.Processor.Game;
 

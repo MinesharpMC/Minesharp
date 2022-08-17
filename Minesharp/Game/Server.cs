@@ -1,4 +1,5 @@
 using Minesharp.Configuration;
+using Minesharp.Game.Blocks;
 using Minesharp.Game.Broadcast;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Managers;
@@ -17,6 +18,7 @@ public sealed class Server
     private readonly SessionManager sessionManager;
     private readonly PlayerManager playerManager;
     private readonly ServerConfiguration configuration;
+    private readonly BlockRegistry blockRegistry;
 
     public const string Version = "1.19";
     public const int Protocol = 759;
@@ -33,16 +35,18 @@ public sealed class Server
     private int tickCounter;
 
     public Scheduler Scheduler => scheduler;
+    public BlockRegistry BlockRegistry => blockRegistry;
     
     public int Tps { get; private set; }
 
-    public Server(ServerConfiguration configuration, SessionManager sessionManager)
+    public Server(ServerConfiguration configuration, SessionManager sessionManager, BlockRegistry blockRegistry)
     {
         this.configuration = configuration;
         this.sessionManager = sessionManager;
-        this.worldManager = new WorldManager();
+        this.worldManager = new WorldManager(this);
         this.scheduler = new Scheduler();
         this.playerManager = new PlayerManager();
+        this.blockRegistry = blockRegistry;
     }
 
     public int GetNextEntityId()

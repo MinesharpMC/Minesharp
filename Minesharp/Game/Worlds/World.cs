@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Game.Blocks;
@@ -6,9 +5,7 @@ using Minesharp.Game.Broadcast;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Managers;
-using Minesharp.Packet;
 using Minesharp.Packet.Game;
-using Serilog;
 
 namespace Minesharp.Game.Worlds;
 
@@ -18,7 +15,7 @@ public sealed class World : IEquatable<World>
     private readonly EntityManager entityManager;
     private readonly ChunkManager chunkManager;
 
-    public World(WorldCreator creator)
+    public World(WorldCreator creator, Server server)
     {
         Id = Guid.NewGuid();
         Name = creator.Name;
@@ -26,6 +23,7 @@ public sealed class World : IEquatable<World>
         Difficulty = creator.Difficulty;
         GameMode = creator.GameMode;
         Random = new Random(Guid.NewGuid().GetHashCode());
+        Server = server;
         
         playerManager = new PlayerManager();
         entityManager = new EntityManager();
@@ -38,6 +36,7 @@ public sealed class World : IEquatable<World>
     public Difficulty Difficulty { get; }
     public GameMode GameMode { get; }
     public Random Random { get; }
+    public Server Server { get; }
     
     public Block GetBlockAt(int x, int y, int z)
     {
@@ -61,13 +60,18 @@ public sealed class World : IEquatable<World>
     public void SetBlockTypeAt(int x, int y, int z, Material material)
     {
         var chunk = GetChunkAt(x >> 4, z >> 4);
-        chunk.SetTypeAt(x, y, z, material);
+        var blockType = Server.BlockRegistry.GetBlockType(material);
+        
+        chunk.SetBlockType(x, y, z, blockType);
     }
 
     public Material GetBlockTypeAt(int x, int y, int z)
     {
         var chunk = GetChunkAt(x >> 4, z >> 4);
-        return chunk.GetTypeAt(x & 0xf, y, z & 0xf);
+        var blockType = chunk.GetBlockType(x & 0xf, y, z & 0xf);
+        var material = Server.BlockRegistry.GetMaterial(blockType);
+
+        return material;
     }
 
     public Block GetBlockAt(Position position)

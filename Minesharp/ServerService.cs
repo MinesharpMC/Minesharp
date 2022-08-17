@@ -22,12 +22,15 @@ public class ServerService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        logger.LogInformation("Loading block registry");
+        server.BlockRegistry.Load();
+        
         logger.LogInformation("Creating world");
         var world = server.CreateWorld(new WorldCreator
         {
             Name = "Debug World",
             Border = new WorldBorder(),
-            ChunkGenerator = new SuperflatGenerator(),
+            ChunkGenerator = new SuperflatGenerator(server),
             Difficulty = Difficulty.Normal,
             GameMode = GameMode.Survival
         });
@@ -42,7 +45,6 @@ public class ServerService : BackgroundService
         await networkServer.StartAsync();
 
         logger.LogInformation("Server is now running");
-
         
         while (!stoppingToken.IsCancellationRequested)
         {

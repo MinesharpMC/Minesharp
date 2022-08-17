@@ -37,10 +37,12 @@ public sealed class Block : IEquatable<Block>
             return;
         }
 
+        var blockType = World.Server.BlockRegistry.GetBlockType(Type);
+
         World.Broadcast(new PlayEffectPacket
         {
             Effect = Effect.BlockBreak,
-            Data = (int)Type,
+            Data = blockType,
             Position = Position,
             IgnoreDistance = false,
         }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10), new ExceptPlayerRule(breaker));

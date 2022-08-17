@@ -46,21 +46,19 @@ public sealed class Chunk : IEquatable<Chunk>
         return modifiedBlocks;
     }
 
-    public Material GetTypeAt(int x, int y, int z)
+    public int GetBlockType(int x, int y, int z)
     {
         var chunkX = x & 0xF;
         var chunkZ = z & 0xF;
         var chunkY = y >> 4;
         
         var section = Sections.GetValueOrDefault(chunkY);
-        var output = section == null
-            ? Material.Air
-            : (Material)section.GetType(chunkX, y, chunkZ);
-                
-        return output;
+        return section == null 
+            ? 0 
+            : section.GetType(chunkX, y, chunkZ);
     }
 
-    public void SetTypeAt(int x, int y, int z, Material material)
+    public void SetBlockType(int x, int y, int z, int type)
     {
         var chunkX = x & 0xF;
         var chunkZ = z & 0xF;
@@ -69,7 +67,7 @@ public sealed class Chunk : IEquatable<Chunk>
         var section = Sections.GetValueOrDefault(chunkY);
         if (section is null)
         {
-            if (material == Material.Air)
+            if (type == 0)
             {
                 return;
             }
@@ -78,7 +76,7 @@ public sealed class Chunk : IEquatable<Chunk>
         }
 
         var heightIndex = chunkZ * 16 + chunkX;
-        if (material == Material.Air)
+        if (type == 0)
         {
             if (Heightmap[heightIndex] == y + 1)
             {
@@ -93,11 +91,11 @@ public sealed class Chunk : IEquatable<Chunk>
             }
         }
         
-        section.SetType(chunkX, y, chunkZ, (int)material);
+        section.SetType(chunkX, y, chunkZ, type);
         modifiedBlocks.Add(new ModifiedBlock
         {
             Position = new Position(x, y, z),
-            Type = material
+            Type = type
         });
     }
 

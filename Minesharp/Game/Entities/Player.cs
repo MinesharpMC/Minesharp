@@ -6,11 +6,13 @@ using Minesharp.Extension;
 using Minesharp.Game.Blocks;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities.Meta;
+using Minesharp.Game.Inventories;
 using Minesharp.Nbt;
 using Minesharp.Network;
 using Minesharp.Packet;
 using Minesharp.Packet.Game;
 using Minesharp.Packet.Game.Server;
+using Serilog;
 
 namespace Minesharp.Game.Entities;
 
@@ -37,6 +39,7 @@ public sealed class Player : LivingEntity
     public int Food { get; set; }
     public float Exhaustion { get; set; }
     public float Saturation { get; set; }
+    public PlayerInventory Inventory { get; set; }
 
     public Block Digging
     {
@@ -51,15 +54,22 @@ public sealed class Player : LivingEntity
             if (value is null) // When set to null we stop breaking this block
             {
                 digging.ResetBreakStage(this);
+
                 digging = value;
+                diggingTicks = 0L;
+                diggingTicksRequired = 0L;
+                return;
+            }
+
+            var hardness = value.Type.Hardness;
+            if (hardness < 0)
+            {
                 return;
             }
 
             digging = value;
             diggingTicks = 0L;
-            diggingTicksRequired = (long)((1.5 * digging.Type.GetHardness() * Server.TickRate) + 0.5);
-            
-            digging.ShowBreakStage(0, this);
+            diggingTicksRequired = (long)(1.5 * hardness * Server.TickRate - 0.5);
         }
     }
 
@@ -107,7 +117,7 @@ public sealed class Player : LivingEntity
         return chunks.Contains(chunk.Key);
     }
 
-    private void UpdateChunks()
+    public void UpdateChunks()
     {
         var centralX = Position.BlockX >> 4;
         var centralZ = Position.BlockZ >> 4;
@@ -288,15 +298,15 @@ public sealed class Player : LivingEntity
         
         if (++diggingTicks <= diggingTicksRequired)
         {
-            Digging.ShowBreakStage((byte)(10.0 * (diggingTicks - 1) / diggingTicksRequired), this);
+            var stage = (byte)(10.0 * (diggingTicks - 1) / diggingTicksRequired);
+            Digging.ShowBreakStage(stage, this);
+            Log.Information("Sending breaking stage {stage}", stage);
             return;
         }
 
         Exhaustion = Math.Min(Exhaustion + 0.005f, 40f);
         
-        Digging.ResetBreakStage(this);
         Digging.Break(this);
-        
         Digging = null;
     }
     
@@ -363,8 +373,9 @@ public sealed class Player : LivingEntity
     {
         UpdateChunks();
         UpdateEntities();
-        UpdateDigging();
         UpdateHealth();
+        UpdateDigging();
+        UpdateMetadata();
 
         TicksLived += 1;
     }
@@ -372,8 +383,7 @@ public sealed class Player : LivingEntity
     public override void Update()
     {
         UpdateBlocks();
-        UpdateMetadata();
-        
+
         LastPosition = Position;
         LastRotation = Rotation;
         
@@ -404,5 +414,15 @@ public sealed class Player : LivingEntity
     public void SendPosition()
     {
         SendPacket(new SyncPositionPacket(Position, Rotation));
+    }
+
+    public void SendInventory()
+    {
+        SendPacket(new UpdateInventoryContentPacket
+        {
+            Window = 0,
+            State = 10,
+            Items = Inventory.GetContent(),
+        });
     }
 }
