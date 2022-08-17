@@ -1,49 +1,78 @@
-using Minesharp.Common;
+using Minesharp.Common.Collection;
 using Minesharp.Common.Enum;
+using Minesharp.Common.Extension;
+using Minesharp.Common.Meta;
+using Minesharp.Extension;
 using Minesharp.Game.Blocks;
 using Minesharp.Game.Chunks;
-using Minesharp.Game.Processors;
-using Minesharp.Game.Worlds;
+using Minesharp.Game.Entities.Meta;
+using Minesharp.Nbt;
 using Minesharp.Network;
 using Minesharp.Packet;
+using Minesharp.Packet.Game;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game.Entities;
 
-public sealed class Player : Entity, IEquatable<Player>
+public sealed class Player : LivingEntity
 {
     private readonly NetworkSession session;
-    private readonly ChunkProcessor chunkProcessor;
-    private readonly EntityProcessor entityProcessor;
-    private readonly DiggingProcessor diggingProcessor;
+    private readonly HashSet<ChunkKey> chunks = new();
+    private readonly HashSet<int> entities = new();
 
-    public Player(NetworkSession session) : base(EntityType.Player)
+    private Block digging;
+    private long diggingTicks;
+    private long diggingTicksRequired;
+
+    public Player(NetworkSession session)
     {
         this.session = session;
-        this.chunkProcessor = new ChunkProcessor(this);
-        this.entityProcessor = new EntityProcessor(this);
-        this.diggingProcessor = new DiggingProcessor(this);
     }
-    
+
     public string Username { get; set; }
-    public Server Server { get; init; }
     public GameMode GameMode { get; set; }
     public string Locale { get; set; }
     public byte ViewDistance { get; set; }
     public Hand MainHand { get; set; }
+    public int Food { get; set; }
+    public float Exhaustion { get; set; }
+    public float Saturation { get; set; }
 
-    public void SendPacket(IPacket packet)
+    public Block Digging
     {
-        session.SendPacket(packet);
+        get => digging;
+        set
+        {
+            if (digging == value)
+            {
+                return;
+            }
+            
+            if (value is null) // When set to null we stop breaking this block
+            {
+                digging.ResetBreakStage(this);
+                digging = value;
+                return;
+            }
+
+            digging = value;
+            diggingTicks = 0L;
+            diggingTicksRequired = (long)((1.5 * digging.Type.GetHardness() * Server.TickRate) + 0.5);
+            
+            digging.ShowBreakStage(0, this);
+        }
     }
 
-    public void StartDigging(Block block)
+    public bool IsSprinting
     {
-        diggingProcessor.Start(block);
+        get => Metadata.GetBoolean(MetadataIndex.Status, StatusFlags.Sprinting);
+        set => Metadata.SetBoolean(MetadataIndex.Status, StatusFlags.Sprinting, value);
     }
 
-    public void StopDigging()
+    public bool IsSneaking
     {
-        diggingProcessor.Stop();
+        get => Metadata.GetBoolean(MetadataIndex.Status, StatusFlags.Sneaking);
+        set => Metadata.SetBoolean(MetadataIndex.Status, StatusFlags.Sneaking, value);
     }
 
     public bool CanSee(Entity entity)
@@ -59,7 +88,12 @@ public sealed class Player : Entity, IEquatable<Player>
             return false;
         }
 
-        return chunkProcessor.HasLoaded(chunk.Key);
+        return chunks.Contains(chunk.Key);
+    }
+
+    public bool CanSee(Chunk chunk)
+    {
+        return chunks.Contains(chunk.Key);
     }
 
     public bool CanSee(Block block)
@@ -70,52 +104,305 @@ public sealed class Player : Entity, IEquatable<Player>
             return false;
         }
 
-        return chunkProcessor.HasLoaded(chunk.Key);
+        return chunks.Contains(chunk.Key);
+    }
+
+    private void UpdateChunks()
+    {
+        var centralX = Position.BlockX >> 4;
+        var centralZ = Position.BlockZ >> 4;
+        var radius = ViewDistance + 1;
+        
+        var newChunks = new HashSet<ChunkKey>();
+        var outdatedChunks = new HashSet<ChunkKey>(chunks);
+        
+        // Filter new chunks
+        for (var x = centralX - radius; x <= centralX + radius; x++)
+        for (var z = centralZ - radius; z <= centralZ + radius; z++)
+        {
+            var key = ChunkKey.Of(x, z);
+            if (!chunks.Contains(key))
+            {
+                newChunks.Add(key);
+            }
+            else
+            {
+                outdatedChunks.Remove(key);
+            }
+        }
+        
+        // Unload outdated chunks
+        foreach (var chunkKey in outdatedChunks)
+        {
+            var chunk = World.GetChunk(chunkKey);
+            if (chunk is null)
+            {
+                continue;
+            }
+            
+            SendPacket(new UnloadChunkPacket(chunk.X, chunk.Z));
+
+            chunks.Remove(chunk.Key);
+            chunk.RemoveLock();
+        }
+
+        // Load new chunks
+        foreach (var key in newChunks)
+        {
+            var chunk = World.LoadChunk(key);
+            
+            chunk.AddLock();
+
+            var sections = chunk.Sections
+                .OrderBy(x => x.Key)
+                .Select(x => new SectionInfo
+                {
+                    Bits = x.Value.Bits,
+                    BlockCount = (short)x.Value.BlockCount,
+                    Mapping = x.Value.Mapping,
+                    Palette = x.Value.Palette
+                });
+
+            var biomes = Enumerable.Range(0, 256)
+                .Select(_ => 0);
+            
+            var mask = new BitSet();
+            var lights = new List<byte[]>();
+            for (var i = 0; i < 18; i++)
+            {
+                mask.Set(i);
+                lights.Add(ChunkConstants.EmptyLight);
+            }
+            
+            SendPacket(new LoadChunkPacket
+            {
+                ChunkX = chunk.X,
+                ChunkZ = chunk.Z,
+                ChunkInfo = new ChunkInfo
+                {
+                    Sections = sections,
+                    Biomes = biomes
+                },
+                Heightmaps = new CompoundTag
+                {
+                    ["MOTION_BLOCKING"] = new ByteArrayTag(chunk.Heightmap)
+                },
+                TrustEdges = true,
+                EmptyBlockLightMask = new BitSet(),
+                EmptySkyLightMask = new BitSet(),
+                SkyLight = lights,
+                BlockLight = lights,
+                SkyLightMask = mask,
+                BlockLightMask = mask
+            });
+            
+            chunks.Add(key);
+        }
+
+        // Update center chunk
+        if (Position.BlockX != LastPosition.BlockX || Position.BlockZ != LastPosition.BlockZ)
+        {
+            var chunk = World.GetChunkAt(Position);
+            var previousChunk = World.GetChunkAt(LastPosition);
+
+            if (chunk != previousChunk)
+            {
+                SendPacket(new SetCenterChunkPacket(chunk.X, chunk.Z));
+            }
+        }
     }
     
+    private void UpdateHealth()
+    {
+        if (Exhaustion > 4.0f)
+        {
+            Exhaustion -= 4.0f;
+            if (Saturation > 0f)
+            {
+                Saturation = Math.Max(Saturation - 1f, 0f);
+                SendHealth();
+            }
+            else if (World.Difficulty is not Difficulty.Peaceful)
+            {
+                Food = Math.Max(Food - 1, 0);
+                SendHealth();
+            }
+        }
+
+        if (Health < MaximumHealth)
+        {
+            if ((Food >= 18 && TicksLived % 80 == 0) || World.Difficulty == Difficulty.Peaceful)
+            {
+                Exhaustion = Math.Min(Exhaustion + 3.0f, 40.0f);
+                Saturation -= 3;
+
+                Health = Math.Min(MaximumHealth, Health + 1);
+                SendHealth();
+            }
+        }
+
+        switch (World.Difficulty)
+        {
+            case Difficulty.Peaceful:
+                if (Food < 20 && TicksLived % 20 == 0)
+                {
+                    Food++;
+                }
+                break;
+            case Difficulty.Easy:
+                if (Food == 0 && Health > 10 && TicksLived % 80 == 0)
+                {
+                    // TODO : Damage
+                }
+                break;
+            case Difficulty.Normal:
+                if (Food == 0 && Health > 1 && TicksLived % 80 == 0)
+                {
+                    // TODO : Damage
+                }
+                break;
+            case Difficulty.Hard:
+                if (Food == 0 && TicksLived % 80 == 0)
+                {
+                    // TODO : Damage
+                }
+                break;
+        }
+    }
+
+    private void UpdateMetadata()
+    {
+        var changes = Metadata.GetChanges();
+        if (changes.Any())
+        {
+            session.SendPacket(new EntityMetadataPacket(Id, changes));
+        }
+    }
+
+    private void UpdateDigging()
+    {
+        if (Digging == null)
+        {
+            return;
+        }
+        
+        if (++diggingTicks <= diggingTicksRequired)
+        {
+            Digging.ShowBreakStage((byte)(10.0 * (diggingTicks - 1) / diggingTicksRequired), this);
+            return;
+        }
+
+        Exhaustion = Math.Min(Exhaustion + 0.005f, 40f);
+        
+        Digging.ResetBreakStage(this);
+        Digging.Break(this);
+        
+        Digging = null;
+    }
+    
+    private void UpdateEntities()
+    {
+        var removedEntities = new HashSet<int>(entities);
+        foreach (var entity in World.GetEntities())
+        {
+            var canSee = CanSee(entity);
+            if (canSee)
+            {
+                if (!entities.Contains(entity.Id))
+                {
+                    var packets = entity.GetSpawnPackets();
+                    foreach (var packet in packets)
+                    {
+                        session.SendPacket(packet);
+                    }
+
+                    entities.Add(entity.Id);
+                }
+                else
+                {
+                    var packets = entity.GetUpdatePackets();
+                    foreach (var packet in packets)
+                    {
+                        session.SendPacket(packet);
+                    }
+                    
+                    removedEntities.Remove(entity.Id);
+                }
+            }
+        }
+
+        if (removedEntities.Any())
+        {
+            session.SendPacket(new RemoveEntitiesPacket(removedEntities.ToList()));
+            foreach (var removedEntity in removedEntities)
+            {
+                entities.Remove(removedEntity);
+            }
+        }
+    }
+
+    private void UpdateBlocks()
+    {
+        foreach (var chunkKey in chunks)
+        {
+            var chunk = World.GetChunk(chunkKey);
+            if (chunk is null)
+            {
+                continue;
+            }
+            
+            var modifiedBlocks = chunk.GetModifiedBlocks();
+            foreach (var modifiedBlock in modifiedBlocks)
+            {
+                session.SendPacket(new BlockChangePacket(modifiedBlock.Position, modifiedBlock.Type));
+            }
+        }
+    }
 
     public override void Tick()
     {
-        diggingProcessor.Tick();
-        chunkProcessor.Tick();
-        entityProcessor.Tick();
-    }
+        UpdateChunks();
+        UpdateEntities();
+        UpdateDigging();
+        UpdateHealth();
 
-    public override void LateTick()
+        TicksLived += 1;
+    }
+    
+    public override void Update()
     {
-        chunkProcessor.LateTick();
+        UpdateBlocks();
+        UpdateMetadata();
         
         LastPosition = Position;
         LastRotation = Rotation;
+        
+        Metadata.ClearChanges();
+    }
+
+    public override IEnumerable<GamePacket> GetSpawnPackets()
+    {
+        return new GamePacket[]
+        {
+            new SpawnPlayerPacket(Id, UniqueId, Position, Rotation),
+            new EntityMetadataPacket(Id, Metadata.GetEntries()),
+            new HeadRotationPacket(Id, Rotation.GetIntYaw())
+        };
     }
     
-    public bool Equals(Player other)
+    public void SendPacket(IPacket packet)
     {
-        if (ReferenceEquals(null, other))
-        {
-            return false;
-        }
-
-        return ReferenceEquals(this, other) || UniqueId.Equals(other.UniqueId);
+        session.SendPacket(packet);
+    }
+    
+    public void SendHealth()
+    {
+        var health = (float) (Health / MaximumHealth * 20);
+        SendPacket(new HealthPacket(health, Food, Saturation));
     }
 
-    public override bool Equals(object obj)
+    public void SendPosition()
     {
-        return ReferenceEquals(this, obj) || obj is Player other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return UniqueId.GetHashCode();
-    }
-
-    public static bool operator ==(Player left, Player right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(Player left, Player right)
-    {
-        return !Equals(left, right);
+        SendPacket(new SyncPositionPacket(Position, Rotation));
     }
 }

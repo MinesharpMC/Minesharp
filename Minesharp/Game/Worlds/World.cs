@@ -25,6 +25,7 @@ public sealed class World : IEquatable<World>
         Border = creator.Border;
         Difficulty = creator.Difficulty;
         GameMode = creator.GameMode;
+        Random = new Random(Guid.NewGuid().GetHashCode());
         
         playerManager = new PlayerManager();
         entityManager = new EntityManager();
@@ -36,6 +37,7 @@ public sealed class World : IEquatable<World>
     public WorldBorder Border { get; }
     public Difficulty Difficulty { get; }
     public GameMode GameMode { get; }
+    public Random Random { get; }
     
     public Block GetBlockAt(int x, int y, int z)
     {
@@ -113,7 +115,7 @@ public sealed class World : IEquatable<World>
         playerManager.Add(player);
         entityManager.Add(player);
     }
-
+    
     public void Broadcast(GamePacket packet, params IBroadcastRule[] rules)
     {
         var players = playerManager.GetPlayers();
@@ -146,25 +148,22 @@ public sealed class World : IEquatable<World>
 
     public void Tick()
     {
+        var chunks = chunkManager.GetChunks();
         var entities = entityManager.GetEntities();
-        foreach (var entity in entities) 
+
+        foreach (var entity in entities)
         {
             entity.Tick();
         }
-        
+
         foreach (var entity in entities)
         {
-            entity.LateTick();
+            entity.Update();
         }
-
-        var chunks = chunkManager.GetChunks();
+        
         foreach (var chunk in chunks)
         {
             chunk.Tick();
-            if (!chunk.IsLocked)
-            {
-                chunkManager.UnloadChunk(chunk);
-            }
         }
     }
 

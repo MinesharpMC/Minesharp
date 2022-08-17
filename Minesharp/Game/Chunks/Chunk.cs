@@ -23,7 +23,7 @@ public sealed class Chunk : IEquatable<Chunk>
     public sbyte[] Heightmap { get; set; }
     public World World { get; }
 
-    public bool IsLocked => lockCount > 0;
+    public bool IsLocked { get; private set; }
 
     private int lockCount;
     private readonly List<ModifiedBlock> modifiedBlocks = new();
@@ -41,7 +41,7 @@ public sealed class Chunk : IEquatable<Chunk>
         }
     }
     
-    public IEnumerable<ModifiedBlock> GetModifiedBlocks()
+    public IList<ModifiedBlock> GetModifiedBlocks()
     {
         return modifiedBlocks;
     }
@@ -138,6 +138,7 @@ public sealed class Chunk : IEquatable<Chunk>
 
     public void Tick()
     {
+        IsLocked = lockCount > 0;
         modifiedBlocks.Clear();
     }
 }

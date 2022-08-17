@@ -1,8 +1,10 @@
 using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Extension;
-using Minesharp.Game.Chunks;
+using Minesharp.Game.Broadcast;
+using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game.Blocks;
 
@@ -10,7 +12,7 @@ public sealed class Block : IEquatable<Block>
 {
     public Position Position { get; init; }
     public World World { get; init; }
-    
+
     public Material Type
     {
         get => World.GetBlockTypeAt(Position);
@@ -28,19 +30,37 @@ public sealed class Block : IEquatable<Block>
         return GetRelative((int)modifier.X, (int)modifier.Y, (int)modifier.Z);
     }
 
-    public float GetHardness()
-    {
-        return Type.GetHardness();
-    }
-
-    public void Break()
+    public void Break(Player breaker = null)
     {
         if (Type == Material.Air)
         {
             return;
         }
 
+        World.Broadcast(new PlayEffectPacket
+        {
+            Effect = Effect.BlockBreak,
+            Data = (int)Type,
+            Position = Position,
+            IgnoreDistance = false,
+        }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10), new ExceptPlayerRule(breaker));
+        
         Type = Material.Air;
+    }
+
+    public void ShowBreakStage(byte stage, Player breaker = null)
+    {
+        World.Broadcast(new BlockBreakStageUpdatePacket
+        {
+            EntityId = breaker?.Id ?? World.Random.Next(),
+            Stage = stage,
+            Position = Position,
+        }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10), new ExceptPlayerRule(breaker));
+    }
+
+    public void ResetBreakStage(Player breaker = null)
+    {
+        ShowBreakStage(10, breaker);
     }
 
     public bool Equals(Block other)

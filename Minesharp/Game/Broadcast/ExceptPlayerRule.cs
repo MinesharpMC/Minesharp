@@ -13,6 +13,11 @@ public class ExceptPlayerRule : IBroadcastRule
 
     public bool IsAllowed(Player other)
     {
+        if (player == null)
+        {
+            return true;
+        }
+        
         return this.player != other;
     }
 }
