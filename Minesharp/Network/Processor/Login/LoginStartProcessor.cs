@@ -1,5 +1,4 @@
 using Minesharp.Chat;
-using Minesharp.Chat.Component;
 using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Extension;
@@ -76,15 +75,15 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             IsFlat = true,
             HasDeathLocation = false
         });
-        
+
         world.AddPlayer(player);
         server.AddPlayer(player);
 
         server.BroadcastMessage($"{player.Username} joined the game", ChatColor.Yellow);
         server.BroadcastPlayerListAdd(player);
-        
-        player.UpdateChunks();
-        
+
+        player.RefreshChunks();
+
         player.SendPlayerList();
         player.SendInventory();
         player.SendPosition();

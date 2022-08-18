@@ -16,7 +16,7 @@ public class ChangeHeldItemProcessor : PacketProcessor<ChangeHeldItemPacket>
             {
                 continue;
             }
-            
+
             player.SendPacket(new EquipmentPacket
             {
                 EntityId = session.Player.Id,

@@ -16,12 +16,12 @@ public sealed class Startup
     {
         services.AddServer();
         services.AddServerConfiguration(configuration);
-        
+
         services.AddNetworkServer();
         services.AddNetworkConfiguration(configuration);
-        
+
         services.AddRegistry();
-        
+
         services.AddPacketFactory();
         services.AddPacketProcessor();
     }

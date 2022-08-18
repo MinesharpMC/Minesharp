@@ -10,7 +10,7 @@ public class KeepAliveResponseProcessor : PacketProcessor<KeepAliveResponsePacke
         {
             return;
         }
-        
+
         session.LastKeepAliveReceivedAt = DateTime.UtcNow;
     }
 }

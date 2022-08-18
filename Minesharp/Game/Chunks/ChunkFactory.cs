@@ -1,7 +1,6 @@
 using Minesharp.Extension;
 using Minesharp.Game.Chunks.Generator;
 using Minesharp.Game.Worlds;
-using Serilog;
 
 namespace Minesharp.Game.Chunks;
 

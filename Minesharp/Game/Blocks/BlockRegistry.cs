@@ -1,6 +1,5 @@
 using Minesharp.Common.Enum;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace Minesharp.Game.Blocks;
 
@@ -29,7 +28,7 @@ public class BlockRegistry
                     {
                         continue;
                     }
-                    
+
                     blockTypes[material] = id;
                     materials[id] = material;
                 }

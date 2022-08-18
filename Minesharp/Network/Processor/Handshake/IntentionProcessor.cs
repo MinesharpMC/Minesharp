@@ -15,7 +15,7 @@ public class IntentionProcessor : PacketProcessor<IntentionPacket>
             session.Disconnect();
             return;
         }
-        
+
         session.Protocol = packet.RequestedProtocol;
 
         if (packet.ProtocolVersion != Server.Protocol)
@@ -24,7 +24,7 @@ public class IntentionProcessor : PacketProcessor<IntentionPacket>
             {
                 Reason = new TextComponent
                 {
-                    Text = packet.ProtocolVersion < Server.Protocol 
+                    Text = packet.ProtocolVersion < Server.Protocol
                         ? $"Outdated client! (I'm running on {Server.Version})"
                         : $"Outdated server! (I'm running on {Server.Version})"
                 }

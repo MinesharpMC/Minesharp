@@ -17,7 +17,7 @@ public class SwingArmProcessor : PacketProcessor<SwingArmPacket>
             {
                 continue;
             }
-            
+
             player.SendEntityAnimation(session.Player, Animation.SwingMainHand);
         }
     }

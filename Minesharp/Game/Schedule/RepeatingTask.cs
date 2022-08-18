@@ -2,13 +2,13 @@ namespace Minesharp.Game.Schedule;
 
 public class RepeatingTask : ScheduledTask
 {
-    public long Delay { get; init; }
-
     public RepeatingTask()
     {
         CanBeRemove = false;
     }
-    
+
+    public long Delay { get; init; }
+
     public override void Tick()
     {
         if (Delay == Ticks)

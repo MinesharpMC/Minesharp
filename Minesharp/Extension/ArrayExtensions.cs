@@ -23,10 +23,10 @@ public static class ArrayExtensions
         {
             count = 15;
         }
-        
+
         return count;
     }
-    
+
     public static void Set(this Dictionary<int, long> mapping, int index, int value, byte bits, long mask)
     {
         index *= bits;
@@ -37,17 +37,17 @@ public static class ArrayExtensions
         {
             mapping[i0] = 0;
         }
-        
+
         mapping[i0] = (mapping[i0] & ~(mask << i1)) | ((value & mask) << i1);
-        
+
         var i2 = i1 + bits;
-        if (i2 > 64) 
+        if (i2 > 64)
         {
             i0++;
             mapping[i0] = (mapping[i0] & -(1L << (i2 - 64))) | (uint)(value >> (64 - i1));
         }
     }
-    
+
     public static int Get(this Dictionary<int, long> mapping, int index, byte bits, long mask)
     {
         index *= bits;
@@ -58,18 +58,18 @@ public static class ArrayExtensions
         {
             mapping[i0] = 0;
         }
-        
+
         var value = mapping[i0] >> i1;
         var i2 = i1 + bits;
 
-        if (i2 > 64) 
+        if (i2 > 64)
         {
             value |= mapping[++i0] << (64 - i1);
         }
 
-        return (int) (value & mask);
+        return (int)(value & mask);
     }
-    
+
 
     public static int GetHighestTypeAt(this Dictionary<int, ChunkSection> sections, int x, int y, int z)
     {

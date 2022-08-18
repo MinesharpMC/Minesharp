@@ -1,7 +1,5 @@
-using DotNetty.Buffers;
 using DotNetty.Transport.Channels;
 using Minesharp.Extension;
-using Minesharp.Game.Entities;
 using Minesharp.Game.Managers;
 using Serilog;
 
@@ -41,9 +39,9 @@ public class SessionHandler : ChannelHandlerAdapter
 
             Log.Information("{name} disconnected", session.Player.Username);
         }
-        
+
         sessionManager.Remove(session);
-        
+
         base.ChannelInactive(context);
     }
 }

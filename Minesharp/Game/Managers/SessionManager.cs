@@ -16,7 +16,7 @@ public class SessionManager
     {
         sessions.Remove(session.Id, out _);
     }
-    
+
     public IEnumerable<NetworkSession> GetSessions()
     {
         return sessions.Values;

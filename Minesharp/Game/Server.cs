@@ -5,49 +5,46 @@ using Minesharp.Game.Entities;
 using Minesharp.Game.Managers;
 using Minesharp.Game.Schedule;
 using Minesharp.Game.Worlds;
-using Minesharp.Network;
 using Minesharp.Packet;
-using Serilog;
 
 namespace Minesharp.Game;
 
 public sealed class Server
 {
+    public const string Version = "1.19";
+    public const int Protocol = 759;
+    public const int TickRate = 125;
     private readonly WorldManager worldManager;
-    private readonly Scheduler scheduler;
     private readonly SessionManager sessionManager;
     private readonly PlayerManager playerManager;
     private readonly ServerConfiguration configuration;
     private readonly BlockRegistry blockRegistry;
 
-    public const string Version = "1.19";
-    public const int Protocol = 759;
-    public const int TickRate = 125;
-    
     private readonly long[] ticks = new long[TickRate];
-
-    public int MaxPlayers => configuration.MaxPlayers;
-    public string Description => configuration.Description;
-    public byte ViewDistance => configuration.ViewDistance;
 
     private int entityId;
     private long nextTick;
     private int tickCounter;
 
-    public Scheduler Scheduler => scheduler;
-    public BlockRegistry BlockRegistry => blockRegistry;
-    
-    public int Tps { get; private set; }
-
     public Server(ServerConfiguration configuration, SessionManager sessionManager, BlockRegistry blockRegistry)
     {
         this.configuration = configuration;
         this.sessionManager = sessionManager;
-        this.worldManager = new WorldManager(this);
-        this.scheduler = new Scheduler();
-        this.playerManager = new PlayerManager();
+        worldManager = new WorldManager(this);
+        Scheduler = new Scheduler();
+        playerManager = new PlayerManager();
         this.blockRegistry = blockRegistry;
     }
+
+    public int MaxPlayers => configuration.MaxPlayers;
+    public string Description => configuration.Description;
+    public byte ViewDistance => configuration.ViewDistance;
+
+    public Scheduler Scheduler { get; }
+
+    public BlockRegistry BlockRegistry => blockRegistry;
+
+    public int Tps { get; private set; }
 
     public int GetNextEntityId()
     {
@@ -58,7 +55,7 @@ public sealed class Server
     {
         return worldManager.CreateWorld(creator);
     }
-    
+
     public void Broadcast(IPacket packet)
     {
         var players = playerManager.GetPlayers();
@@ -67,7 +64,7 @@ public sealed class Server
             player.SendPacket(packet);
         }
     }
-    
+
     public void Broadcast(IPacket packet, params IBroadcastRule[] rules)
     {
         var players = playerManager.GetPlayers();
@@ -77,7 +74,7 @@ public sealed class Server
             {
                 continue;
             }
-            
+
             player.SendPacket(packet);
         }
     }
@@ -112,7 +109,7 @@ public sealed class Server
         var current = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         var elapsed = current - nextTick;
 
-        if (elapsed < (1000 / TickRate))
+        if (elapsed < 1000 / TickRate)
         {
             return;
         }
@@ -122,20 +119,20 @@ public sealed class Server
         {
             session.Tick();
         }
-        
+
         var worlds = worldManager.GetWorlds();
         foreach (var world in worlds)
         {
             world.Tick();
         }
-        
-        scheduler.Tick();
-        
+
+        Scheduler.Tick();
+
         nextTick = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        
+
         ticks[tickCounter] = elapsed;
         tickCounter++;
-        
+
         if (tickCounter >= ticks.Length)
         {
             Tps = (int)(1000 / ticks.Average());

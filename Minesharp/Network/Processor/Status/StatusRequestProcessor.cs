@@ -1,7 +1,6 @@
 using Minesharp.Game;
 using Minesharp.Packet.Status.Client;
 using Minesharp.Packet.Status.Server;
-using Newtonsoft.Json;
 
 namespace Minesharp.Network.Processor.Status;
 

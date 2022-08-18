@@ -1,4 +1,3 @@
-using Minesharp.Common.Enum;
 using Minesharp.Common.Meta;
 
 namespace Minesharp.Game.Entities.Meta;
@@ -12,7 +11,7 @@ public class MetadataRegistry
     {
         values[MetadataIndex.Status] = (byte)0;
     }
-    
+
     public void Set(MetadataIndex index, object value)
     {
         var previous = values.GetValueOrDefault(index);
@@ -52,11 +51,11 @@ public class MetadataRegistry
     public void SetBoolean(MetadataIndex index, byte bit, bool value)
     {
         var currentValue = Get<byte>(index);
-        if (value) 
+        if (value)
         {
             Set(index, (byte)(currentValue | bit));
-        } 
-        else 
+        }
+        else
         {
             Set(index, (byte)(currentValue & ~bit));
         }

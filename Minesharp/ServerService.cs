@@ -24,7 +24,7 @@ public class ServerService : BackgroundService
     {
         logger.LogInformation("Loading block registry");
         server.BlockRegistry.Load();
-        
+
         logger.LogInformation("Creating world");
         var world = server.CreateWorld(new WorldCreator
         {
@@ -45,7 +45,7 @@ public class ServerService : BackgroundService
         await networkServer.StartAsync();
 
         logger.LogInformation("Server is now running");
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try

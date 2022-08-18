@@ -1,10 +1,8 @@
 using DotNetty.Buffers;
 using DotNetty.Codecs;
-using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
 using Minesharp.Packet;
 using Minesharp.Packet.Extension;
-using Minesharp.Packet.Game.Server;
 using Serilog;
 
 namespace Minesharp.Network.Pipeline;
@@ -30,7 +28,7 @@ public class PacketEncoder : MessageToByteEncoder<IPacket>
         output.WriteBytes(buffer);
 
         buffer.Release();
-        
+
         Log.Debug("Sending packet: {message}", message.GetType().Name);
     }
 }

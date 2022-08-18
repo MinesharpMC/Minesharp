@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Hosting.Server;
 using Minesharp.Chat;
 using Minesharp.Chat.Component;
 using Minesharp.Game;
 using Minesharp.Game.Broadcast;
 using Minesharp.Game.Entities;
-using Minesharp.Packet;
 using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Extension;
@@ -56,7 +54,7 @@ public static class ServerExtensions
             {
                 new()
                 {
-                    Id = player.UniqueId,
+                    Id = player.UniqueId
                 }
             }
         }, new ExceptPlayerRule(player));

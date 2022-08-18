@@ -54,12 +54,12 @@ public sealed class NetworkSession
         if (LastKeepAliveSendAt.AddSeconds(10) < DateTime.UtcNow)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            
+
             SendPacket(new KeepAliveRequestPacket
             {
                 Timestamp = timestamp
             });
-            
+
             LastKeepAlive = timestamp;
             LastKeepAliveSendAt = DateTime.UtcNow;
         }

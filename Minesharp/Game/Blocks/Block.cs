@@ -19,51 +19,7 @@ public sealed class Block : IEquatable<Block>
         set => World.SetBlockTypeAt(Position, value);
     }
 
-    public Block GetRelative(int modX, int modY, int modZ)
-    {
-        return World.GetBlockAt(Position.BlockX + modX, Position.BlockY + modY, Position.BlockZ + modZ);
-    }
-
-    public Block GetRelative(Face face)
-    {
-        var modifier = face.GetModifiers();
-        return GetRelative((int)modifier.X, (int)modifier.Y, (int)modifier.Z);
-    }
-
-    public void Break(Player breaker = null)
-    {
-        if (Type == Material.Air)
-        {
-            return;
-        }
-
-        var blockType = World.Server.BlockRegistry.GetBlockType(Type);
-
-        World.Broadcast(new PlayEffectPacket
-        {
-            Effect = Effect.BlockBreak,
-            Data = blockType,
-            Position = Position,
-            IgnoreDistance = false,
-        }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10), new ExceptPlayerRule(breaker));
-        
-        Type = Material.Air;
-    }
-
-    public void ShowBreakStage(byte stage, Player breaker = null)
-    {
-        World.Broadcast(new BlockBreakStageUpdatePacket
-        {
-            EntityId = breaker?.Id ?? World.Random.Next(),
-            Stage = stage,
-            Position = Position,
-        }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10), new ExceptPlayerRule(breaker));
-    }
-
-    public void ResetBreakStage(Player breaker = null)
-    {
-        ShowBreakStage(10, breaker);
-    }
+    public int BlockType => World.Server.BlockRegistry.GetBlockType(Type);
 
     public bool Equals(Block other)
     {
@@ -80,9 +36,56 @@ public sealed class Block : IEquatable<Block>
         return Position.Equals(other.Position) && Equals(World, other.World);
     }
 
+    public Block GetRelative(int modX, int modY, int modZ)
+    {
+        return World.GetBlockAt(Position.BlockX + modX, Position.BlockY + modY, Position.BlockZ + modZ);
+    }
+
+    public Block GetRelative(Face face)
+    {
+        var modifier = face.GetModifiers();
+        return GetRelative((int)modifier.X, (int)modifier.Y, (int)modifier.Z);
+    }
+
+    public void Break()
+    {
+        if (Type == Material.Air)
+        {
+            return;
+        }
+
+        World.Broadcast(new PlayEffectPacket
+        {
+            Effect = Effect.BlockBreak,
+            Data = BlockType,
+            Position = Position,
+            IgnoreDistance = false
+        }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10));
+
+        Type = Material.Air;
+    }
+
+    public void BreakBy(Player player)
+    {
+        if (Type == Material.Air)
+        {
+            return;
+        }
+
+        World.Broadcast(new PlayEffectPacket
+        {
+            Effect = Effect.BlockBreak,
+            Data = BlockType,
+            Position = Position,
+            IgnoreDistance = false
+        }, new CanSeeBlockRule(this), new InRadiusRule(Position, 10), new ExceptPlayerRule(player));
+
+        Type = Material.Air;
+    }
+
     public override bool Equals(object obj)
     {
-        return ReferenceEquals(this, obj) || obj is Block other && Equals(other);
+        return ReferenceEquals(this, obj) || (obj is Block other && Equals(other));
     }
 
     public override int GetHashCode()

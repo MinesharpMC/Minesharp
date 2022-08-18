@@ -1,7 +1,7 @@
 namespace Minesharp.Game.Entities.Meta;
 
-public static class StatusFlags {
-
+public static class StatusFlags
+{
     public const int OnFire = 0x01;
     public const int Sneaking = 0x02;
     public const int Sprinting = 0x08;

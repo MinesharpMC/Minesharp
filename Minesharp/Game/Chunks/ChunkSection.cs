@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Minesharp.Extension;
 
 namespace Minesharp.Game.Chunks;
@@ -8,41 +7,39 @@ public sealed class ChunkSection
     private byte bits;
     private long mask;
     private Dictionary<int, long> mapping;
-    private int blockCount;
     private readonly IList<int> palette;
-
-    public byte Bits => bits;
-    public IEnumerable<long> Mapping => mapping.Values;
-    public IEnumerable<int> Palette => palette;
-    public int BlockCount => blockCount;
 
     public ChunkSection() : this(new int[4096])
     {
-        
     }
-    
+
     public ChunkSection(IList<int> types)
     {
-        this.palette = new List<int>();
-        this.bits = palette.GetBitsSize();
-        this.mask = (1L << bits) - 1L;
-        this.mapping = new Dictionary<int, long>();
+        palette = new List<int>();
+        bits = palette.GetBitsSize();
+        mask = (1L << bits) - 1L;
+        mapping = new Dictionary<int, long>();
 
         for (var i = 0; i < 4096; i++)
         {
             if (types[i] != 0)
             {
-                blockCount++;
+                BlockCount++;
             }
 
             if (!palette.Contains(types[i]))
             {
                 palette.Add(types[i]);
             }
-            
+
             mapping.Set(i, bits > 8 ? types[i] : palette.IndexOf(types[i]), bits, mask);
         }
     }
+
+    public byte Bits => bits;
+    public IEnumerable<long> Mapping => mapping.Values;
+    public IEnumerable<int> Palette => palette;
+    public int BlockCount { get; private set; }
 
     public int GetType(int x, int y, int z)
     {
@@ -59,16 +56,16 @@ public sealed class ChunkSection
     public void SetType(int x, int y, int z, int type)
     {
         var index = Index(x, y, z);
-        
+
         var previous = mapping.Get(index, bits, mask);
         if (previous != 0)
         {
-            blockCount--;
+            BlockCount--;
         }
 
         if (type != 0)
         {
-            blockCount++;
+            BlockCount++;
         }
 
         int value;
@@ -90,32 +87,32 @@ public sealed class ChunkSection
                     {
                         var modifiedBits = palette.GetBitsSize();
                         var modifiedMask = (1L << bits) - 1L;
-                    
+
                         var modifiedMapping = new Dictionary<int, long>();
                         for (var i = 0; i < 4096; i++)
                         {
                             var oldValue = mapping.Get(i, bits, mask);
                             var newValue = palette.IndexOf(oldValue);
-                            
+
                             modifiedMapping.Set(i, newValue, modifiedBits, modifiedMask);
                         }
 
                         bits = modifiedBits;
                         mask = modifiedMask;
                         mapping = modifiedMapping;
-                        
+
                         value = type;
                     }
                     else
                     {
                         var modifiedBits = palette.GetBitsSize();
                         var modifiedMask = (1L << bits) - 1L;
-                    
+
                         var modifiedMapping = new Dictionary<int, long>();
                         for (var i = 0; i < 4096; i++)
                         {
                             var oldValue = mapping.Get(i, bits, mask);
-                            
+
                             modifiedMapping.Set(i, oldValue, modifiedBits, modifiedMask);
                         }
 
@@ -126,7 +123,7 @@ public sealed class ChunkSection
                 }
             }
         }
-        
+
         mapping.Set(index, value, bits, mask);
     }
 

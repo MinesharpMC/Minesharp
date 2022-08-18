@@ -1,15 +1,15 @@
 using Minesharp.Common;
-using Minesharp.Common.Enum;
 using Minesharp.Extension;
 using Minesharp.Game.Blocks;
-using Minesharp.Game.Entities;
 using Minesharp.Game.Worlds;
-using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Game.Chunks;
 
 public sealed class Chunk : IEquatable<Chunk>
 {
+    private int lockCount;
+    private readonly List<ModifiedBlock> modifiedBlocks = new();
+
     public Chunk(ChunkKey key, World world)
     {
         Key = key;
@@ -23,81 +23,7 @@ public sealed class Chunk : IEquatable<Chunk>
     public sbyte[] Heightmap { get; set; }
     public World World { get; }
 
-    public bool IsLocked { get; private set; }
-
-    private int lockCount;
-    private readonly List<ModifiedBlock> modifiedBlocks = new();
-    
-    public void AddLock()
-    {
-        lockCount++;
-    }
-
-    public void RemoveLock()
-    {
-        if (lockCount > 0)
-        {
-            lockCount--;
-        }
-    }
-    
-    public IList<ModifiedBlock> GetModifiedBlocks()
-    {
-        return modifiedBlocks;
-    }
-
-    public int GetBlockType(int x, int y, int z)
-    {
-        var chunkX = x & 0xF;
-        var chunkZ = z & 0xF;
-        var chunkY = y >> 4;
-        
-        var section = Sections.GetValueOrDefault(chunkY);
-        return section == null 
-            ? 0 
-            : section.GetType(chunkX, y, chunkZ);
-    }
-
-    public void SetBlockType(int x, int y, int z, int type)
-    {
-        var chunkX = x & 0xF;
-        var chunkZ = z & 0xF;
-        var chunkY = y >> 4;
-        
-        var section = Sections.GetValueOrDefault(chunkY);
-        if (section is null)
-        {
-            if (type == 0)
-            {
-                return;
-            }
-
-            Sections[chunkY] = section = new ChunkSection();
-        }
-
-        var heightIndex = chunkZ * 16 + chunkX;
-        if (type == 0)
-        {
-            if (Heightmap[heightIndex] == y + 1)
-            {
-                Heightmap[heightIndex] = (sbyte) Sections.GetHighestTypeAt(chunkX, y, chunkZ);
-            }
-        }
-        else
-        {
-            if (Heightmap[heightIndex] <= y)
-            {
-                Heightmap[heightIndex] = (sbyte)Math.Min(y + 1, 255);
-            }
-        }
-        
-        section.SetType(chunkX, y, chunkZ, type);
-        modifiedBlocks.Add(new ModifiedBlock
-        {
-            Position = new Position(x, y, z),
-            Type = type
-        });
-    }
+    public bool IsLocked => lockCount > 0;
 
     public bool Equals(Chunk other)
     {
@@ -114,9 +40,80 @@ public sealed class Chunk : IEquatable<Chunk>
         return Key.Equals(other.Key);
     }
 
+    public void AddLock()
+    {
+        lockCount++;
+    }
+
+    public void RemoveLock()
+    {
+        if (lockCount > 0)
+        {
+            lockCount--;
+        }
+    }
+
+    public IList<ModifiedBlock> GetModifiedBlocks()
+    {
+        return modifiedBlocks;
+    }
+
+    public int GetBlockType(int x, int y, int z)
+    {
+        var chunkX = x & 0xF;
+        var chunkZ = z & 0xF;
+        var chunkY = y >> 4;
+
+        var section = Sections.GetValueOrDefault(chunkY);
+        return section == null
+            ? 0
+            : section.GetType(chunkX, y, chunkZ);
+    }
+
+    public void SetBlockType(int x, int y, int z, int type)
+    {
+        var chunkX = x & 0xF;
+        var chunkZ = z & 0xF;
+        var chunkY = y >> 4;
+
+        var section = Sections.GetValueOrDefault(chunkY);
+        if (section is null)
+        {
+            if (type == 0)
+            {
+                return;
+            }
+
+            Sections[chunkY] = section = new ChunkSection();
+        }
+
+        var heightIndex = chunkZ * 16 + chunkX;
+        if (type == 0)
+        {
+            if (Heightmap[heightIndex] == y + 1)
+            {
+                Heightmap[heightIndex] = (sbyte)Sections.GetHighestTypeAt(chunkX, y, chunkZ);
+            }
+        }
+        else
+        {
+            if (Heightmap[heightIndex] <= y)
+            {
+                Heightmap[heightIndex] = (sbyte)Math.Min(y + 1, 255);
+            }
+        }
+
+        section.SetType(chunkX, y, chunkZ, type);
+        modifiedBlocks.Add(new ModifiedBlock
+        {
+            Position = new Position(x, y, z),
+            Type = type
+        });
+    }
+
     public override bool Equals(object obj)
     {
-        return ReferenceEquals(this, obj) || obj is Chunk other && Equals(other);
+        return ReferenceEquals(this, obj) || (obj is Chunk other && Equals(other));
     }
 
     public override int GetHashCode()
@@ -136,7 +133,6 @@ public sealed class Chunk : IEquatable<Chunk>
 
     public void Tick()
     {
-        IsLocked = lockCount > 0;
         modifiedBlocks.Clear();
     }
 }

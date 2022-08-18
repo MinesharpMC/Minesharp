@@ -1,5 +1,3 @@
-using Minesharp.Game.Worlds;
-
 namespace Minesharp.Game.Chunks.Generator;
 
 public abstract class ChunkGenerator

@@ -4,13 +4,17 @@ namespace Minesharp.Game.Chunks.Generator;
 
 public class SuperflatGenerator : ChunkGenerator
 {
+    public SuperflatGenerator(Server server) : base(server)
+    {
+    }
+
     public override ChunkData Generate(int chunkX, int chunkZ)
     {
         var chunkData = CreateChunkData();
 
-        int cx = chunkX << 4;
-        int cz = chunkZ << 4;
-        
+        var cx = chunkX << 4;
+        var cz = chunkZ << 4;
+
         for (var x = 0; x < 16; x++)
         for (var z = 0; z < 16; z++)
         {
@@ -30,9 +34,5 @@ public class SuperflatGenerator : ChunkGenerator
         chunkData.SetBlock(x, -62, z, Material.Dirt);
         chunkData.SetBlock(x, -61, z, Material.Dirt);
         chunkData.SetBlock(x, -60, z, Material.GrassBlock);
-    }
-
-    public SuperflatGenerator(Server server) : base(server)
-    {
     }
 }

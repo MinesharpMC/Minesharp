@@ -17,7 +17,7 @@ public class ExceptPlayerRule : IBroadcastRule
         {
             return true;
         }
-        
-        return this.player != other;
+
+        return player != other;
     }
 }

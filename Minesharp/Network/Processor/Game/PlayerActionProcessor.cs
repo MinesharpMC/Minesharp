@@ -1,6 +1,5 @@
 using Minesharp.Common.Enum;
 using Minesharp.Packet.Game.Client;
-using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Network.Processor.Game;
 
@@ -15,15 +14,14 @@ public class PlayerActionProcessor : PacketProcessor<PlayerActionPacket>
         switch (packet.Action)
         {
             case PlayerAction.StartDigging:
-                if (player.GameMode == GameMode.Creative)
-                {
-                    block.Type = Material.Air;
-                    return;
-                }
-                player.Digging = block;
+                player.Breaking = block;
                 break;
             case PlayerAction.StopDigging:
-                player.Digging = null;
+                player.Breaking = null;
+                break;
+            case PlayerAction.FinishDigging:
+                player.Breaking.BreakBy(player);
+                player.Breaking = null;
                 break;
         }
     }

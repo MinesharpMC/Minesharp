@@ -20,7 +20,7 @@ public abstract class Entity : IEquatable<Entity>
     public Rotation LastRotation { get; set; }
     public Server Server { get; init; }
     public long TicksLived { get; set; }
-    protected MetadataRegistry Metadata { get; } = new();
+    public MetadataRegistry Metadata { get; } = new();
 
     public bool Moved => Position != LastPosition;
     public bool Rotated => Rotation != LastRotation;
@@ -52,7 +52,7 @@ public abstract class Entity : IEquatable<Entity>
             return true;
         }
 
-        if (obj.GetType() != this.GetType())
+        if (obj.GetType() != GetType())
         {
             return false;
         }
@@ -74,7 +74,7 @@ public abstract class Entity : IEquatable<Entity>
     {
         return !Equals(left, right);
     }
-    
+
     public abstract void Tick();
 
     public abstract void Update();
@@ -83,7 +83,7 @@ public abstract class Entity : IEquatable<Entity>
     {
         return Array.Empty<GamePacket>();
     }
-    
+
     public virtual IEnumerable<GamePacket> GetUpdatePackets()
     {
         var packets = new List<GamePacket>();
@@ -95,9 +95,9 @@ public abstract class Entity : IEquatable<Entity>
         }
 
         var delta = Position.Delta(LastPosition);
-        var teleport = delta.X > short.MaxValue || delta.Y > short.MaxValue || delta.Z > short.MaxValue 
+        var teleport = delta.X > short.MaxValue || delta.Y > short.MaxValue || delta.Z > short.MaxValue
                        || delta.X < short.MinValue || delta.Y < short.MinValue || delta.Z < short.MinValue;
-        
+
         switch (Moved)
         {
             case true when teleport:

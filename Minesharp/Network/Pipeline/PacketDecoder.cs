@@ -1,6 +1,5 @@
 using DotNetty.Buffers;
 using DotNetty.Codecs;
-using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
 using Minesharp.Packet;
 using Serilog;
@@ -26,7 +25,7 @@ public class PacketDecoder : ByteToMessageDecoder
             input.Clear();
             return;
         }
-        
+
         output.Add(packet);
 
         Log.Debug("Receiving packet: {message}", packet.GetType().Name);

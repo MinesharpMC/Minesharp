@@ -2,7 +2,6 @@ using DotNetty.Transport.Channels;
 using Minesharp.Network.Processor;
 using Minesharp.Packet;
 using Minesharp.Packet.Game;
-using Minesharp.Packet.Login.Client;
 using Serilog;
 
 namespace Minesharp.Network.Pipeline;

@@ -1,5 +1,4 @@
 using Minesharp.Common;
-using Minesharp.Common.Enum;
 
 namespace Minesharp.Game.Blocks;
 

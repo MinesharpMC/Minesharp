@@ -1,5 +1,4 @@
 using Minesharp.Common.Enum;
-using Minesharp.Packet.Game;
 using Minesharp.Packet.Game.Client;
 
 namespace Minesharp.Network.Processor.Game;

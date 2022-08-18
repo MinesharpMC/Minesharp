@@ -2,7 +2,6 @@ using Minesharp.Configuration;
 using Minesharp.Game;
 using Minesharp.Game.Blocks;
 using Minesharp.Game.Managers;
-using Minesharp.Game.Worlds;
 using Minesharp.Network;
 using Minesharp.Network.Processor;
 
@@ -31,7 +30,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddConfiguration<NetworkConfiguration>(configuration, "network");
     }
-    
+
     public static void AddServerConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddConfiguration<ServerConfiguration>(configuration, "server");

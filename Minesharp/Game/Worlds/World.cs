@@ -24,7 +24,7 @@ public sealed class World : IEquatable<World>
         GameMode = creator.GameMode;
         Random = new Random(Guid.NewGuid().GetHashCode());
         Server = server;
-        
+
         playerManager = new PlayerManager();
         entityManager = new EntityManager();
         chunkManager = new ChunkManager(new ChunkFactory(creator.ChunkGenerator, this));
@@ -37,7 +37,22 @@ public sealed class World : IEquatable<World>
     public GameMode GameMode { get; }
     public Random Random { get; }
     public Server Server { get; }
-    
+
+    public bool Equals(World other)
+    {
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Id.Equals(other.Id);
+    }
+
     public Block GetBlockAt(int x, int y, int z)
     {
         return new Block
@@ -56,12 +71,12 @@ public sealed class World : IEquatable<World>
     {
         SetBlockTypeAt(position.BlockX, position.BlockY, position.BlockZ, material);
     }
-    
+
     public void SetBlockTypeAt(int x, int y, int z, Material material)
     {
         var chunk = GetChunkAt(x >> 4, z >> 4);
         var blockType = Server.BlockRegistry.GetBlockType(material);
-        
+
         chunk.SetBlockType(x, y, z, blockType);
     }
 
@@ -78,7 +93,7 @@ public sealed class World : IEquatable<World>
     {
         return GetBlockAt(position.BlockX, position.BlockY, position.BlockZ);
     }
-    
+
     public Chunk GetChunkAt(Position position)
     {
         return GetChunkAt(position.BlockX, position.BlockZ);
@@ -119,7 +134,7 @@ public sealed class World : IEquatable<World>
         playerManager.Add(player);
         entityManager.Add(player);
     }
-    
+
     public void Broadcast(GamePacket packet, params IBroadcastRule[] rules)
     {
         var players = playerManager.GetPlayers();
@@ -129,7 +144,7 @@ public sealed class World : IEquatable<World>
             {
                 continue;
             }
-            
+
             player.SendPacket(packet);
         }
     }
@@ -164,31 +179,16 @@ public sealed class World : IEquatable<World>
         {
             entity.Update();
         }
-        
+
         foreach (var chunk in chunks)
         {
             chunk.Tick();
         }
     }
 
-    public bool Equals(World other)
-    {
-        if (ReferenceEquals(null, other))
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return Id.Equals(other.Id);
-    }
-
     public override bool Equals(object obj)
     {
-        return ReferenceEquals(this, obj) || obj is World other && Equals(other);
+        return ReferenceEquals(this, obj) || (obj is World other && Equals(other));
     }
 
     public override int GetHashCode()
