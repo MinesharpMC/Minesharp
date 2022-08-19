@@ -6,21 +6,21 @@ public class Storage : IStorage
 {
     private readonly Stack[] stacks;
 
-    public Stack[] Content => stacks.ToArray();
-
     public Storage(int size)
     {
         stacks = new Stack[size];
     }
+
+    public Stack[] Content => stacks.ToArray();
 
     public Stack this[int index]
     {
         get => stacks[index];
         set => stacks[index] = value;
     }
-    
+
     public int Size => stacks.Length;
-    
+
     public int GetSlot(IStack stack)
     {
         return Array.IndexOf(stacks, stack);

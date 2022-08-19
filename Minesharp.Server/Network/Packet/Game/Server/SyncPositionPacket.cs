@@ -5,12 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public sealed class SyncPositionPacket : GamePacket
 {
-    public Position Position { get; init; }
-    public Rotation Rotation { get; init; }
-    public byte Flags { get; init; }
-    public int TeleportId { get; init; }
-    public bool DismountVehicle { get; init; }
-
     public SyncPositionPacket()
     {
     }
@@ -29,6 +23,12 @@ public sealed class SyncPositionPacket : GamePacket
         TeleportId = teleportId;
         DismountVehicle = dismountVehicle;
     }
+
+    public Position Position { get; init; }
+    public Rotation Rotation { get; init; }
+    public byte Flags { get; init; }
+    public int TeleportId { get; init; }
+    public bool DismountVehicle { get; init; }
 }
 
 public sealed class SyncPositionPacketCodec : GamePacketCodec<SyncPositionPacket>

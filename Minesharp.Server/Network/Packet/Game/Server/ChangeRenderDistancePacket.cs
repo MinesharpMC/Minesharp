@@ -11,6 +11,7 @@ public class ChangeRenderDistancePacket : GamePacket
 public class ChangeRenderDistancePacketCodec : GamePacketCodec<ChangeRenderDistancePacket>
 {
     public override int PacketId { get; } = 0x49;
+
     protected override ChangeRenderDistancePacket Decode(IByteBuffer buffer)
     {
         throw new NotImplementedException();

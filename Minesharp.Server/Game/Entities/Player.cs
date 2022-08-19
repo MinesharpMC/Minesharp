@@ -3,7 +3,6 @@ using Minesharp.Server.Extension;
 using Minesharp.Server.Game.Blocks;
 using Minesharp.Server.Game.Entities.Meta;
 using Minesharp.Server.Game.Entities.Module;
-using Minesharp.Server.Game.Enum;
 using Minesharp.Server.Game.Storages;
 using Minesharp.Server.Network;
 using Minesharp.Server.Network.Packet;
@@ -16,7 +15,7 @@ namespace Minesharp.Server.Game.Entities;
 public sealed class Player : LivingEntity, IPlayer
 {
     private readonly NetworkSession session;
-    
+
     private readonly ChunkModule chunkModule;
     private readonly EntityModule entityModule;
     private readonly HealthModule healthModule;
@@ -34,14 +33,6 @@ public sealed class Player : LivingEntity, IPlayer
         metadataModule = new MetadataModule(this);
     }
 
-    public string Username { get; set; }
-    public GameMode GameMode { get; set; }
-    public string Locale { get; set; }
-    public byte ViewDistance { get; set; }
-    public Hand MainHand { get; set; }
-    public int Food { get; set; }
-    public float Exhaustion { get; set; }
-    public float Saturation { get; set; }
     public PlayerStorage Inventory { get; init; }
 
     public Block Breaking
@@ -62,13 +53,27 @@ public sealed class Player : LivingEntity, IPlayer
         set => Metadata.SetBoolean(MetadataIndex.Status, StatusFlags.Sneaking, value);
     }
 
+    public string Username { get; set; }
+    public GameMode GameMode { get; set; }
+    public string Locale { get; set; }
+    public byte ViewDistance { get; set; }
+    public Hand MainHand { get; set; }
+    public int Food { get; set; }
+    public float Exhaustion { get; set; }
+    public float Saturation { get; set; }
+
+    public IPlayerStorage GetInventory()
+    {
+        return Inventory;
+    }
+
     public bool CanSee(Entity entity)
     {
         if (entity == this)
         {
             return false;
         }
-        
+
         return entityModule.HasLoaded(entity);
     }
 
@@ -125,10 +130,5 @@ public sealed class Player : LivingEntity, IPlayer
     public void SendPacket(IPacket packet)
     {
         session.SendPacket(packet);
-    }
-    
-    public IPlayerStorage GetInventory()
-    {
-        return Inventory;
     }
 }

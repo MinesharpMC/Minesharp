@@ -1,3 +1,4 @@
+using Minesharp.Server.Game;
 using Minesharp.Server.Game.Chunks.Generator;
 using Minesharp.Server.Game.Worlds;
 using Minesharp.Server.Network;
@@ -9,9 +10,9 @@ public class ServerService : BackgroundService
 {
     private readonly ILogger<ServerService> logger;
     private readonly NetworkServer networkServer;
-    private readonly Game.GameServer server;
+    private readonly GameServer server;
 
-    public ServerService(Game.GameServer server, ILogger<ServerService> logger, NetworkServer networkServer)
+    public ServerService(GameServer server, ILogger<ServerService> logger, NetworkServer networkServer)
     {
         this.server = server;
         this.logger = logger;
@@ -30,7 +31,7 @@ public class ServerService : BackgroundService
             ChunkGenerator = new SuperflatGenerator(server),
             Difficulty = Difficulty.Normal,
             GameMode = GameMode.Survival,
-            SpawnPosition = new Position(0, -59, 0),
+            SpawnPosition = new Position(0, -59, 0)
         });
 
         if (world is null)

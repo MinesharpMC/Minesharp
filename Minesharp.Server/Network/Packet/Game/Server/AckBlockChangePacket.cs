@@ -5,8 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class AckBlockChangePacket : GamePacket
 {
-    public int Sequence { get; init; }
-
     public AckBlockChangePacket()
     {
     }
@@ -15,6 +13,8 @@ public class AckBlockChangePacket : GamePacket
     {
         Sequence = sequence;
     }
+
+    public int Sequence { get; init; }
 }
 
 public class AckBlockChangePacketCodec : GamePacketCodec<AckBlockChangePacket>

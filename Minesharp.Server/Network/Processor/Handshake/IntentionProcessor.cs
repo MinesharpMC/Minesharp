@@ -1,4 +1,5 @@
 using Minesharp.Chat.Component;
+using Minesharp.Server.Game;
 using Minesharp.Server.Network.Packet.Handshake.Client;
 using Minesharp.Server.Network.Packet.Login.Server;
 
@@ -16,15 +17,15 @@ public class IntentionProcessor : PacketProcessor<IntentionPacket>
 
         session.Protocol = packet.RequestedProtocol;
 
-        if (packet.ProtocolVersion != Server.Game.GameServer.Protocol)
+        if (packet.ProtocolVersion != GameServer.Protocol)
         {
             session.SendPacket(new DisconnectPacket
             {
                 Reason = new TextComponent
                 {
-                    Text = packet.ProtocolVersion < Server.Game.GameServer.Protocol
-                        ? $"Outdated client! (I'm running on {Server.Game.GameServer.Version})"
-                        : $"Outdated server! (I'm running on {Server.Game.GameServer.Version})"
+                    Text = packet.ProtocolVersion < GameServer.Protocol
+                        ? $"Outdated client! (I'm running on {GameServer.Version})"
+                        : $"Outdated server! (I'm running on {GameServer.Version})"
                 }
             });
             session.Disconnect();

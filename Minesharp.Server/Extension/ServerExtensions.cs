@@ -1,5 +1,6 @@
 using Minesharp.Chat;
 using Minesharp.Chat.Component;
+using Minesharp.Server.Game;
 using Minesharp.Server.Game.Broadcast;
 using Minesharp.Server.Game.Entities;
 using Minesharp.Server.Network.Packet.Game.Server;
@@ -8,7 +9,7 @@ namespace Minesharp.Server.Extension;
 
 public static class ServerExtensions
 {
-    public static void BroadcastMessage(this Game.GameServer server, TextComponent message)
+    public static void BroadcastMessage(this GameServer server, TextComponent message)
     {
         server.Broadcast(new SystemMessagePacket
         {
@@ -17,7 +18,7 @@ public static class ServerExtensions
         });
     }
 
-    public static void BroadcastMessage(this Game.GameServer server, string message, ChatColor color)
+    public static void BroadcastMessage(this GameServer server, string message, ChatColor color)
     {
         server.BroadcastMessage(new TextComponent
         {
@@ -26,7 +27,7 @@ public static class ServerExtensions
         });
     }
 
-    public static void BroadcastPlayerListAdd(this Game.GameServer server, Player player)
+    public static void BroadcastPlayerListAdd(this GameServer server, Player player)
     {
         server.Broadcast(new PlayerListPacket
         {
@@ -44,7 +45,7 @@ public static class ServerExtensions
         }, new ExceptPlayerRule(player));
     }
 
-    public static void BroadcastPlayerListRemove(this Game.GameServer server, Player player)
+    public static void BroadcastPlayerListRemove(this GameServer server, Player player)
     {
         server.Broadcast(new PlayerListPacket
         {

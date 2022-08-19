@@ -5,8 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class RemoveEntitiesPacket : GamePacket
 {
-    public IList<int> Entities { get; init; }
-
     public RemoveEntitiesPacket()
     {
     }
@@ -15,6 +13,8 @@ public class RemoveEntitiesPacket : GamePacket
     {
         Entities = entities;
     }
+
+    public IList<int> Entities { get; init; }
 }
 
 public class RemoveEntitiesPacketCodec : GamePacketCodec<RemoveEntitiesPacket>

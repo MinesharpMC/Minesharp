@@ -19,10 +19,10 @@ public class PlayerStorage : Storage, IPlayerStorage
         get => this[OffHandSlot];
         set => this[OffHandSlot] = value;
     }
-    
+
     public short MainHandSlot { get; set; }
     public short OffHandSlot { get; set; }
-    
+
     public IStack GetItemInMainHand()
     {
         return ItemInMainHand;

@@ -4,9 +4,6 @@ namespace Minesharp.Server.Game.Storages;
 
 public class Stack : IStack
 {
-    public Material Type { get; }
-    public byte Amount { get; set; } = 1;
-
     public Stack(Material type)
     {
         Type = type;
@@ -17,4 +14,7 @@ public class Stack : IStack
         Type = type;
         Amount = amount;
     }
+
+    public Material Type { get; }
+    public byte Amount { get; set; } = 1;
 }

@@ -5,11 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class SpawnPlayerPacket : GamePacket
 {
-    public int Id { get; init; }
-    public Guid UniqueId { get; init; }
-    public Position Position { get; init; }
-    public Rotation Rotation { get; init; }
-
     public SpawnPlayerPacket()
     {
     }
@@ -21,6 +16,11 @@ public class SpawnPlayerPacket : GamePacket
         Position = position;
         Rotation = rotation;
     }
+
+    public int Id { get; init; }
+    public Guid UniqueId { get; init; }
+    public Position Position { get; init; }
+    public Rotation Rotation { get; init; }
 }
 
 public class SpawnPlayerPacketCodec : GamePacketCodec<SpawnPlayerPacket>

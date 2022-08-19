@@ -6,9 +6,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class EntityMetadataPacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public IList<KeyValuePair<MetadataIndex, object>> Entries { get; init; }
-
     public EntityMetadataPacket()
     {
     }
@@ -18,6 +15,9 @@ public class EntityMetadataPacket : GamePacket
         EntityId = entityId;
         Entries = entries;
     }
+
+    public int EntityId { get; init; }
+    public IList<KeyValuePair<MetadataIndex, object>> Entries { get; init; }
 }
 
 public class EntityMetadataPacketCodec : GamePacketCodec<EntityMetadataPacket>

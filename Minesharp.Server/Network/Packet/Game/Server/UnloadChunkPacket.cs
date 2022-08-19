@@ -4,9 +4,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public sealed class UnloadChunkPacket : GamePacket
 {
-    public int ChunkX { get; init; }
-    public int ChunkZ { get; init; }
-
     public UnloadChunkPacket()
     {
     }
@@ -16,6 +13,9 @@ public sealed class UnloadChunkPacket : GamePacket
         ChunkX = chunkX;
         ChunkZ = chunkZ;
     }
+
+    public int ChunkX { get; init; }
+    public int ChunkZ { get; init; }
 }
 
 public sealed class UnloadChunkPacketCodec : GamePacketCodec<UnloadChunkPacket>

@@ -1,3 +1,4 @@
+using Minesharp.Server.Game;
 using Minesharp.Server.Network.Packet.Status.Client;
 using Minesharp.Server.Network.Packet.Status.Server;
 
@@ -5,9 +6,9 @@ namespace Minesharp.Server.Network.Processor.Status;
 
 public class StatusRequestProcessor : PacketProcessor<StatusRequestPacket>
 {
-    private readonly Server.Game.GameServer server;
+    private readonly GameServer server;
 
-    public StatusRequestProcessor(Server.Game.GameServer server)
+    public StatusRequestProcessor(GameServer server)
     {
         this.server = server;
     }
@@ -18,8 +19,8 @@ public class StatusRequestProcessor : PacketProcessor<StatusRequestPacket>
         {
             Version = new StatusVersion
             {
-                Name = Server.Game.GameServer.Version,
-                Protocol = Server.Game.GameServer.Protocol
+                Name = GameServer.Version,
+                Protocol = GameServer.Protocol
             },
             Players = new StatusPlayers
             {

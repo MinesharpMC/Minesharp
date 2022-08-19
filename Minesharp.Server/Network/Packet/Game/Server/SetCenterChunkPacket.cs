@@ -5,9 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class SetCenterChunkPacket : GamePacket
 {
-    public int ChunkX { get; init; }
-    public int ChunkZ { get; init; }
-
     public SetCenterChunkPacket()
     {
     }
@@ -17,6 +14,9 @@ public class SetCenterChunkPacket : GamePacket
         ChunkX = chunkX;
         ChunkZ = chunkZ;
     }
+
+    public int ChunkX { get; init; }
+    public int ChunkZ { get; init; }
 }
 
 public class SetCenterChunkPacketCodec : GamePacketCodec<SetCenterChunkPacket>

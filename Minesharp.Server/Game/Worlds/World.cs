@@ -16,9 +16,6 @@ public sealed class World : IEquatable<World>, IWorld
     private readonly EntityManager entityManager;
     private readonly ChunkManager chunkManager;
 
-    public IEnumerable<Entity> Entities => entityManager.GetEntities();
-    public IEnumerable<Player> Players => playerManager.GetPlayers();
-
     public World(WorldCreator creator, GameServer server)
     {
         Id = Guid.NewGuid();
@@ -34,6 +31,9 @@ public sealed class World : IEquatable<World>, IWorld
         entityManager = new EntityManager();
         chunkManager = new ChunkManager(new ChunkFactory(creator.ChunkGenerator, this));
     }
+
+    public IEnumerable<Entity> Entities => entityManager.GetEntities();
+    public IEnumerable<Player> Players => playerManager.GetPlayers();
 
     public Guid Id { get; }
     public string Name { get; }
@@ -59,6 +59,31 @@ public sealed class World : IEquatable<World>, IWorld
         return Id.Equals(other.Id);
     }
 
+    public IEnumerable<IEntity> GetEntities()
+    {
+        return Entities;
+    }
+
+    public IEnumerable<IPlayer> GetPlayers()
+    {
+        return Players;
+    }
+
+    public IBlock GetBlock(Position position)
+    {
+        return GetBlockAt(position);
+    }
+
+    public IEntity GetEntity(Guid uniqueId)
+    {
+        return entityManager.GetEntity(uniqueId);
+    }
+
+    public IPlayer GetPlayer(Guid uniqueId)
+    {
+        return playerManager.GetPlayer(uniqueId);
+    }
+
     public Block GetBlockAt(int x, int y, int z)
     {
         return new Block
@@ -82,12 +107,12 @@ public sealed class World : IEquatable<World>, IWorld
     {
         var chunk = GetChunkAt(x, z);
         var blockType = Server.BlockRegistry.GetBlockType(material);
-        
+
         if (chunk is null)
         {
             return;
         }
-        
+
         chunk.SetBlockType(x, y, z, blockType);
     }
 
@@ -113,7 +138,7 @@ public sealed class World : IEquatable<World>, IWorld
         {
             return Material.Air;
         }
-        
+
         var blockType = chunk.GetBlockType(x, y, z);
         var material = Server.BlockRegistry.GetMaterial(blockType);
 
@@ -171,31 +196,6 @@ public sealed class World : IEquatable<World>, IWorld
         entityManager.Remove(player);
     }
 
-    public IEnumerable<IEntity> GetEntities()
-    {
-        return Entities;
-    }
-
-    public IEnumerable<IPlayer> GetPlayers()
-    {
-        return Players;
-    }
-
-    public IBlock GetBlock(Position position)
-    {
-        return GetBlockAt(position);
-    }
-
-    public IEntity GetEntity(Guid uniqueId)
-    {
-        return entityManager.GetEntity(uniqueId);
-    }
-
-    public IPlayer GetPlayer(Guid uniqueId)
-    {
-        return playerManager.GetPlayer(uniqueId);
-    }
-    
     public void Tick()
     {
         var chunks = chunkManager.GetChunks();
@@ -218,7 +218,7 @@ public sealed class World : IEquatable<World>, IWorld
                 chunkManager.UnloadChunk(chunk);
                 continue;
             }
-            
+
             chunk.Tick();
         }
     }

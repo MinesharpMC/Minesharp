@@ -2,16 +2,16 @@ namespace Minesharp.Server.Game.Entities.Meta;
 
 public class MetadataIndex : IEquatable<MetadataIndex>
 {
-    public static MetadataIndex Status { get; } = new(0, MetadataType.Byte);
-
-    public int Id { get; }
-    public MetadataType Type { get; }
-    
     public MetadataIndex(int id, MetadataType type)
     {
         Id = id;
         Type = type;
     }
+
+    public static MetadataIndex Status { get; } = new(0, MetadataType.Byte);
+
+    public int Id { get; }
+    public MetadataType Type { get; }
 
     public bool Equals(MetadataIndex other)
     {
@@ -40,7 +40,7 @@ public class MetadataIndex : IEquatable<MetadataIndex>
             return true;
         }
 
-        if (obj.GetType() != this.GetType())
+        if (obj.GetType() != GetType())
         {
             return false;
         }

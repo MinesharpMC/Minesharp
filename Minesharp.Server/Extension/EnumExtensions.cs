@@ -1,5 +1,4 @@
 using System.Numerics;
-using Minesharp.Server.Game.Blocks;
 
 namespace Minesharp.Server.Extension;
 
@@ -18,14 +17,14 @@ public static class EnumExtensions
             _ => new Vector3(0, 0, 0)
         };
     }
-    
+
     public static int GetIntYaw(this Rotation rotation)
     {
-        return (int) (rotation.Yaw % 360 / 360 * 256);
+        return (int)(rotation.Yaw % 360 / 360 * 256);
     }
 
     public static int GetIntPitch(this Rotation rotation)
     {
-        return (int) (rotation.Pitch % 360 / 360 * 256);
+        return (int)(rotation.Pitch % 360 / 360 * 256);
     }
 }

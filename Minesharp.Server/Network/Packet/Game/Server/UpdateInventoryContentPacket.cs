@@ -31,7 +31,7 @@ public class UpdateInventoryContentPacketCodec : GamePacketCodec<UpdateInventory
         {
             buffer.WriteStack(value);
         }
-        
+
         buffer.WriteStack(packet.HeldItem);
     }
 }

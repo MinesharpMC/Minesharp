@@ -1,4 +1,3 @@
-using Minesharp;
 using Minesharp.Server;
 using Serilog;
 using Serilog.Filters;

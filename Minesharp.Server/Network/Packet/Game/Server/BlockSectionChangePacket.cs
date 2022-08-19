@@ -11,5 +11,4 @@ public class BlockSectionChangePacket : GamePacket
 
 public class BlockSectionChangePacketCodec : GamePacket
 {
-    
 }

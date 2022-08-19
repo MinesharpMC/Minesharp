@@ -6,8 +6,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public sealed class BlockChangePacket : GamePacket
 {
-    public BlockChange Block { get; init; }
-
     public BlockChangePacket()
     {
     }
@@ -16,6 +14,8 @@ public sealed class BlockChangePacket : GamePacket
     {
         Block = block;
     }
+
+    public BlockChange Block { get; init; }
 }
 
 public sealed class BlockChangePacketCodec : GamePacketCodec<BlockChangePacket>

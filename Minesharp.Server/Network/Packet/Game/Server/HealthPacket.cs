@@ -5,10 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public sealed class HealthPacket : GamePacket
 {
-    public float Health { get; init; }
-    public int Food { get; init; }
-    public float Saturation { get; init; }
-
     public HealthPacket()
     {
     }
@@ -19,6 +15,10 @@ public sealed class HealthPacket : GamePacket
         Food = food;
         Saturation = saturation;
     }
+
+    public float Health { get; init; }
+    public int Food { get; init; }
+    public float Saturation { get; init; }
 }
 
 public sealed class HealthPacketCodec : GamePacketCodec<HealthPacket>

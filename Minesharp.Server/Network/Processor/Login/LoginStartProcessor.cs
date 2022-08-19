@@ -1,5 +1,6 @@
 using Minesharp.Chat;
 using Minesharp.Server.Extension;
+using Minesharp.Server.Game;
 using Minesharp.Server.Game.Entities;
 using Minesharp.Server.Game.Storages;
 using Minesharp.Server.Network.Packet.Game.Server;
@@ -11,9 +12,9 @@ namespace Minesharp.Server.Network.Processor.Login;
 
 public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
 {
-    private readonly Server.Game.GameServer server;
+    private readonly GameServer server;
 
-    public LoginStartProcessor(Server.Game.GameServer server)
+    public LoginStartProcessor(GameServer server)
     {
         this.server = server;
     }

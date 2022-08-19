@@ -7,16 +7,15 @@ public readonly struct Position : IEquatable<Position>
     public double X { get; }
     public double Y { get; }
     public double Z { get; }
-    
+
     public int BlockX { get; }
     public int BlockY { get; }
     public int BlockZ { get; }
 
     public Position(int x, int y, int z) : this((double)x, y, z)
     {
-        
     }
-    
+
     public Position(double x, double y, double z)
     {
         X = x;

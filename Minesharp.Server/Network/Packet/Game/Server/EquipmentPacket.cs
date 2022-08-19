@@ -6,10 +6,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class EquipmentPacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public EquipmentSlot Slot { get; init; }
-    public Stack Item { get; init; }
-
     public EquipmentPacket()
     {
     }
@@ -20,6 +16,10 @@ public class EquipmentPacket : GamePacket
         Slot = slot;
         Item = item;
     }
+
+    public int EntityId { get; init; }
+    public EquipmentSlot Slot { get; init; }
+    public Stack Item { get; init; }
 }
 
 public class EquipmentPacketCodec : GamePacketCodec<EquipmentPacket>

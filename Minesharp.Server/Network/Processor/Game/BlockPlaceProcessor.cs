@@ -19,27 +19,27 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         {
             return;
         }
-        
+
         if (world.HasEntityAt(target.Position))
         {
             Log.Warning("Can't place block at {position} because and entity is here", target.Position);
             return;
         }
-        
+
         var item = session.Player.Inventory.ItemInMainHand;
         if (item == null)
         {
             return;
         }
-        
+
         item.Amount--;
-        
+
         if (item.Amount == 0)
         {
             player.Inventory.ItemInMainHand = null;
             world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInMainHand));
         }
-        
+
         target.Type = item.Type;
 
         player.SendPacket(new AckBlockChangePacket(packet.Sequence));

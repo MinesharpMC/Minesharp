@@ -5,11 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class EntityTeleportPacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public Position Position { get; init; }
-    public Rotation Angle { get; init; }
-    public bool IsGrounded { get; init; }
-
     public EntityTeleportPacket()
     {
     }
@@ -21,6 +16,11 @@ public class EntityTeleportPacket : GamePacket
         Angle = angle;
         IsGrounded = isGrounded;
     }
+
+    public int EntityId { get; init; }
+    public Position Position { get; init; }
+    public Rotation Angle { get; init; }
+    public bool IsGrounded { get; init; }
 }
 
 public class EntityTeleportPacketCodec : GamePacketCodec<EntityTeleportPacket>

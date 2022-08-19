@@ -14,6 +14,8 @@ public sealed class Block : IEquatable<Block>, IBlock
     public Position Position { get; init; }
     public World World { get; init; }
 
+    public int BlockType => World.Server.BlockRegistry.GetBlockType(Type);
+
     public Location Location => new() { Position = Position, World = World };
 
     public Material Type
@@ -22,7 +24,10 @@ public sealed class Block : IEquatable<Block>, IBlock
         set => World.SetBlockTypeAt(Position, value);
     }
 
-    public int BlockType => World.Server.BlockRegistry.GetBlockType(Type);
+    public IWorld GetWorld()
+    {
+        return World;
+    }
 
     public bool Equals(Block other)
     {
@@ -104,10 +109,5 @@ public sealed class Block : IEquatable<Block>, IBlock
     public static bool operator !=(Block left, Block right)
     {
         return !Equals(left, right);
-    }
-
-    public IWorld GetWorld()
-    {
-        return World;
     }
 }

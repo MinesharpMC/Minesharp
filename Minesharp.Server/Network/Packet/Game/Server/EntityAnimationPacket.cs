@@ -6,9 +6,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class EntityAnimationPacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public Animation Animation { get; init; }
-
     public EntityAnimationPacket()
     {
     }
@@ -18,6 +15,9 @@ public class EntityAnimationPacket : GamePacket
         EntityId = entityId;
         Animation = animation;
     }
+
+    public int EntityId { get; init; }
+    public Animation Animation { get; init; }
 }
 
 public class EntityAnimationPacketCodec : GamePacketCodec<EntityAnimationPacket>

@@ -5,9 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class HeadRotationPacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public int Yaw { get; init; }
-
     public HeadRotationPacket()
     {
     }
@@ -17,6 +14,9 @@ public class HeadRotationPacket : GamePacket
         EntityId = entityId;
         Yaw = yaw;
     }
+
+    public int EntityId { get; init; }
+    public int Yaw { get; init; }
 }
 
 public class HeadRotationPacketCodec : GamePacketCodec<HeadRotationPacket>

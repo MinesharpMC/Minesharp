@@ -1,4 +1,5 @@
 using Minesharp.Server.Configuration;
+using Minesharp.Server.Game;
 using Minesharp.Server.Game.Blocks;
 using Minesharp.Server.Game.Managers;
 using Minesharp.Server.Network;
@@ -11,7 +12,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddServer(this IServiceCollection services)
     {
-        services.AddSingleton<Game.GameServer>();
+        services.AddSingleton<GameServer>();
         services.AddHostedService<ServerService>();
     }
 
@@ -62,7 +63,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<PacketProcessorManager>();
     }
-    
+
     public static void AddPacketFactory(this IServiceCollection services)
     {
         var codecs = typeof(IPacketCodec).Assembly.GetTypes()

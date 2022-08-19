@@ -5,10 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class BlockBreakStageUpdatePacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public Position Position { get; init; }
-    public byte Stage { get; init; }
-
     public BlockBreakStageUpdatePacket()
     {
     }
@@ -19,6 +15,10 @@ public class BlockBreakStageUpdatePacket : GamePacket
         Position = position;
         Stage = stage;
     }
+
+    public int EntityId { get; init; }
+    public Position Position { get; init; }
+    public byte Stage { get; init; }
 }
 
 public class BlockBreakAnimationPacketCodec : GamePacketCodec<BlockBreakStageUpdatePacket>

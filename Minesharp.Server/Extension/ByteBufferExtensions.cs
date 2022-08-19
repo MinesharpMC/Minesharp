@@ -41,7 +41,7 @@ public static class ByteBufferExtensions
     public static Position ReadBlockPosition(this IByteBuffer buffer)
     {
         var value = buffer.ReadLong();
-        
+
         var x = value >> 38;
         var y = value & 0xFFF;
         var z = (value >> 12) & 0x3FFFFFF;
@@ -84,7 +84,7 @@ public static class ByteBufferExtensions
 
             buffer.WriteByte(id);
             buffer.WriteVarInt(type);
-            
+
             if (!index.Type.IsOptional && value == null)
             {
                 continue;
@@ -103,17 +103,17 @@ public static class ByteBufferExtensions
             {
                 buffer.WriteByte((byte)value);
             }
-            
+
             if (index.Type == MetadataType.Int)
             {
                 buffer.WriteVarInt((int)value);
             }
-            
+
             if (index.Type == MetadataType.Float)
             {
                 buffer.WriteFloat((float)value);
             }
-            
+
             if (index.Type == MetadataType.String)
             {
                 buffer.WriteString((string)value);
@@ -131,7 +131,7 @@ public static class ByteBufferExtensions
 
         return new Position(x, y, z);
     }
-    
+
     public static void WritePosition(this IByteBuffer buffer, Position position)
     {
         buffer.WriteDouble(position.X);
@@ -203,7 +203,7 @@ public static class ByteBufferExtensions
         buffer.WriteString(component.ToJson());
     }
 
-    public static void WriteVarIntEnum<T>(this IByteBuffer buffer, T value) where T : System.Enum
+    public static void WriteVarIntEnum<T>(this IByteBuffer buffer, T value) where T : Enum
     {
         var i = Unsafe.As<T, int>(ref value);
 
@@ -303,6 +303,7 @@ public static class ByteBufferExtensions
         {
             output[i] = buffer.ReadVarInt();
         }
+
         return output;
     }
 
@@ -446,16 +447,17 @@ public static class ByteBufferExtensions
     public static void WriteVarInt(this IByteBuffer buffer, int value)
     {
         byte part;
-        while (true) 
+        while (true)
         {
-            part = (byte) (value & 0x7F);
+            part = (byte)(value & 0x7F);
             value = (int)((uint)value >> 7);
-            if (value != 0) 
+            if (value != 0)
             {
                 part |= 0x80;
             }
+
             buffer.WriteByte(part);
-            if (value == 0) 
+            if (value == 0)
             {
                 break;
             }

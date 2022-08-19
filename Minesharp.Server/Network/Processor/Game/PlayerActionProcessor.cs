@@ -25,12 +25,12 @@ public class PlayerActionProcessor : PacketProcessor<PlayerActionPacket>
                 {
                     return;
                 }
-                
+
                 player.Breaking.BreakBy(player);
                 player.Breaking = null;
                 break;
         }
-        
+
         player.SendPacket(new AckBlockChangePacket(packet.Sequence));
     }
 }

@@ -67,6 +67,7 @@ public class PlayerListPacketCodec : GamePacketCodec<PlayerListPacket>
                             buffer.WriteString(property.Signature);
                         }
                     }
+
                     buffer.WriteVarIntEnum(value.GameMode);
                     buffer.WriteVarInt(value.Ping);
                     buffer.WriteBoolean(value.HasDisplayName);
@@ -82,6 +83,7 @@ public class PlayerListPacketCodec : GamePacketCodec<PlayerListPacket>
                         buffer.WriteByteArray(value.PublicKey);
                         buffer.WriteByteArray(value.Signature);
                     }
+
                     break;
                 case PlayerListAction.UpdateGameMode:
                     buffer.WriteVarIntEnum(value.GameMode);

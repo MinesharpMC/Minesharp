@@ -49,7 +49,7 @@ public sealed class NetworkSession
 
             processor.Process(this, packet);
         }
-        
+
         if (LastKeepAliveSendAt.AddSeconds(10) < DateTime.UtcNow)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

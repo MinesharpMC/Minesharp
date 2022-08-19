@@ -5,11 +5,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class UpdateEntityPositionAndRotationPacket : GamePacket
 {
-    public int EntityId { get; init; }
-    public Position Delta { get; init; }
-    public Rotation Angle { get; init; }
-    public bool IsGrounded { get; init; }
-
     public UpdateEntityPositionAndRotationPacket()
     {
     }
@@ -21,6 +16,11 @@ public class UpdateEntityPositionAndRotationPacket : GamePacket
         Angle = angle;
         IsGrounded = isGrounded;
     }
+
+    public int EntityId { get; init; }
+    public Position Delta { get; init; }
+    public Rotation Angle { get; init; }
+    public bool IsGrounded { get; init; }
 }
 
 public class UpdateEntityPositionAndRotationPacketCodec : GamePacketCodec<UpdateEntityPositionAndRotationPacket>

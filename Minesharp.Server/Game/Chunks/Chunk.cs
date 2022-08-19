@@ -103,7 +103,7 @@ public sealed class Chunk : IEquatable<Chunk>
         }
 
         section.SetType(chunkX, y, chunkZ, type);
-        
+
         changes.Add(new BlockChange
         {
             Position = new Position(x, y, z),
