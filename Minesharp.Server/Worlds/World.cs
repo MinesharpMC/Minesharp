@@ -2,6 +2,7 @@ using Minesharp.Blocks;
 using Minesharp.Chunks;
 using Minesharp.Entities;
 using Minesharp.Server.Blocks;
+using Minesharp.Server.Blocks.Type;
 using Minesharp.Server.Chunks;
 using Minesharp.Server.Common.Broadcast;
 using Minesharp.Server.Entities;
@@ -111,7 +112,7 @@ public sealed class World : IEquatable<World>, IWorld
     public void SetBlockTypeAt(int x, int y, int z, Material material)
     {
         var chunk = GetChunkAt(x, z);
-        var blockType = Server.BlockRegistry.GetBlockType(material);
+        var blockType = Server.BlockRegistry.GetBlockId(material);
 
         if (chunk is null)
         {

@@ -1,3 +1,4 @@
+using Minesharp.Blocks;
 using Minesharp.Entities;
 using Minesharp.Worlds;
 
@@ -12,4 +13,6 @@ public interface IChunk
 
     IEnumerable<IEntity> GetEntities();
     IEnumerable<IPlayer> GetPlayers();
+
+    IBlock GetBlock(int x, int y, int z);
 }

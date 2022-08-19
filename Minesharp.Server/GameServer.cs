@@ -1,6 +1,7 @@
 using Minesharp.Entities;
 using Minesharp.Events;
 using Minesharp.Server.Blocks;
+using Minesharp.Server.Blocks.Type;
 using Minesharp.Server.Common.Broadcast;
 using Minesharp.Server.Common.Configuration;
 using Minesharp.Server.Entities;
@@ -23,6 +24,7 @@ public sealed class GameServer : IServer
     private readonly PlayerManager playerManager;
     private readonly ServerConfiguration configuration;
     private readonly BlockRegistry blockRegistry;
+    private readonly PluginManager pluginManager;
 
     private readonly long[] ticks = new long[TickRate];
 
@@ -34,10 +36,10 @@ public sealed class GameServer : IServer
     {
         this.configuration = configuration;
         this.sessionManager = sessionManager;
-        worldManager = new WorldManager(this);
-        playerManager = new PlayerManager();
+        this.worldManager = new WorldManager(this);
+        this.playerManager = new PlayerManager();
         this.blockRegistry = blockRegistry;
-        PluginManager = new PluginManager(this);
+        this.pluginManager = new PluginManager(this);
     }
 
     public int MaxPlayers => configuration.MaxPlayers;
@@ -45,9 +47,7 @@ public sealed class GameServer : IServer
     public byte ViewDistance => configuration.ViewDistance;
     public IEnumerable<World> Worlds => worldManager.GetWorlds();
     public IEnumerable<Player> Players => playerManager.GetPlayers();
-
-    public PluginManager PluginManager { get; }
-
+    public PluginManager PluginManager => pluginManager;
     public BlockRegistry BlockRegistry => blockRegistry;
 
     public int Tps { get; private set; }
@@ -70,6 +70,11 @@ public sealed class GameServer : IServer
     public World CreateWorld(WorldCreator creator)
     {
         return worldManager.CreateWorld(creator);
+    }
+    
+    public BlockType GetBlockFrom(Material material)
+    {
+        return blockRegistry.GetBlock(material);
     }
 
     public void Broadcast(IPacket packet)

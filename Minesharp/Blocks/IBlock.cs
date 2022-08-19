@@ -1,3 +1,4 @@
+using Minesharp.Chunks;
 using Minesharp.Worlds;
 
 namespace Minesharp.Blocks;
@@ -22,4 +23,9 @@ public interface IBlock
     /// </summary>
     /// <returns>World where this block is currently</returns>
     IWorld GetWorld();
+
+    IChunk GetChunk();
+
+    IBlockState GetState();
+    T GetState<T>() where T : class, IBlockState;
 }

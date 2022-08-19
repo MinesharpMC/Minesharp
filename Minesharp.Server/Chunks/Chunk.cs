@@ -1,3 +1,4 @@
+using Minesharp.Blocks;
 using Minesharp.Chunks;
 using Minesharp.Entities;
 using Minesharp.Server.Blocks;
@@ -65,6 +66,16 @@ public sealed class Chunk : IEquatable<Chunk>, IChunk
         }
 
         return output;
+    }
+
+    public IBlock GetBlock(int x, int y, int z)
+    {
+        return GetBlockAt(x, y, z);
+    }
+
+    public Block GetBlockAt(int x, int y, int z)
+    {
+        return World.GetBlockAt(x, y, z);
     }
 
     public bool Equals(Chunk other)

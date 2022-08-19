@@ -18,4 +18,5 @@ public interface IWorld
     IEntity GetEntity(Guid uniqueId);
     IPlayer GetPlayer(Guid uniqueId);
     IChunk GetChunk(Position position);
+    Material GetBlockTypeAt(Position position);
 }

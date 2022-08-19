@@ -1,9 +1,12 @@
 using Minesharp.Blocks;
+using Minesharp.Chunks;
+using Minesharp.Server.Chunks;
 using Minesharp.Server.Common.Broadcast;
 using Minesharp.Server.Common.Enum;
 using Minesharp.Server.Entities;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Network.Packet.Game.Server;
+using Minesharp.Server.Storages;
 using Minesharp.Server.Worlds;
 using Minesharp.Worlds;
 
@@ -12,8 +15,11 @@ namespace Minesharp.Server.Blocks;
 public sealed class Block : IEquatable<Block>, IBlock
 {
     public World World { get; init; }
+    public GameServer Server => World.Server;
 
-    public int BlockType => World.Server.BlockRegistry.GetBlockType(Type);
+    public Chunk Chunk => World.GetChunkAt(Position);
+
+    public int BlockType => World.Server.BlockRegistry.GetBlockId(Type);
     public Position Position { get; init; }
 
     public Material Type
@@ -22,9 +28,26 @@ public sealed class Block : IEquatable<Block>, IBlock
         set => World.SetBlockTypeAt(Position, value);
     }
 
+    public BlockState State => Server.GetBlockFrom(Type).GetState(this);
+
     public IWorld GetWorld()
     {
         return World;
+    }
+
+    public IChunk GetChunk()
+    {
+        return Chunk;
+    }
+
+    public IBlockState GetState()
+    {
+        return State;
+    }
+
+    public T GetState<T>() where T : class, IBlockState
+    {
+        return State as T;
     }
 
     public bool Equals(Block other)
@@ -51,6 +74,11 @@ public sealed class Block : IEquatable<Block>, IBlock
     {
         var modifier = face.GetModifiers();
         return GetRelative((int)modifier.X, (int)modifier.Y, (int)modifier.Z);
+    }
+
+    public IEnumerable<Stack> GetDrops(Stack tool = null)
+    {
+        return Server.GetBlockFrom(Type).GetDrops(tool);
     }
 
     public void Break()
