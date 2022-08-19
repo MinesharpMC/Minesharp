@@ -33,9 +33,8 @@ public class PluginManager
         {
             var configurationText = File.ReadAllText(Path.Combine(directory, "plugin.yml"));
             var configuration = deserializer.Deserialize<PluginConfiguration>(configurationText);
-
-            var domain = AppDomain.CurrentDomain;
-            domain.AssemblyResolve += (sender, args) =>
+            
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
                 var name = args.Name.Split(',')[0];
                 if (name == "Minesharp")
@@ -53,6 +52,7 @@ public class PluginManager
             };
             
             var assembly = Assembly.LoadFile(Path.Combine(directory, configuration.Assembly));
+            
             var types = assembly.GetTypes();
 
             var pluginType = types.FirstOrDefault(x => typeof(IPlugin).IsAssignableFrom(x));
