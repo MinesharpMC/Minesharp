@@ -11,7 +11,7 @@ namespace Minesharp.Network;
 public sealed class NetworkSession
 {
     private readonly IChannel channel;
-    private readonly ConcurrentQueue<IPacket> packets = new();
+    private readonly ConcurrentQueue<IPacket> receivedPackets = new();
     private readonly PacketProcessorManager processorManager;
 
     public NetworkSession(IChannel channel, PacketProcessorManager processorManager)
@@ -30,7 +30,7 @@ public sealed class NetworkSession
 
     public void Enqueue(IPacket packet)
     {
-        packets.Enqueue(packet);
+        receivedPackets.Enqueue(packet);
     }
 
     public void SendPacket(IPacket packet)
@@ -40,7 +40,7 @@ public sealed class NetworkSession
 
     public void Tick()
     {
-        while (packets.TryDequeue(out var packet))
+        while (receivedPackets.TryDequeue(out var packet))
         {
             var processor = processorManager.GetProcessor(packet.GetType());
             if (processor is null)
@@ -50,7 +50,7 @@ public sealed class NetworkSession
 
             processor.Process(this, packet);
         }
-
+        
         if (LastKeepAliveSendAt.AddSeconds(10) < DateTime.UtcNow)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

@@ -59,7 +59,7 @@ public static class ArrayExtensions
             mapping[i0] = 0;
         }
 
-        var value = mapping[i0] >> i1;
+        var value = (long)((ulong)mapping[i0] >> i1);
         var i2 = i1 + bits;
 
         if (i2 > 64)

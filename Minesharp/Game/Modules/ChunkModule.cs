@@ -1,3 +1,4 @@
+using Minesharp.Common;
 using Minesharp.Common.Collection;
 using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
@@ -123,19 +124,18 @@ public class ChunkModule
 
     public void Update()
     {
-        var world = player.World;
         foreach (var chunkKey in chunks)
         {
-            var chunk = world.GetChunk(chunkKey);
+            var chunk = player.World.GetChunk(chunkKey);
             if (chunk is null)
             {
                 continue;
             }
 
-            var blocks = chunk.GetModifiedBlocks();
+            var blocks = chunk.GetChanges();
             foreach (var block in blocks)
             {
-                player.SendPacket(new BlockChangePacket(block.Position, block.Type));
+                player.SendPacket(new BlockChangePacket(block));
             }
         }
     }

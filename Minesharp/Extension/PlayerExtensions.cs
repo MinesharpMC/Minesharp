@@ -24,17 +24,29 @@ public static class PlayerExtensions
         player.SendPacket(new UpdateInventoryContentPacket
         {
             Window = 0,
-            State = 10,
-            Items = player.Inventory.GetContent()
+            State = 0,
+            Items = player.Inventory.GetContent(),
+            HeldItem = player.Inventory.ItemInMainHand
         });
     }
 
-    public static void SendEntityAnimation(this Player player, Entity entity, Animation animation)
+    public static void SendAckBlockChange(this Player player, int sequence)
     {
-        player.SendPacket(new EntityAnimationPacket
+        player.SendPacket(new AckBlockChangePacket
         {
-            EntityId = entity.Id,
-            Animation = animation
+            Sequence = sequence
+        });
+    }
+
+    public static void SendInventorySlot(this Player player, short slot)
+    {
+        var item = player.Inventory[slot];
+        player.SendPacket(new UpdateInventorySlotPacket
+        {
+            Window = 0,
+            State = 0,
+            Slot = slot,
+            Item = item
         });
     }
 

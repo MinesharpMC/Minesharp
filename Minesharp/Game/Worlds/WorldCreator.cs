@@ -1,3 +1,4 @@
+using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Game.Chunks.Generator;
 
@@ -10,4 +11,6 @@ public class WorldCreator
     public ChunkGenerator ChunkGenerator { get; init; }
     public Difficulty Difficulty { get; init; }
     public GameMode GameMode { get; init; }
+    public Position SpawnPosition { get; init; }
+    public Rotation SpawnRotation { get; init; }
 }

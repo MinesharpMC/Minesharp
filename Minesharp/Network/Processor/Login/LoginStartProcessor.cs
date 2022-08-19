@@ -29,8 +29,8 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             Id = server.GetNextEntityId(),
             UniqueId = Guid.NewGuid(),
             Username = packet.Username,
-            Position = new Position(0, -55, 0),
-            Rotation = new Rotation(0, 0),
+            Position = world.SpawnPosition,
+            Rotation = world.SpawnRotation,
             Server = server,
             GameMode = world.GameMode,
             World = world,
@@ -40,11 +40,12 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
                 [36] = new(Material.Stone),
                 [37] = new(Material.GrassBlock),
                 [38] = new(Material.Dirt),
-                [39] = new(Material.Bedrock)
+                [39] = new(Material.Bedrock),
+                MainHandSlot = 36
             }
         };
 
-        player.SendPacket(new LoginSuccessPacket
+        session.SendPacket(new LoginSuccessPacket
         {
             Id = player.UniqueId,
             Username = packet.Username

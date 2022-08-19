@@ -1,4 +1,5 @@
 using Minesharp.Common.Enum;
+using Minesharp.Game.Broadcast;
 using Minesharp.Packet.Game.Client;
 using Minesharp.Packet.Game.Server;
 
@@ -8,25 +9,12 @@ public class ChangeHeldItemProcessor : PacketProcessor<ChangeHeldItemPacket>
 {
     protected override void Process(NetworkSession session, ChangeHeldItemPacket packet)
     {
-        var world = session.Player.World;
-        var players = world.GetPlayers();
-        foreach (var player in players)
-        {
-            if (!player.CanSee(session.Player))
-            {
-                continue;
-            }
+        var player = session.Player;
+        var inventory = player.Inventory;
+        var slot = (short)(packet.Slot + 36);
 
-            player.SendPacket(new EquipmentPacket
-            {
-                EntityId = session.Player.Id,
-                Slot = EquipmentSlot.MainHand,
-                Item = new ItemInfo
-                {
-                    Amount = 1,
-                    Material = Material.Stone
-                }
-            });
-        }
+        inventory.MainHandSlot = slot;
+
+        player.World.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, inventory.ItemInMainHand), new CanSeeEntityRule(player));
     }
 }

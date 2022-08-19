@@ -26,6 +26,6 @@ public class MetadataModule
 
     public void Update()
     {
-        metadata.ClearChanges();
+        // metadata.ClearChanges();
     }
 }

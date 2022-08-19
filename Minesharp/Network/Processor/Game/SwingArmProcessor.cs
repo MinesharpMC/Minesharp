@@ -1,5 +1,6 @@
 using Minesharp.Common.Enum;
 using Minesharp.Extension;
+using Minesharp.Game.Broadcast;
 using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Network.Processor.Game;
@@ -8,17 +9,6 @@ public class SwingArmProcessor : PacketProcessor<SwingArmPacket>
 {
     protected override void Process(NetworkSession session, SwingArmPacket packet)
     {
-        var world = session.Player.World;
-
-        var players = world.GetPlayers();
-        foreach (var player in players)
-        {
-            if (!player.CanSee(session.Player))
-            {
-                continue;
-            }
-
-            player.SendEntityAnimation(session.Player, Animation.SwingMainHand);
-        }
+        session.Player.World.Broadcast(new EntityAnimationPacket(session.Player.Id, Animation.SwingMainHand), new CanSeeEntityRule(session.Player));
     }
 }

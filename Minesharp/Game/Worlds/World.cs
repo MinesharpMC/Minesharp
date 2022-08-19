@@ -6,6 +6,8 @@ using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities;
 using Minesharp.Game.Managers;
 using Minesharp.Packet.Game;
+using Minesharp.Packet.Game.Server;
+using Serilog;
 
 namespace Minesharp.Game.Worlds;
 
@@ -22,6 +24,8 @@ public sealed class World : IEquatable<World>
         Border = creator.Border;
         Difficulty = creator.Difficulty;
         GameMode = creator.GameMode;
+        SpawnPosition = creator.SpawnPosition;
+        SpawnRotation = creator.SpawnRotation;
         Random = new Random(Guid.NewGuid().GetHashCode());
         Server = server;
 
@@ -37,6 +41,8 @@ public sealed class World : IEquatable<World>
     public GameMode GameMode { get; }
     public Random Random { get; }
     public Server Server { get; }
+    public Position SpawnPosition { get; set; }
+    public Rotation SpawnRotation { get; set; }
 
     public bool Equals(World other)
     {
@@ -74,16 +80,41 @@ public sealed class World : IEquatable<World>
 
     public void SetBlockTypeAt(int x, int y, int z, Material material)
     {
-        var chunk = GetChunkAt(x >> 4, z >> 4);
+        var chunk = GetChunkAt(x, z);
         var blockType = Server.BlockRegistry.GetBlockType(material);
-
+        
+        if (chunk is null)
+        {
+            return;
+        }
+        
         chunk.SetBlockType(x, y, z, blockType);
+    }
+
+    public bool HasEntityAt(Position position)
+    {
+        var entities = entityManager.GetEntities();
+        foreach (var entity in entities)
+        {
+            var entityPosition = entity.Position;
+            if (entityPosition.BlockX == position.BlockX && entity.Position.BlockY == position.BlockY && entityPosition.BlockZ == position.BlockZ)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Material GetBlockTypeAt(int x, int y, int z)
     {
-        var chunk = GetChunkAt(x >> 4, z >> 4);
-        var blockType = chunk.GetBlockType(x & 0xf, y, z & 0xf);
+        var chunk = GetChunkAt(x, z);
+        if (chunk is null)
+        {
+            return Material.Air;
+        }
+        
+        var blockType = chunk.GetBlockType(x, y, z);
         var material = Server.BlockRegistry.GetMaterial(blockType);
 
         return material;
@@ -182,6 +213,12 @@ public sealed class World : IEquatable<World>
 
         foreach (var chunk in chunks)
         {
+            if (!chunk.IsUsed)
+            {
+                chunkManager.UnloadChunk(chunk);
+                continue;
+            }
+            
             chunk.Tick();
         }
     }

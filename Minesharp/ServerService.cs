@@ -1,3 +1,4 @@
+using Minesharp.Common;
 using Minesharp.Common.Enum;
 using Minesharp.Game;
 using Minesharp.Game.Chunks.Generator;
@@ -32,7 +33,8 @@ public class ServerService : BackgroundService
             Border = new WorldBorder(),
             ChunkGenerator = new SuperflatGenerator(server),
             Difficulty = Difficulty.Normal,
-            GameMode = GameMode.Survival
+            GameMode = GameMode.Survival,
+            SpawnPosition = new Position(0, -59, 0),
         });
 
         if (world is null)

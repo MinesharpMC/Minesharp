@@ -2,7 +2,6 @@ using Minesharp.Common.Enum;
 using Minesharp.Common.Extension;
 using Minesharp.Common.Meta;
 using Minesharp.Game.Blocks;
-using Minesharp.Game.Chunks;
 using Minesharp.Game.Entities.Meta;
 using Minesharp.Game.Inventories;
 using Minesharp.Game.Modules;
@@ -16,10 +15,7 @@ namespace Minesharp.Game.Entities;
 public sealed class Player : LivingEntity
 {
     private readonly NetworkSession session;
-    private readonly HashSet<ChunkKey> chunks = new();
-    private readonly HashSet<int> entities = new();
-
-
+    
     private readonly ChunkModule chunkModule;
     private readonly EntityModule entityModule;
     private readonly HealthModule healthModule;
@@ -67,6 +63,11 @@ public sealed class Player : LivingEntity
 
     public bool CanSee(Entity entity)
     {
+        if (entity == this)
+        {
+            return false;
+        }
+        
         return entityModule.HasLoaded(entity);
     }
 
@@ -84,7 +85,6 @@ public sealed class Player : LivingEntity
     public void RefreshChunks()
     {
         chunkModule.Tick();
-        chunkModule.Update();
     }
 
     public override void Tick()
@@ -116,7 +116,8 @@ public sealed class Player : LivingEntity
         {
             new SpawnPlayerPacket(Id, UniqueId, Position, Rotation),
             new EntityMetadataPacket(Id, Metadata.GetEntries()),
-            new HeadRotationPacket(Id, Rotation.GetIntYaw())
+            new HeadRotationPacket(Id, Rotation.GetIntYaw()),
+            new EquipmentPacket(Id, EquipmentSlot.MainHand, Inventory.ItemInMainHand)
         };
     }
 

@@ -1,4 +1,5 @@
 using Minesharp.Common;
+using Minesharp.Common.Enum;
 
 namespace Minesharp.Game.Inventories;
 
@@ -15,6 +16,11 @@ public abstract class Inventory
     {
         get => stacks[index];
         set => stacks[index] = value;
+    }
+
+    public short GetSlot(ItemStack item)
+    {
+        return (short)Array.IndexOf(stacks, item);
     }
 
     public ItemStack[] GetContent()

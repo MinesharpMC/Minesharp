@@ -26,11 +26,6 @@ public class ChunkManager
 
     public void UnloadChunk(Chunk chunk)
     {
-        if (chunk.IsLocked)
-        {
-            return;
-        }
-
         chunks.Remove(chunk.Key, out _);
     }
 

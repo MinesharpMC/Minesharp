@@ -1,5 +1,6 @@
 using Minesharp.Common.Enum;
 using Minesharp.Packet.Game.Client;
+using Minesharp.Packet.Game.Server;
 
 namespace Minesharp.Network.Processor.Game;
 
@@ -20,9 +21,16 @@ public class PlayerActionProcessor : PacketProcessor<PlayerActionPacket>
                 player.Breaking = null;
                 break;
             case PlayerAction.FinishDigging:
+                if (block != player.Breaking)
+                {
+                    return;
+                }
+                
                 player.Breaking.BreakBy(player);
                 player.Breaking = null;
                 break;
         }
+        
+        player.SendPacket(new AckBlockChangePacket(packet.Sequence));
     }
 }

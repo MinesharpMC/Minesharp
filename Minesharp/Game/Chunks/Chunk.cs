@@ -8,7 +8,7 @@ namespace Minesharp.Game.Chunks;
 public sealed class Chunk : IEquatable<Chunk>
 {
     private int lockCount;
-    private readonly List<ModifiedBlock> modifiedBlocks = new();
+    private readonly List<BlockChange> changes = new();
 
     public Chunk(ChunkKey key, World world)
     {
@@ -23,7 +23,7 @@ public sealed class Chunk : IEquatable<Chunk>
     public sbyte[] Heightmap { get; set; }
     public World World { get; }
 
-    public bool IsLocked => lockCount > 0;
+    public bool IsUsed => lockCount > 0;
 
     public bool Equals(Chunk other)
     {
@@ -53,9 +53,9 @@ public sealed class Chunk : IEquatable<Chunk>
         }
     }
 
-    public IList<ModifiedBlock> GetModifiedBlocks()
+    public IList<BlockChange> GetChanges()
     {
-        return modifiedBlocks;
+        return changes;
     }
 
     public int GetBlockType(int x, int y, int z)
@@ -104,10 +104,11 @@ public sealed class Chunk : IEquatable<Chunk>
         }
 
         section.SetType(chunkX, y, chunkZ, type);
-        modifiedBlocks.Add(new ModifiedBlock
+        
+        changes.Add(new BlockChange
         {
             Position = new Position(x, y, z),
-            Type = type
+            BlockType = type
         });
     }
 
@@ -133,6 +134,6 @@ public sealed class Chunk : IEquatable<Chunk>
 
     public void Tick()
     {
-        modifiedBlocks.Clear();
+        changes.Clear();
     }
 }

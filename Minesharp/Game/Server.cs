@@ -6,6 +6,7 @@ using Minesharp.Game.Managers;
 using Minesharp.Game.Schedule;
 using Minesharp.Game.Worlds;
 using Minesharp.Packet;
+using Serilog;
 
 namespace Minesharp.Game;
 
