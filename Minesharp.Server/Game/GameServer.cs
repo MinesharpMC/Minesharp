@@ -1,9 +1,11 @@
 using Minesharp.Entities;
+using Minesharp.Events;
 using Minesharp.Server.Configuration;
 using Minesharp.Server.Game.Blocks;
 using Minesharp.Server.Game.Broadcast;
 using Minesharp.Server.Game.Entities;
 using Minesharp.Server.Game.Managers;
+using Minesharp.Server.Game.Plugins;
 using Minesharp.Server.Game.Schedule;
 using Minesharp.Server.Game.Worlds;
 using Minesharp.Server.Network.Packet;
@@ -21,6 +23,7 @@ public sealed class GameServer : IServer
     private readonly PlayerManager playerManager;
     private readonly ServerConfiguration configuration;
     private readonly BlockRegistry blockRegistry;
+    private readonly PluginManager pluginManager;
 
     private readonly long[] ticks = new long[TickRate];
 
@@ -36,6 +39,7 @@ public sealed class GameServer : IServer
         Scheduler = new Scheduler();
         playerManager = new PlayerManager();
         this.blockRegistry = blockRegistry;
+        this.pluginManager = new PluginManager(this);
     }
 
     public int MaxPlayers => configuration.MaxPlayers;
@@ -45,6 +49,7 @@ public sealed class GameServer : IServer
     public IEnumerable<Player> Players => playerManager.GetPlayers();
 
     public Scheduler Scheduler { get; }
+    public PluginManager PluginManager => pluginManager;
 
     public BlockRegistry BlockRegistry => blockRegistry;
 
@@ -86,6 +91,12 @@ public sealed class GameServer : IServer
     public IEnumerable<IPlayer> GetPlayers()
     {
         return Players;
+    }
+
+    public T CallEvent<T>(T e) where T : IEvent
+    {
+        pluginManager.CallEvent(e);
+        return e;
     }
 
     public IEnumerable<IWorld> GetWorlds()

@@ -22,11 +22,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<BlockRegistry>();
     }
 
-    public static void AddPluginManager(this IServiceCollection services)
-    {
-        services.AddSingleton<PluginManager>();
-    }
-
     public static void AddNetworkServer(this IServiceCollection services)
     {
         services.AddSingleton<NetworkServer>();

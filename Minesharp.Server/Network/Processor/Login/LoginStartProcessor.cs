@@ -1,4 +1,5 @@
 using Minesharp.Chat;
+using Minesharp.Events.Player;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Game;
 using Minesharp.Server.Game.Entities;
@@ -75,10 +76,22 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
 
+        var e = server.CallEvent(new PlayerJoinEvent
+        {
+            Player = player,
+            Message = $"{player.Username} joined the game"
+        });
+
+        if (e.IsCancelled)
+        {
+            session.Disconnect();
+            return;
+        }
+
         world.AddPlayer(player);
         server.AddPlayer(player);
 
-        server.BroadcastMessage($"{player.Username} joined the game", ChatColor.Yellow);
+        server.BroadcastMessage(e.Message, ChatColor.Yellow);
         server.BroadcastPlayerListAdd(player);
 
         player.RefreshChunks();

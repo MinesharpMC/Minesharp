@@ -11,13 +11,12 @@ public class ServerService : BackgroundService
     private readonly ILogger<ServerService> logger;
     private readonly NetworkServer networkServer;
     private readonly GameServer server;
-    private readonly PluginManager pluginManager;
-    public ServerService(GameServer server, ILogger<ServerService> logger, NetworkServer networkServer, PluginManager pluginManager)
+
+    public ServerService(GameServer server, ILogger<ServerService> logger, NetworkServer networkServer)
     {
         this.server = server;
         this.logger = logger;
         this.networkServer = networkServer;
-        this.pluginManager = pluginManager;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,7 +41,7 @@ public class ServerService : BackgroundService
         }
         
         logger.LogInformation("Starting plugins");
-        pluginManager.StartAll();
+        server.PluginManager.StartAll();
 
         logger.LogInformation("Starting server");
         await networkServer.StartAsync();
@@ -58,7 +57,7 @@ public class ServerService : BackgroundService
         await networkServer.StopAsync();
         
         logger.LogInformation("Stopping plugins");
-        pluginManager.StopAll();
+        server.PluginManager.StopAll();
         
         logger.LogInformation("Server is now stopped");
     }
