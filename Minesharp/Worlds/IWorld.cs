@@ -5,6 +5,11 @@ namespace Minesharp.Worlds;
 
 public interface IWorld
 {
+    public Guid Id { get; }
+    public string Name { get; }
+    public Difficulty Difficulty { get; }
+    public GameMode GameMode { get; }
+    
     IEnumerable<IEntity> GetEntities();
     IEnumerable<IPlayer> GetPlayers();
 

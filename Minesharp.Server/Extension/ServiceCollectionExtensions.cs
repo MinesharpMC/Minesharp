@@ -2,6 +2,7 @@ using Minesharp.Server.Configuration;
 using Minesharp.Server.Game;
 using Minesharp.Server.Game.Blocks;
 using Minesharp.Server.Game.Managers;
+using Minesharp.Server.Game.Plugins;
 using Minesharp.Server.Network;
 using Minesharp.Server.Network.Packet;
 using Minesharp.Server.Network.Processor;
@@ -19,6 +20,11 @@ public static class ServiceCollectionExtensions
     public static void AddRegistry(this IServiceCollection services)
     {
         services.AddSingleton<BlockRegistry>();
+    }
+
+    public static void AddPluginManager(this IServiceCollection services)
+    {
+        services.AddSingleton<PluginManager>();
     }
 
     public static void AddNetworkServer(this IServiceCollection services)

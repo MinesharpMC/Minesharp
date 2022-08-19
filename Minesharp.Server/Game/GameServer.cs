@@ -1,3 +1,4 @@
+using Minesharp.Entities;
 using Minesharp.Server.Configuration;
 using Minesharp.Server.Game.Blocks;
 using Minesharp.Server.Game.Broadcast;
@@ -6,10 +7,11 @@ using Minesharp.Server.Game.Managers;
 using Minesharp.Server.Game.Schedule;
 using Minesharp.Server.Game.Worlds;
 using Minesharp.Server.Network.Packet;
+using Minesharp.Worlds;
 
 namespace Minesharp.Server.Game;
 
-public sealed class GameServer
+public sealed class GameServer : IServer
 {
     public const string Version = "1.19";
     public const int Protocol = 759;
@@ -39,6 +41,8 @@ public sealed class GameServer
     public int MaxPlayers => configuration.MaxPlayers;
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
+    public IEnumerable<World> Worlds => worldManager.GetWorlds();
+    public IEnumerable<Player> Players => playerManager.GetPlayers();
 
     public Scheduler Scheduler { get; }
 
@@ -79,14 +83,14 @@ public sealed class GameServer
         }
     }
 
-    public IEnumerable<Player> GetPlayers()
+    public IEnumerable<IPlayer> GetPlayers()
     {
-        return playerManager.GetPlayers();
+        return Players;
     }
 
-    public IEnumerable<World> GetWorlds()
+    public IEnumerable<IWorld> GetWorlds()
     {
-        return worldManager.GetWorlds();
+        return Worlds;
     }
 
     public World GetDefaultWorld()

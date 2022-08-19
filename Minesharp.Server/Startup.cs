@@ -20,6 +20,7 @@ public sealed class Startup
         services.AddNetworkConfiguration(configuration);
 
         services.AddRegistry();
+        services.AddPluginManager();
 
         services.AddPacketFactory();
         services.AddPacketProcessor();

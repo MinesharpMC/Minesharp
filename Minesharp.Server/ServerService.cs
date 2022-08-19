@@ -1,8 +1,8 @@
 using Minesharp.Server.Game;
 using Minesharp.Server.Game.Chunks.Generator;
+using Minesharp.Server.Game.Plugins;
 using Minesharp.Server.Game.Worlds;
 using Minesharp.Server.Network;
-using Serilog;
 
 namespace Minesharp.Server;
 
@@ -11,12 +11,13 @@ public class ServerService : BackgroundService
     private readonly ILogger<ServerService> logger;
     private readonly NetworkServer networkServer;
     private readonly GameServer server;
-
-    public ServerService(GameServer server, ILogger<ServerService> logger, NetworkServer networkServer)
+    private readonly PluginManager pluginManager;
+    public ServerService(GameServer server, ILogger<ServerService> logger, NetworkServer networkServer, PluginManager pluginManager)
     {
         this.server = server;
         this.logger = logger;
         this.networkServer = networkServer;
+        this.pluginManager = pluginManager;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -39,6 +40,9 @@ public class ServerService : BackgroundService
             logger.LogError("Failed to create world");
             return;
         }
+        
+        logger.LogInformation("Starting plugins");
+        pluginManager.StartAll();
 
         logger.LogInformation("Starting server");
         await networkServer.StartAsync();
@@ -47,18 +51,15 @@ public class ServerService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            try
-            {
-                server.Tick();
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Something happened when ticking server");
-            }
+            server.Tick();
         }
 
         logger.LogInformation("Stopping server");
         await networkServer.StopAsync();
+        
+        logger.LogInformation("Stopping plugins");
+        pluginManager.StopAll();
+        
         logger.LogInformation("Server is now stopped");
     }
 }
