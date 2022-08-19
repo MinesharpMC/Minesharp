@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Minesharp.Plugins;
 
 /// <summary>
-/// Interface implemented by all plugins
+///     Interface implemented by all plugins
 /// </summary>
 public interface IPlugin
 {

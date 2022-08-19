@@ -4,11 +4,11 @@ using DotNetty.Buffers;
 using Minesharp.Chat.Component;
 using Minesharp.Nbt;
 using Minesharp.Nbt.Writer;
-using Minesharp.Server.Game.Entities.Meta;
-using Minesharp.Server.Game.Storages;
+using Minesharp.Server.Common;
+using Minesharp.Server.Entities.Metadata;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Network.Packet.Utility;
-using Minesharp.Server.Utility;
+using Minesharp.Server.Storages;
 
 namespace Minesharp.Server.Extension;
 

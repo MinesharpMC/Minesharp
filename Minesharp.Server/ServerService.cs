@@ -1,8 +1,6 @@
-using Minesharp.Server.Game;
-using Minesharp.Server.Game.Chunks.Generator;
-using Minesharp.Server.Game.Plugins;
-using Minesharp.Server.Game.Worlds;
+using Minesharp.Server.Chunks.Generator;
 using Minesharp.Server.Network;
+using Minesharp.Server.Worlds;
 
 namespace Minesharp.Server;
 
@@ -39,7 +37,7 @@ public class ServerService : BackgroundService
             logger.LogError("Failed to create world");
             return;
         }
-        
+
         logger.LogInformation("Starting plugins");
         await server.PluginManager.StartAll();
 
@@ -55,10 +53,10 @@ public class ServerService : BackgroundService
 
         logger.LogInformation("Stopping server");
         await networkServer.StopAsync();
-        
+
         logger.LogInformation("Stopping plugins");
         await server.PluginManager.StopAll();
-        
+
         logger.LogInformation("Server is now stopped");
     }
 }

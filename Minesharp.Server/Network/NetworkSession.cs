@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using DotNetty.Transport.Channels;
-using Minesharp.Server.Game.Entities;
+using Minesharp.Server.Entities;
 using Minesharp.Server.Network.Packet;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Network.Processor;

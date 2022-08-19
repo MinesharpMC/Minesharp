@@ -3,7 +3,7 @@ using Minesharp.Entities;
 namespace Minesharp.Events.Player;
 
 /// <summary>
-/// Event called when a player disconnect
+///     Event called when a player disconnect
 /// </summary>
 public class PlayerDisconnectEvent : IEvent
 {
@@ -13,7 +13,7 @@ public class PlayerDisconnectEvent : IEvent
     }
 
     /// <summary>
-    /// Player who disconnected
+    ///     Player who disconnected
     /// </summary>
     public IPlayer Player { get; }
 }

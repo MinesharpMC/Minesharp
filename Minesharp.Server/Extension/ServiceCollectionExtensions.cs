@@ -1,8 +1,5 @@
-using Minesharp.Server.Configuration;
-using Minesharp.Server.Game;
-using Minesharp.Server.Game.Blocks;
-using Minesharp.Server.Game.Managers;
-using Minesharp.Server.Game.Plugins;
+using Minesharp.Server.Blocks;
+using Minesharp.Server.Common.Configuration;
 using Minesharp.Server.Network;
 using Minesharp.Server.Network.Packet;
 using Minesharp.Server.Network.Processor;

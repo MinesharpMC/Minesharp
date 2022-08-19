@@ -1,8 +1,7 @@
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
-using Minesharp.Server.Configuration;
-using Minesharp.Server.Game.Managers;
+using Minesharp.Server.Common.Configuration;
 using Minesharp.Server.Network.Packet;
 using Minesharp.Server.Network.Pipeline;
 using Minesharp.Server.Network.Processor;

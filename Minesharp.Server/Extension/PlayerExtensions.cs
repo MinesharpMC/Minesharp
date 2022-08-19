@@ -1,4 +1,4 @@
-using Minesharp.Server.Game.Entities;
+using Minesharp.Server.Entities;
 using Minesharp.Server.Network.Packet.Game.Server;
 
 namespace Minesharp.Server.Extension;
@@ -29,10 +29,7 @@ public static class PlayerExtensions
 
     public static void SendAckBlockChange(this Player player, int sequence)
     {
-        player.SendPacket(new AckBlockChangePacket
-        {
-            Sequence = sequence
-        });
+        player.SendPacket(new AckBlockChangePacket(sequence));
     }
 
     public static void SendInventorySlot(this Player player, short slot)

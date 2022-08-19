@@ -1,13 +1,12 @@
 using Minesharp.Chat;
 using Minesharp.Events.Player;
+using Minesharp.Server.Common;
+using Minesharp.Server.Entities;
 using Minesharp.Server.Extension;
-using Minesharp.Server.Game;
-using Minesharp.Server.Game.Entities;
-using Minesharp.Server.Game.Storages;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Network.Packet.Login.Client;
 using Minesharp.Server.Network.Packet.Login.Server;
-using Minesharp.Server.Utility;
+using Minesharp.Server.Storages;
 
 namespace Minesharp.Server.Network.Processor.Login;
 

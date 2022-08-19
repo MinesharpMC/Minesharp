@@ -1,4 +1,3 @@
-using Minesharp.Server.Game;
 using Minesharp.Server.Network.Packet.Status.Client;
 using Minesharp.Server.Network.Packet.Status.Server;
 

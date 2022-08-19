@@ -1,5 +1,4 @@
 using Minesharp.Chat.Component;
-using Minesharp.Server.Game;
 using Minesharp.Server.Network.Packet.Handshake.Client;
 using Minesharp.Server.Network.Packet.Login.Server;
 

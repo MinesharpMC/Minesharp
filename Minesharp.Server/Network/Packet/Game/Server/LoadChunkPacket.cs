@@ -1,7 +1,7 @@
 using DotNetty.Buffers;
 using Minesharp.Nbt;
+using Minesharp.Server.Common;
 using Minesharp.Server.Extension;
-using Minesharp.Server.Utility;
 
 namespace Minesharp.Server.Network.Packet.Game.Server;
 

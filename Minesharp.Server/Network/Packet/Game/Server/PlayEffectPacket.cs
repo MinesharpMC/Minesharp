@@ -1,6 +1,6 @@
 using DotNetty.Buffers;
+using Minesharp.Server.Common.Enum;
 using Minesharp.Server.Extension;
-using Minesharp.Server.Game.Enum;
 
 namespace Minesharp.Server.Network.Packet.Game.Server;
 

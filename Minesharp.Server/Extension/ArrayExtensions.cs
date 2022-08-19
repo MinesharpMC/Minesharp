@@ -1,4 +1,4 @@
-using Minesharp.Server.Game.Chunks;
+using Minesharp.Server.Chunks;
 
 namespace Minesharp.Server.Extension;
 

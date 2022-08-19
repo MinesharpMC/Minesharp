@@ -4,7 +4,7 @@ using Minesharp.Entities;
 namespace Minesharp.Events.Block;
 
 /// <summary>
-/// Event called when a player place a block
+///     Event called when a player place a block
 /// </summary>
 public class BlockPlaceEvent : IEvent
 {
@@ -15,17 +15,17 @@ public class BlockPlaceEvent : IEvent
     }
 
     /// <summary>
-    /// Block placed
+    ///     Block placed
     /// </summary>
     public IBlock Block { get; }
-    
+
     /// <summary>
-    /// Player who placed the block
+    ///     Player who placed the block
     /// </summary>
     public IPlayer Player { get; }
-    
+
     /// <summary>
-    /// Define if this event should be cancelled
+    ///     Define if this event should be cancelled
     /// </summary>
     public bool IsCancelled { get; set; }
 }

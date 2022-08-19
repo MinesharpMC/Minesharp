@@ -1,6 +1,6 @@
 using DotNetty.Buffers;
+using Minesharp.Server.Entities.Metadata;
 using Minesharp.Server.Extension;
-using Minesharp.Server.Game.Entities.Meta;
 
 namespace Minesharp.Server.Network.Packet.Game.Server;
 

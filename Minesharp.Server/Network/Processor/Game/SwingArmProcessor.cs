@@ -1,5 +1,5 @@
-using Minesharp.Server.Game.Broadcast;
-using Minesharp.Server.Game.Enum;
+using Minesharp.Server.Common.Broadcast;
+using Minesharp.Server.Common.Enum;
 using Minesharp.Server.Network.Packet.Game.Server;
 
 namespace Minesharp.Server.Network.Processor.Game;

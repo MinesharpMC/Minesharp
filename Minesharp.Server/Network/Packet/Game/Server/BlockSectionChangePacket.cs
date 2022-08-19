@@ -1,4 +1,4 @@
-using Minesharp.Server.Game.Blocks;
+using Minesharp.Server.Blocks;
 
 namespace Minesharp.Server.Network.Packet.Game.Server;
 

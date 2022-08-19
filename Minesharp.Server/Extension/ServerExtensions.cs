@@ -1,8 +1,7 @@
 using Minesharp.Chat;
 using Minesharp.Chat.Component;
-using Minesharp.Server.Game;
-using Minesharp.Server.Game.Broadcast;
-using Minesharp.Server.Game.Entities;
+using Minesharp.Server.Common.Broadcast;
+using Minesharp.Server.Entities;
 using Minesharp.Server.Network.Packet.Game.Server;
 
 namespace Minesharp.Server.Extension;

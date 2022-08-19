@@ -1,6 +1,5 @@
 using Minesharp.Events.Block;
 using Minesharp.Server.Extension;
-using Minesharp.Server.Game.Storages;
 using Minesharp.Server.Network.Packet.Game.Client;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Serilog;
@@ -34,7 +33,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         }
 
         target.Type = item.Type;
-        
+
         var e = player.Server.CallEvent(new BlockPlaceEvent(block, player));
         if (e.IsCancelled)
         {
@@ -49,8 +48,8 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             player.Inventory.ItemInMainHand = null;
             world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInMainHand));
         }
-            
+
         player.SendInventorySlot(player.Inventory.MainHandSlot);
-        player.SendPacket(new AckBlockChangePacket(packet.Sequence));
+        player.SendAckBlockChange(packet.Sequence);
     }
 }
