@@ -6,6 +6,11 @@ public class PlayerJoinEvent : IEvent
 {
     public IPlayer Player { get; init; }
     public string Message { get; set; }
-    
+
+    public PlayerJoinEvent(IPlayer player)
+    {
+        Player = player;
+    }
+
     public bool IsCancelled { get; set; }
 }

@@ -1,3 +1,4 @@
+using Minesharp.Events.Block;
 using Minesharp.Server.Game.Enum;
 using Minesharp.Server.Network.Packet.Game.Client;
 using Minesharp.Server.Network.Packet.Game.Server;
@@ -26,7 +27,12 @@ public class PlayerActionProcessor : PacketProcessor<PlayerActionPacket>
                     return;
                 }
 
-                player.Breaking.BreakBy(player);
+                var e = player.Server.CallEvent(new BlockBreakEvent(block));
+                if (!e.IsCancelled)
+                {
+                    block.BreakBy(player);
+                }
+                
                 player.Breaking = null;
                 break;
         }

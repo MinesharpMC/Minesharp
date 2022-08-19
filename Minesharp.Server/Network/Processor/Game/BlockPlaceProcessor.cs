@@ -1,3 +1,4 @@
+using Minesharp.Events.Block;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Game.Storages;
 using Minesharp.Server.Network.Packet.Game.Client;
@@ -32,6 +33,15 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             return;
         }
 
+        target.Type = item.Type;
+        
+        var e = player.Server.CallEvent(new BlockPlaceEvent(block, player));
+        if (e.IsCancelled)
+        {
+            target.Type = Material.Air;
+            return;
+        }
+
         item.Amount--;
 
         if (item.Amount == 0)
@@ -39,10 +49,8 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             player.Inventory.ItemInMainHand = null;
             world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInMainHand));
         }
-
-        target.Type = item.Type;
-
-        player.SendPacket(new AckBlockChangePacket(packet.Sequence));
+            
         player.SendInventorySlot(player.Inventory.MainHandSlot);
+        player.SendPacket(new AckBlockChangePacket(packet.Sequence));
     }
 }

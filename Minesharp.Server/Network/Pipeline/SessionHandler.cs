@@ -1,4 +1,5 @@
 using DotNetty.Transport.Channels;
+using Minesharp.Events.Player;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Game.Managers;
 using Serilog;
@@ -33,6 +34,8 @@ public class SessionHandler : ChannelHandlerAdapter
         var player = session.Player;
         if (player is not null)
         {
+            player.Server.CallEvent(new PlayerDisconnectEvent(player));
+            
             player.World.RemovePlayer(player);
             player.Server.RemovePlayer(player);
             player.Server.BroadcastPlayerListRemove(player);

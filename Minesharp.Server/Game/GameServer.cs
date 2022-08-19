@@ -15,9 +15,10 @@ namespace Minesharp.Server.Game;
 
 public sealed class GameServer : IServer
 {
-    public const string Version = "1.19";
     public const int Protocol = 759;
     public const int TickRate = 125;
+    public const string Version = "1.19";
+    
     private readonly WorldManager worldManager;
     private readonly SessionManager sessionManager;
     private readonly PlayerManager playerManager;
@@ -50,7 +51,6 @@ public sealed class GameServer : IServer
 
     public Scheduler Scheduler { get; }
     public PluginManager PluginManager => pluginManager;
-
     public BlockRegistry BlockRegistry => blockRegistry;
 
     public int Tps { get; private set; }
