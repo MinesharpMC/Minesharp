@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>disable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <ServerGarbageCollection>false</ServerGarbageCollection>
+        <AssemblyName>Minesharp.Server</AssemblyName>
+        <RootNamespace>Minesharp.Server</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Minesharp.Chat" Version="1.0.0" />
+        <PackageReference Include="Minesharp.Nbt" Version="1.1.0" />
+        <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.2.0" />
+        <PackageReference Include="Serilog" Version="2.11.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
+        <PackageReference Include="DotNetty.Buffers" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Codecs" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Common" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Handlers" Version="0.7.4" />
+        <PackageReference Include="DotNetty.Transport" Version="0.7.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="config.yaml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="blocks.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Network\Packet\Handshake\Server" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Minesharp\Minesharp.csproj" />
+    </ItemGroup>
+
+</Project>

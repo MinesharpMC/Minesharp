@@ -1,0 +1,37 @@
+using DotNetty.Buffers;
+using Minesharp.Server.Extension;
+using Minesharp.Server.Game.Entities.Meta;
+
+namespace Minesharp.Server.Network.Packet.Game.Server;
+
+public class EntityMetadataPacket : GamePacket
+{
+    public int EntityId { get; init; }
+    public IList<KeyValuePair<MetadataIndex, object>> Entries { get; init; }
+
+    public EntityMetadataPacket()
+    {
+    }
+
+    public EntityMetadataPacket(int entityId, IList<KeyValuePair<MetadataIndex, object>> entries)
+    {
+        EntityId = entityId;
+        Entries = entries;
+    }
+}
+
+public class EntityMetadataPacketCodec : GamePacketCodec<EntityMetadataPacket>
+{
+    public override int PacketId => 0x4D;
+
+    protected override EntityMetadataPacket Decode(IByteBuffer buffer)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void Encode(EntityMetadataPacket packet, IByteBuffer buffer)
+    {
+        buffer.WriteVarInt(packet.EntityId);
+        buffer.WriteMetadata(packet.Entries);
+    }
+}
