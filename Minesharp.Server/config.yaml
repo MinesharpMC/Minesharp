@@ -4,4 +4,4 @@ Network:
 Server:
   MaxPlayers: 1000
   Description: "Powered by Minesharp"
-  ViewDistance: 2
+  ViewDistance: 10
