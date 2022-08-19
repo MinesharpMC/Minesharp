@@ -41,7 +41,7 @@ public class ServerService : BackgroundService
         }
         
         logger.LogInformation("Starting plugins");
-        server.PluginManager.StartAll();
+        await server.PluginManager.StartAll();
 
         logger.LogInformation("Starting server");
         await networkServer.StartAsync();
@@ -57,7 +57,7 @@ public class ServerService : BackgroundService
         await networkServer.StopAsync();
         
         logger.LogInformation("Stopping plugins");
-        server.PluginManager.StopAll();
+        await server.PluginManager.StopAll();
         
         logger.LogInformation("Server is now stopped");
     }

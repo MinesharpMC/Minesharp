@@ -1,7 +1,12 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Minesharp.Plugins;
 
+/// <summary>
+/// Interface implemented by all plugins
+/// </summary>
 public interface IPlugin
 {
-    void Start();
-    void Stop();
+    void ConfigureDependencies(IServiceCollection services);
+    void Configure(IPluginBuilder plugin);
 }

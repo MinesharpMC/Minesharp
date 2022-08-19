@@ -25,8 +25,6 @@ public abstract class Entity : IEquatable<Entity>, IEntity
     public int Id { get; init; }
     public Guid UniqueId { get; init; }
 
-    public Location Location => new(World, Position);
-
     public Rotation Rotation { get; set; }
 
     public IWorld GetWorld()

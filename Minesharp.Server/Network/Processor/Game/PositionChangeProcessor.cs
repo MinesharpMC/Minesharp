@@ -9,7 +9,7 @@ public class PositionChangeProcessor : PacketProcessor<PositionChangePacket>
     protected override void Process(NetworkSession session, PositionChangePacket packet)
     {
         var player = session.Player;
-        var e = session.Player.Server.CallEvent(new PlayerMoveEvent(session.Player, new Location(player.World, player.Position), new Location(player.World, packet.Position)));
+        var e = session.Player.Server.CallEvent(new PlayerMoveEvent(session.Player, player.Position, packet.Position));
 
         if (e.IsCancelled)
         {
@@ -17,10 +17,7 @@ public class PositionChangeProcessor : PacketProcessor<PositionChangePacket>
             return;
         }
 
-        player.Position = !e.From.World.Equals(e.To.World) 
-            ? packet.Position 
-            : e.To.Position;
-        
+        player.Position = e.To;
         player.IsGrounded = packet.IsGrounded;
     }
 }

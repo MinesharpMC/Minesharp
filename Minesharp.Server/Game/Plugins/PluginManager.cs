@@ -21,7 +21,7 @@ public class PluginManager
         this.server = server;
     }
 
-    public void StartAll()
+    public async Task StartAll()
     {
         if (!Directory.Exists(storagePath))
         {
@@ -56,8 +56,6 @@ public class PluginManager
             var types = assembly.GetTypes();
 
             var pluginType = types.FirstOrDefault(x => typeof(IPlugin).IsAssignableFrom(x));
-            var dependencyType = types.FirstOrDefault(x => typeof(IPluginFactory).IsAssignableFrom(x));
-
             if (pluginType == null)
             {
                 Log.Error("Failed to load {plugin}", configuration.Name);
@@ -66,6 +64,15 @@ public class PluginManager
             
             var services = new ServiceCollection();
 
+            var plugin = Activator.CreateInstance(pluginType) as IPlugin;
+            if (plugin is null)
+            {
+                continue;
+            }
+            
+            plugin.ConfigureDependencies(services);
+            plugin.Configure(new PluginBuilder(services));
+            
             services.AddLogging(x =>
             {
                 var logger = new LoggerConfiguration()
@@ -77,36 +84,22 @@ public class PluginManager
                 
                 x.AddSerilog(logger);
             });
-            services.TryAddSingleton<IServer>(server);
-            services.TryAddSingleton(typeof(IPlugin), pluginType);
-            
-            if (dependencyType is not null)
-            {
-                var dependency = Activator.CreateInstance(dependencyType) as IPluginFactory;
-                if (dependency is not null)
-                {
-                    dependency.Configure(services);
-                }
-            }
 
+            services.TryAddSingleton<IServer>(server);
+            
             var provider = services.BuildServiceProvider();
             
-            var plugin = provider.GetService<IPlugin>();
-            if (plugin is null)
+            var hostedServices = provider.GetServices<IHostedService>();
+            foreach (var hostedService in hostedServices)
             {
-                Log.Error("Failed to get plugin instance");
-                continue;
+                await hostedService.StartAsync(CancellationToken.None);
             }
             
-            plugin.Start();
             plugins.Add(new PluginWrapper
             {
-                Plugin = plugin,
+                Name = configuration.Name,
                 Services = provider,
-                Name = configuration.Name
             });
-
-            Log.Information("Successfully started plugin {name} ({assembly})", configuration.Name, assembly.GetName().Name);
         }
     }
 
@@ -122,11 +115,15 @@ public class PluginManager
         }
     }
 
-    public void StopAll()
+    public async Task StopAll()
     {
         foreach (var wrapper in plugins)
         {
-            wrapper.Plugin.Stop();
+            var hostedServices = wrapper.Services.GetServices<IHostedService>();
+            foreach (var hostedService in hostedServices)
+            {
+                await hostedService.StopAsync(CancellationToken.None);
+            }
         }
     }
 }

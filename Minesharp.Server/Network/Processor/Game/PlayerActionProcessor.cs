@@ -27,7 +27,7 @@ public class PlayerActionProcessor : PacketProcessor<PlayerActionPacket>
                     return;
                 }
 
-                var e = player.Server.CallEvent(new BlockBreakEvent(block));
+                var e = player.Server.CallEvent(new BlockBreakEvent(block, player));
                 if (!e.IsCancelled)
                 {
                     block.BreakBy(player);

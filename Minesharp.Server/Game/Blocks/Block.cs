@@ -16,8 +16,6 @@ public sealed class Block : IEquatable<Block>, IBlock
 
     public int BlockType => World.Server.BlockRegistry.GetBlockType(Type);
 
-    public Location Location => new(World, Position);
-
     public Material Type
     {
         get => World.GetBlockTypeAt(Position);
