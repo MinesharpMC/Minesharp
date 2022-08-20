@@ -124,6 +124,9 @@ public sealed class Player : LivingEntity, IPlayer
         healthModule = new HealthModule(this);
         breakModule = new BreakModule(this);
         metadataModule = new MetadataModule(this);
+
+        Height = 1.8;
+        Width = 0.6;
         
         Metadata.Set(MetadataIndex.Status, (byte)0);
     }

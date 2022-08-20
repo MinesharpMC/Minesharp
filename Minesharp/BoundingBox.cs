@@ -12,29 +12,37 @@ public class BoundingBox
     public double Depth => Maximum.Z - Minimum.Z;
     
     public Vector Center => new(Minimum.X + Width * 0.5, Minimum.Y + Height * 0.5, Minimum.Z + Depth * 0.5);
-    
-    public BoundingBox(double x, double y, double z, double x2, double y2, double z2)
+
+    private BoundingBox(Vector minimum, Vector maximum)
     {
-        var minX = Math.Min(x, x2);
-        var minY = Math.Min(y, y2);
-        var minZ = Math.Min(z, z2);
-
-        var maxX = Math.Max(x, x2);
-        var maxY = Math.Max(y, y2);
-        var maxZ = Math.Max(z, z2);
-
-        Minimum = new Vector(minX, minY, minZ);
-        Maximum = new Vector(maxX, maxY, maxZ);
+        Minimum = minimum;
+        Maximum = maximum;
     }
 
     public static BoundingBox Of(IBlock block)
     {
-        return new BoundingBox(block.Position.BlockX, block.Position.BlockY, block.Position.BlockZ, block.Position.BlockX + 1, block.Position.BlockY + 1, block.Position.BlockZ + 1);
+        var minX = block.Position.BlockX;
+        var minY = block.Position.BlockY;
+        var minZ = block.Position.BlockZ;
+
+        var maxX = block.Position.BlockX  + 1;
+        var maxY = block.Position.BlockY  + 1;
+        var maxZ = block.Position.BlockZ  + 1;
+        
+        return new BoundingBox(new Vector(minX, minY, minZ), new Vector(maxX, maxY, maxZ));
     }
 
     public static BoundingBox Of(IEntity entity)
     {
-        return new BoundingBox(entity.Position.X - entity.Width / 2, entity.Position.Y, entity.Position.X - entity.Width / 2, entity.Position.X + entity.Width / 2, entity.Position.Y + entity.Height, entity.Position.Z + entity.Width / 2);
+        var minX = entity.Position.X - entity.Width / 2;
+        var minY = entity.Position.Y;
+        var minZ = entity.Position.Z - entity.Width / 2;
+
+        var maxX = entity.Position.X + entity.Width / 2;
+        var maxY = entity.Position.Y + entity.Height;
+        var maxZ = entity.Position.Z + entity.Width / 2;
+        
+        return new BoundingBox(new Vector(minX, minY, minZ), new Vector(maxX, maxY, maxZ));
     }
 
     public bool Intersect(BoundingBox box)
@@ -45,5 +53,18 @@ public class BoundingBox
                && Minimum.Y <= box.Maximum.Y
                && Maximum.Z >= box.Minimum.Z 
                && Minimum.Z <= box.Maximum.Z;
+    }
+
+    public BoundingBox Expand(double x, double y, double z)
+    {
+        var minX = Minimum.X - x;
+        var minY = Minimum.Y - y;
+        var minZ = Minimum.Z - z;
+
+        var maxX = Maximum.X + x;
+        var maxY = Maximum.Y + y;
+        var maxZ = Maximum.Z + z;
+
+        return new BoundingBox(new Vector(minX, minY, minZ), new Vector(maxX, maxY, maxZ));
     }
 }

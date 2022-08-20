@@ -32,18 +32,20 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         if (e.IsCancelled)
         {
             target.Type = Material.Air;
-            return;
         }
-
-        item.Amount--;
-
-        if (item.Amount == 0)
+        else
         {
-            player.Inventory.ItemInMainHand = null;
-            world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInMainHand));
-        }
+            item.Amount--;
 
-        player.SendInventorySlot(player.Inventory.MainHandSlot);
+            if (item.Amount == 0)
+            {
+                player.Inventory.ItemInMainHand = null;
+                world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInMainHand));
+            }
+
+            player.SendInventorySlot(player.Inventory.MainHandSlot);
+        }
+        
         player.SendAckBlockChange(packet.Sequence);
     }
 }

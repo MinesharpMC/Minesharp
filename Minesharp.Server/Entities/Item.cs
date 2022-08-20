@@ -1,4 +1,5 @@
 using Minesharp.Server.Entities.Metadata;
+using Minesharp.Server.Extension;
 using Minesharp.Server.Network.Packet.Game;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Worlds;
@@ -23,7 +24,23 @@ public class Item : Entity
 
     public override void Tick()
     {
-        
+        var entities = GetNearbyEntities(1, 0.5, 1);
+        foreach (var entity in entities)
+        {
+            if (entity is not Player player)
+            {
+                continue;
+            }
+
+            var pickedUp = player.Inventory.AddItem(ItemStack);
+            if (pickedUp)
+            {
+                World.RemoveEntity(this);
+                player.SendInventory();
+            }
+
+            player.SendInventory();
+        }
     }
 
     public override IEnumerable<GamePacket> GetSpawnPackets()
@@ -32,8 +49,8 @@ public class Item : Entity
         {
             new SpawnEntityPacket(Id, UniqueId, 44, Position),
             new EntityMetadataPacket(Id, Metadata.GetEntries()),
-            new EntityTeleportPacket(Id, Position),
-            new EntityVelocityPacket(Id, Velocity)
+            // new EntityTeleportPacket(Id, Position),
+            // new EntityVelocityPacket(Id, Velocity)
         };
     }
 }

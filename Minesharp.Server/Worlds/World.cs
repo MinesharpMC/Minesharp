@@ -213,6 +213,11 @@ public sealed class World : IEquatable<World>, IWorld
         entityManager.Remove(player);
     }
 
+    public void RemoveEntity(Entity entity)
+    {
+        entityManager.Remove(entity);
+    }
+
     public void Tick()
     {
         var chunks = chunkManager.GetChunks();
