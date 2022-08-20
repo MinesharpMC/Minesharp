@@ -20,7 +20,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             return;
         }
 
-        var item = session.Player.Inventory.ItemInMainHand;
+        var item = session.Player.Inventory.ItemInHand;
         if (item == null)
         {
             return;
@@ -39,11 +39,11 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
 
             if (item.Amount == 0)
             {
-                player.Inventory.ItemInMainHand = null;
-                world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInMainHand));
+                player.Inventory.ItemInHand = null;
+                world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInHand));
             }
 
-            player.SendInventorySlot(player.Inventory.MainHandSlot);
+            player.SendInventorySlot(player.Inventory.HandSlot);
         }
         
         player.SendAckBlockChange(packet.Sequence);

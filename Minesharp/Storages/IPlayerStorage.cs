@@ -2,6 +2,6 @@ namespace Minesharp.Storages;
 
 public interface IPlayerStorage
 {
-    ItemStack ItemInMainHand { get; }
+    ItemStack ItemInHand { get; }
     ItemStack ItemInOffHand { get; }
 }

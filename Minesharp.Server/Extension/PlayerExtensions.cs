@@ -22,8 +22,8 @@ public static class PlayerExtensions
         {
             Window = 0,
             State = 0,
-            Items = player.Inventory.Contents,
-            HeldItem = player.Inventory.ItemInMainHand
+            Items = player.Inventory.Contents.ToArray(),
+            HeldItem = player.Inventory.ItemInHand
         });
     }
 

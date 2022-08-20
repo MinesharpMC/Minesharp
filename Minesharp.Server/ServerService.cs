@@ -49,7 +49,14 @@ public class ServerService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            server.Tick();
+            try
+            {
+                server.Tick();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error when ticking server");
+            }
         }
 
         logger.LogInformation("Stopping server");

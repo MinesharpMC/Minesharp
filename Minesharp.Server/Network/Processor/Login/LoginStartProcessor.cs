@@ -7,6 +7,7 @@ using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Network.Packet.Login.Client;
 using Minesharp.Server.Network.Packet.Login.Server;
 using Minesharp.Server.Storages;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Network.Processor.Login;
 
@@ -23,20 +24,21 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
     {
         var world = server.GetDefaultWorld();
         var position = world.SpawnPosition;
+        var inventory = new PlayerStorage();
+
+        // TODO: Load inventory
+        inventory.AddItem(new ItemStack(Material.Stone));
+        inventory.AddItem(new ItemStack(Material.GrassBlock));
+        inventory.AddItem(new ItemStack(Material.Dirt));
+        inventory.AddItem(new ItemStack(Material.Cobblestone));
+
         var player = session.Player = new Player(session, world, position)
         {
             Username = packet.Username,
             Rotation = world.SpawnRotation,
             GameMode = world.GameMode,
             ViewDistance = server.ViewDistance,
-            Inventory = new PlayerStorage
-            {
-                [36] = new(Material.Stone),
-                [37] = new(Material.GrassBlock),
-                [38] = new(Material.Dirt),
-                [39] = new(Material.Bedrock),
-                MainHandSlot = 36
-            }
+            Inventory = inventory
         };
 
         session.SendPacket(new LoginSuccessPacket

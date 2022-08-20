@@ -106,7 +106,7 @@ public sealed class Player : LivingEntity, IPlayer
             new SpawnPlayerPacket(Id, UniqueId, Position, Rotation),
             new EntityMetadataPacket(Id, Metadata.GetEntries()),
             new HeadRotationPacket(Id, Rotation.GetIntYaw()),
-            new EquipmentPacket(Id, EquipmentSlot.MainHand, Inventory.ItemInMainHand)
+            new EquipmentPacket(Id, EquipmentSlot.MainHand, Inventory.ItemInHand)
         };
     }
 

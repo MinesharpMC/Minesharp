@@ -76,6 +76,22 @@ public static class ByteBufferExtensions
         }
     }
 
+    public static ItemStack ReadItemStack(this IByteBuffer buffer)
+    {
+        var exist = buffer.ReadBoolean();
+        if (exist)
+        {
+            var typeId = buffer.ReadVarInt();
+            var amount = buffer.ReadByte();
+            var material = Material.GetMaterial(typeId);
+            var nbt = buffer.ReadByte();
+            
+            return new ItemStack(material, amount);
+        }
+
+        return null;
+    }
+
     public static void WriteMetadata(this IByteBuffer buffer, IList<KeyValuePair<MetadataIndex, object>> entries)
     {
         foreach (var (index, value) in entries)

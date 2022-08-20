@@ -12,8 +12,8 @@ public class ChangeHeldItemProcessor : PacketProcessor<ChangeHeldItemPacket>
         var inventory = player.Inventory;
         var slot = (short)(packet.Slot + 36);
 
-        inventory.MainHandSlot = slot;
+        inventory.HandSlot = slot;
 
-        player.World.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, inventory.ItemInMainHand), new CanSeeEntityRule(player));
+        player.World.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, inventory.ItemInHand), new CanSeeEntityRule(player));
     }
 }

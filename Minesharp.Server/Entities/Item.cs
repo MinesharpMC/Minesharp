@@ -32,11 +32,14 @@ public class Item : Entity
                 continue;
             }
 
-            var pickedUp = player.Inventory.AddItem(ItemStack);
-            if (pickedUp)
+            var remaining = player.Inventory.AddItem(ItemStack);
+            if (remaining == null)
             {
                 World.RemoveEntity(this);
-                player.SendInventory();
+            }
+            else
+            {
+                ItemStack = remaining;
             }
 
             player.SendInventory();
