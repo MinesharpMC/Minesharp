@@ -35,6 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Blocks\State" />
         <Folder Include="Network\Packet\Handshake\Server" />
     </ItemGroup>
 

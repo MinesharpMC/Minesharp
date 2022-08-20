@@ -7,7 +7,7 @@ public class MetadataRegistry
 
     public MetadataRegistry()
     {
-        values[MetadataIndex.Status] = (byte)0;
+        
     }
 
     public void Set(MetadataIndex index, object value)
@@ -16,6 +16,10 @@ public class MetadataRegistry
         if (value is byte b)
         {
             values[index] = b;
+        }
+        else
+        {
+            values[index] = value;
         }
 
         if (previous != value)

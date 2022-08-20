@@ -17,6 +17,12 @@ public class EntityTeleportPacket : GamePacket
         IsGrounded = isGrounded;
     }
 
+    public EntityTeleportPacket(int entityId, Position position)
+    {
+        EntityId = entityId;
+        Position = position;
+    }
+
     public int EntityId { get; init; }
     public Position Position { get; init; }
     public Rotation Angle { get; init; }

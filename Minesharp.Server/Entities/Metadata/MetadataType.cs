@@ -1,3 +1,6 @@
+using Minesharp.Chat.Component;
+using Minesharp.Storages;
+
 namespace Minesharp.Server.Entities.Metadata;
 
 public class MetadataType
@@ -15,7 +18,10 @@ public class MetadataType
     public static MetadataType Int { get; } = Create<int>();
     public static MetadataType Float { get; } = Create<float>();
     public static MetadataType String { get; } = Create<string>();
-
+    public static MetadataType Chat { get; } = Create<TextComponent>();
+    public static MetadataType OptChat { get; } = Create<TextComponent>(true);
+    public static MetadataType Item { get; } = Create<ItemStack>();
+    
     public int Id { get; }
     public Type Type { get; }
     public bool IsOptional { get; }

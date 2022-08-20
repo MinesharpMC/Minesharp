@@ -9,6 +9,7 @@ using Minesharp.Server.Entities.Metadata;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Network.Packet.Utility;
 using Minesharp.Server.Storages;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Extension;
 
@@ -64,7 +65,7 @@ public static class ByteBufferExtensions
         return new Position(x, y, z);
     }
 
-    public static void WriteStack(this IByteBuffer buffer, Stack stack)
+    public static void WriteItemStack(this IByteBuffer buffer, ItemStack stack)
     {
         buffer.WriteBoolean(stack != null);
         if (stack != null)
@@ -117,6 +118,11 @@ public static class ByteBufferExtensions
             if (index.Type == MetadataType.String)
             {
                 buffer.WriteString((string)value);
+            }
+
+            if (index.Type == MetadataType.Item)
+            {
+                buffer.WriteItemStack((ItemStack)value);
             }
         }
 
@@ -312,6 +318,13 @@ public static class ByteBufferExtensions
         buffer.WriteShort((short)delta.X);
         buffer.WriteShort((short)delta.Y);
         buffer.WriteShort((short)delta.Z);
+    }
+
+    public static void WriteVector(this IByteBuffer buffer, Vector vector)
+    {
+        buffer.WriteShort((short)(vector.X * 8000));
+        buffer.WriteShort((short)(vector.Y * 8000));
+        buffer.WriteShort((short)(vector.Z * 8000));
     }
 
     public static void WriteAngle(this IByteBuffer buffer, Rotation rotation)

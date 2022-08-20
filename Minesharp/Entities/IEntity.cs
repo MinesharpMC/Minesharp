@@ -10,12 +10,12 @@ public interface IEntity
     /// <summary>
     ///     Id of this entity
     /// </summary>
-    int Id { get; init; }
+    int Id { get; }
 
     /// <summary>
     ///     Unique identifier for this entity
     /// </summary>
-    Guid UniqueId { get; init; }
+    Guid UniqueId { get; }
 
     /// <summary>
     ///     Position of this entity

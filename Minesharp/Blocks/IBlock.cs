@@ -1,4 +1,5 @@
 using Minesharp.Chunks;
+using Minesharp.Storages;
 using Minesharp.Worlds;
 
 namespace Minesharp.Blocks;
@@ -25,7 +26,8 @@ public interface IBlock
     IWorld GetWorld();
 
     IChunk GetChunk();
-
-    IBlockState GetState();
+    
     T GetState<T>() where T : class, IBlockState;
+
+    IEnumerable<ItemStack> GetDrops(ItemStack tool = null);
 }

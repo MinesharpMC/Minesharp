@@ -8,6 +8,7 @@ using Minesharp.Server.Extension;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Storages;
 using Minesharp.Server.Worlds;
+using Minesharp.Storages;
 using Minesharp.Worlds;
 
 namespace Minesharp.Server.Blocks;
@@ -76,7 +77,7 @@ public sealed class Block : IEquatable<Block>, IBlock
         return GetRelative((int)modifier.X, (int)modifier.Y, (int)modifier.Z);
     }
 
-    public IEnumerable<Stack> GetDrops(Stack tool = null)
+    public IEnumerable<ItemStack> GetDrops(ItemStack tool = null)
     {
         return Server.GetBlockFrom(Type).GetDrops(tool);
     }

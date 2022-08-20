@@ -1,6 +1,7 @@
 using DotNetty.Buffers;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Storages;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Network.Packet.Game.Server;
 
@@ -10,7 +11,7 @@ public class EquipmentPacket : GamePacket
     {
     }
 
-    public EquipmentPacket(int entityId, EquipmentSlot slot, Stack item)
+    public EquipmentPacket(int entityId, EquipmentSlot slot, ItemStack item)
     {
         EntityId = entityId;
         Slot = slot;
@@ -19,7 +20,7 @@ public class EquipmentPacket : GamePacket
 
     public int EntityId { get; init; }
     public EquipmentSlot Slot { get; init; }
-    public Stack Item { get; init; }
+    public ItemStack Item { get; init; }
 }
 
 public class EquipmentPacketCodec : GamePacketCodec<EquipmentPacket>
@@ -35,6 +36,6 @@ public class EquipmentPacketCodec : GamePacketCodec<EquipmentPacket>
     {
         buffer.WriteVarInt(packet.EntityId);
         buffer.WriteVarIntEnum(packet.Slot);
-        buffer.WriteStack(packet.Item);
+        buffer.WriteItemStack(packet.Item);
     }
 }

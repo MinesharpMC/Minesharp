@@ -20,12 +20,6 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             return;
         }
 
-        if (world.HasEntityAt(target.Position))
-        {
-            Log.Warning("Can't place block at {position} because and entity is here", target.Position);
-            return;
-        }
-
         var item = session.Player.Inventory.ItemInMainHand;
         if (item == null)
         {

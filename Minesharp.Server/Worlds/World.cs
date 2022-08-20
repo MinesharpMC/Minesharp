@@ -6,7 +6,9 @@ using Minesharp.Server.Blocks.Type;
 using Minesharp.Server.Chunks;
 using Minesharp.Server.Common.Broadcast;
 using Minesharp.Server.Entities;
+using Minesharp.Server.Extension;
 using Minesharp.Server.Network.Packet.Game;
+using Minesharp.Storages;
 using Minesharp.Worlds;
 
 namespace Minesharp.Server.Worlds;
@@ -104,6 +106,27 @@ public sealed class World : IEquatable<World>, IWorld
         return GetBlockTypeAt(position.BlockX, position.BlockY, position.BlockZ);
     }
 
+    public void DropItem(Position position, ItemStack item)
+    {
+        var radius = 0.1;
+        var offsetX = Random.NextDouble(radius * 2) - radius;
+        var offsetY = 0.15;
+        var offsetZ = Math.Sqrt(Math.Pow(radius, 2) - Math.Pow(offsetX, 2));
+        
+        if (Random.NextBoolean()) 
+        {
+            offsetZ *= -1;
+        }
+
+        var drop = new Item(this)
+        {
+            ItemStack = item,
+            Position = new Position(position.X + 0.5, position.Y + 0.5, position.Z + 0.5),
+        };
+        
+        entityManager.Add(drop);
+    }
+
     public void SetBlockTypeAt(Position position, Material material)
     {
         SetBlockTypeAt(position.BlockX, position.BlockY, position.BlockZ, material);
@@ -180,6 +203,11 @@ public sealed class World : IEquatable<World>, IWorld
     {
         playerManager.Add(player);
         entityManager.Add(player);
+    }
+
+    public void AddEntity(Entity entity)
+    {
+        entityManager.Add(entity);
     }
 
     public void Broadcast(GamePacket packet, params IBroadcastRule[] rules)

@@ -15,18 +15,27 @@ public abstract class Entity : IEquatable<Entity>, IEntity
     public bool IsGrounded { get; set; }
     public Position LastPosition { get; set; }
     public Rotation LastRotation { get; set; }
-    public GameServer Server { get; init; }
+    public GameServer Server { get; }
     public long TicksLived { get; set; }
     public MetadataRegistry Metadata { get; } = new();
 
     public bool Moved => Position != LastPosition;
     public bool Rotated => Rotation != LastRotation;
     public Position Position { get; set; }
-    public int Id { get; init; }
-    public Guid UniqueId { get; init; }
-
     public Rotation Rotation { get; set; }
+    
+    public int Id { get; }
+    public Guid UniqueId { get; }
 
+    public Entity(World world)
+    {
+        World = world;
+
+        Id = World.Server.GetNextEntityId();
+        UniqueId = Guid.NewGuid();
+        Server = World.Server;
+    }
+    
     public IWorld GetWorld()
     {
         return World;

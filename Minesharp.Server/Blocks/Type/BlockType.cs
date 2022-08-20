@@ -1,7 +1,5 @@
-using Minesharp.Server.Blocks.State;
-using Minesharp.Server.Chunks;
 using Minesharp.Server.Storages;
-using Minesharp.Server.Worlds;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Blocks.Type;
 
@@ -14,8 +12,8 @@ public abstract class BlockType
         return new BlockState(block);
     }
 
-    public virtual IEnumerable<Stack> GetDrops(Stack tool)
+    public virtual IEnumerable<ItemStack> GetDrops(ItemStack tool)
     {
-        return Array.Empty<Stack>();
+        return Array.Empty<ItemStack>();
     }
 }

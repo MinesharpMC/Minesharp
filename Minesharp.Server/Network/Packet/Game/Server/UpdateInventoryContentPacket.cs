@@ -1,6 +1,7 @@
 using DotNetty.Buffers;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Storages;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Network.Packet.Game.Server;
 
@@ -8,8 +9,8 @@ public class UpdateInventoryContentPacket : GamePacket
 {
     public byte Window { get; init; }
     public int State { get; set; }
-    public Stack[] Items { get; init; }
-    public Stack HeldItem { get; init; }
+    public ItemStack[] Items { get; init; }
+    public ItemStack HeldItem { get; init; }
 }
 
 public class UpdateInventoryContentPacketCodec : GamePacketCodec<UpdateInventoryContentPacket>
@@ -29,9 +30,9 @@ public class UpdateInventoryContentPacketCodec : GamePacketCodec<UpdateInventory
 
         foreach (var value in packet.Items)
         {
-            buffer.WriteStack(value);
+            buffer.WriteItemStack(value);
         }
 
-        buffer.WriteStack(packet.HeldItem);
+        buffer.WriteItemStack(packet.HeldItem);
     }
 }

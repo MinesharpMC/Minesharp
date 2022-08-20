@@ -22,7 +22,7 @@ public static class PlayerExtensions
         {
             Window = 0,
             State = 0,
-            Items = player.Inventory.Content,
+            Items = player.Inventory.Contents,
             HeldItem = player.Inventory.ItemInMainHand
         });
     }
@@ -34,7 +34,7 @@ public static class PlayerExtensions
 
     public static void SendInventorySlot(this Player player, short slot)
     {
-        var item = player.Inventory[slot];
+        var item = player.Inventory.GetItem(slot);
         player.SendPacket(new UpdateInventorySlotPacket
         {
             Window = 0,

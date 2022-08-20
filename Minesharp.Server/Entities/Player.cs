@@ -8,6 +8,7 @@ using Minesharp.Server.Network.Packet;
 using Minesharp.Server.Network.Packet.Game;
 using Minesharp.Server.Network.Packet.Game.Server;
 using Minesharp.Server.Storages;
+using Minesharp.Server.Worlds;
 using Minesharp.Storages;
 
 namespace Minesharp.Server.Entities;
@@ -21,17 +22,6 @@ public sealed class Player : LivingEntity, IPlayer
     private readonly HealthModule healthModule;
     private readonly BreakModule breakModule;
     private readonly MetadataModule metadataModule;
-
-    public Player(NetworkSession session)
-    {
-        this.session = session;
-
-        chunkModule = new ChunkModule(this);
-        entityModule = new EntityModule(this, chunkModule);
-        healthModule = new HealthModule(this);
-        breakModule = new BreakModule(this);
-        metadataModule = new MetadataModule(this);
-    }
 
     public PlayerStorage Inventory { get; init; }
 
@@ -130,5 +120,18 @@ public sealed class Player : LivingEntity, IPlayer
     public void SendPacket(IPacket packet)
     {
         session.SendPacket(packet);
+    }
+
+    public Player(NetworkSession session, World world) : base(world)
+    {
+        this.session = session;
+
+        chunkModule = new ChunkModule(this);
+        entityModule = new EntityModule(this, chunkModule);
+        healthModule = new HealthModule(this);
+        breakModule = new BreakModule(this);
+        metadataModule = new MetadataModule(this);
+        
+        Metadata.Set(MetadataIndex.Status, (byte)0);
     }
 }

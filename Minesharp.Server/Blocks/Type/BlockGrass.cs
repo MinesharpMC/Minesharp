@@ -1,4 +1,5 @@
 using Minesharp.Server.Storages;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Blocks.Type;
 
@@ -6,11 +7,11 @@ public class BlockGrass : BlockType
 {
     public override Material[] Types { get; } = { Material.GrassBlock };
     
-    public override IEnumerable<Stack> GetDrops(Stack tool)
+    public override IEnumerable<ItemStack> GetDrops(ItemStack tool)
     {
         return new[]
         {
-            new Stack(Material.Dirt, 1)
+            new ItemStack(Material.Dirt)
         };
     }
 }

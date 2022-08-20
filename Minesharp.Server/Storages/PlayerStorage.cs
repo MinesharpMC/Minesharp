@@ -8,28 +8,24 @@ public class PlayerStorage : Storage, IPlayerStorage
     {
     }
 
-    public Stack ItemInMainHand
+    public ItemStack this[int slot]
     {
-        get => this[MainHandSlot];
-        set => this[MainHandSlot] = value;
+        get => GetItem(slot);
+        set => SetItem(slot, value);
     }
 
-    public Stack ItemInOffHand
+    public ItemStack ItemInMainHand
     {
-        get => this[OffHandSlot];
-        set => this[OffHandSlot] = value;
+        get => GetItem(MainHandSlot);
+        set => SetItem(MainHandSlot, value);
+    }
+
+    public ItemStack ItemInOffHand
+    {
+        get => GetItem(OffHandSlot);
+        set => SetItem(OffHandSlot, value);
     }
 
     public short MainHandSlot { get; set; }
     public short OffHandSlot { get; set; }
-
-    public IStack GetItemInMainHand()
-    {
-        return ItemInMainHand;
-    }
-
-    public IStack GetItemInOffHand()
-    {
-        return ItemInOffHand;
-    }
 }

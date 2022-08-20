@@ -4,35 +4,24 @@ namespace Minesharp.Server.Storages;
 
 public class Storage : IStorage
 {
-    private readonly Stack[] stacks;
+    private readonly ItemStack[] stacks;
 
     public Storage(int size)
     {
-        stacks = new Stack[size];
+        stacks = new ItemStack[size];
     }
 
-    public Stack[] Content => stacks.ToArray();
-
-    public Stack this[int index]
-    {
-        get => stacks[index];
-        set => stacks[index] = value;
-    }
-
-    public int Size => stacks.Length;
-
-    public int GetSlot(IStack stack)
-    {
-        return Array.IndexOf(stacks, stack);
-    }
-
-    public IStack GetStack(int slot)
+    public ItemStack[] Contents => stacks.ToArray();
+    
+    public ItemStack GetItem(int slot)
     {
         return stacks[slot];
     }
 
-    public IStack[] GetContent()
+    public void SetItem(int slot, ItemStack stack)
     {
-        return Content;
+        stacks[slot] = stack;
     }
+
+    public int Size => stacks.Length;
 }

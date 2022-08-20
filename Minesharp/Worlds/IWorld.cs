@@ -1,6 +1,7 @@
 using Minesharp.Blocks;
 using Minesharp.Chunks;
 using Minesharp.Entities;
+using Minesharp.Storages;
 
 namespace Minesharp.Worlds;
 
@@ -18,5 +19,8 @@ public interface IWorld
     IEntity GetEntity(Guid uniqueId);
     IPlayer GetPlayer(Guid uniqueId);
     IChunk GetChunk(Position position);
+    
     Material GetBlockTypeAt(Position position);
+
+    void DropItem(Position position, ItemStack item);
 }

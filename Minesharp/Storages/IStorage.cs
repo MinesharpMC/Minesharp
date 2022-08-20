@@ -3,8 +3,9 @@ namespace Minesharp.Storages;
 public interface IStorage
 {
     int Size { get; }
-
-    int GetSlot(IStack stack);
-    IStack GetStack(int slot);
-    IStack[] GetContent();
+    
+    ItemStack[] Contents { get; }
+    
+    ItemStack GetItem(int slot);
+    void SetItem(int slot, ItemStack stack);
 }
