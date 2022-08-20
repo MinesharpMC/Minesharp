@@ -20,8 +20,8 @@ public class ServerService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Loading block registry");
-        server.BlockRegistry.LoadBlockTypes();
-        server.BlockRegistry.LoadBlocksMapping();
+        server.BlockRegistry.LoadBlockTypeMapping();
+        server.BlockRegistry.LoadBlockIdMapping();
 
         logger.LogInformation("Creating world");
         var world = server.CreateWorld(new WorldCreator

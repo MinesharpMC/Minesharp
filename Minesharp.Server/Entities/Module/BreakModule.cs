@@ -62,8 +62,4 @@ public class BreakModule
             });
         }
     }
-
-    public void Update()
-    {
-    }
 }

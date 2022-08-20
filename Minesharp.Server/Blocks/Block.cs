@@ -15,13 +15,15 @@ namespace Minesharp.Server.Blocks;
 
 public sealed class Block : IEquatable<Block>, IBlock
 {
-    public World World { get; init; }
     public GameServer Server => World.Server;
+    
+    public World World { get; }
+    public Position Position { get; }
+    public BoundingBox BoundingBox { get; }
 
     public Chunk Chunk => World.GetChunkAt(Position);
 
-    public int BlockType => World.Server.BlockRegistry.GetBlockId(Type);
-    public Position Position { get; init; }
+    public int BlockType => World.Server.BlockRegistry.GetBlockIdFromMaterial(Type);
 
     public Material Type
     {
@@ -31,6 +33,13 @@ public sealed class Block : IEquatable<Block>, IBlock
 
     public BlockState State => Server.GetBlockFrom(Type).GetState(this);
 
+    public Block(World world, Position position)
+    {
+        World = world;
+        Position = position;
+        BoundingBox = BoundingBox.Of(this);
+    }
+    
     public IWorld GetWorld()
     {
         return World;

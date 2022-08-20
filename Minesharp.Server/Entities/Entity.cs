@@ -1,3 +1,4 @@
+using Minesharp.Blocks;
 using Minesharp.Entities;
 using Minesharp.Server.Entities.Metadata;
 using Minesharp.Server.Extension;
@@ -18,22 +19,30 @@ public abstract class Entity : IEquatable<Entity>, IEntity
     public GameServer Server { get; }
     public long TicksLived { get; set; }
     public MetadataRegistry Metadata { get; } = new();
+    
+    protected Vector Gravity { get; set; }
 
     public bool Moved => Position != LastPosition;
     public bool Rotated => Rotation != LastRotation;
     public Position Position { get; set; }
     public Rotation Rotation { get; set; }
     
+    public double Height { get; protected set; }
+    public double Width { get; protected set; }
+
     public int Id { get; }
     public Guid UniqueId { get; }
+    
+    public BoundingBox BoundingBox => BoundingBox.Of(this);
 
-    public Entity(World world)
+    public Entity(World world, Position position)
     {
         World = world;
-
-        Id = World.Server.GetNextEntityId();
-        UniqueId = Guid.NewGuid();
         Server = World.Server;
+        Id = Server.GetNextEntityId();
+        UniqueId = Guid.NewGuid();
+        Position = position;
+        LastPosition = position;
     }
     
     public IWorld GetWorld()
@@ -58,7 +67,14 @@ public abstract class Entity : IEquatable<Entity>, IEntity
 
     public abstract void Tick();
 
-    public abstract void Update();
+    public virtual void Update()
+    {
+        LastPosition = Position;
+        LastRotation = Rotation;
+        TicksLived += 1;
+        
+        Metadata.ClearChanges();
+    }
 
     public virtual IEnumerable<GamePacket> GetSpawnPackets()
     {

@@ -1,3 +1,4 @@
+using Minesharp.Blocks;
 using Minesharp.Worlds;
 
 namespace Minesharp.Entities;
@@ -32,4 +33,9 @@ public interface IEntity
     /// </summary>
     /// <returns>The world where this entity is currently</returns>
     IWorld GetWorld();
+    
+    double Height { get; }
+    double Width { get; }
+    
+    BoundingBox BoundingBox { get; }
 }

@@ -42,20 +42,6 @@ public class ChunkModule
             }
         }
 
-        foreach (var chunkKey in outdatedChunks)
-        {
-            var chunk = world.GetChunk(chunkKey);
-            if (chunk is null)
-            {
-                continue;
-            }
-
-            player.SendPacket(new UnloadChunkPacket(chunk.X, chunk.Z));
-
-            chunks.Remove(chunk.Key);
-            chunk.RemoveLock();
-        }
-
         foreach (var key in newChunks)
         {
             var chunk = world.LoadChunk(key);
@@ -106,6 +92,20 @@ public class ChunkModule
             });
 
             chunks.Add(key);
+        }
+        
+        foreach (var chunkKey in outdatedChunks)
+        {
+            var chunk = world.GetChunk(chunkKey);
+            if (chunk is null)
+            {
+                continue;
+            }
+
+            player.SendPacket(new UnloadChunkPacket(chunk.X, chunk.Z));
+
+            chunks.Remove(chunk.Key);
+            chunk.RemoveLock();
         }
 
         if (position.BlockX != lastPosition.BlockX || position.BlockZ != lastPosition.BlockZ)

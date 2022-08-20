@@ -9,7 +9,7 @@ public class MetadataIndex : IEquatable<MetadataIndex>
     }
 
     public static MetadataIndex Status { get; } = new(0, MetadataType.Byte);
-    public static MetadataIndex Item { get; } = new(6, MetadataType.Item);
+    public static MetadataIndex Item { get; } = new(8, MetadataType.Item);
     
     public int Id { get; }
     public MetadataType Type { get; }

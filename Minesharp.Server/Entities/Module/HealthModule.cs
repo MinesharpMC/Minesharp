@@ -72,8 +72,4 @@ public class HealthModule
                 break;
         }
     }
-
-    public void Update()
-    {
-    }
 }

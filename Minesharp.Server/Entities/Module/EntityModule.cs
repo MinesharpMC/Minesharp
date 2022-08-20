@@ -64,10 +64,6 @@ public class EntityModule
         }
     }
 
-    public void Update()
-    {
-    }
-
     public bool HasLoaded(Entity entity)
     {
         return entities.Contains(entity.Id);

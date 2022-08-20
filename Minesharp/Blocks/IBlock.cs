@@ -30,4 +30,6 @@ public interface IBlock
     T GetState<T>() where T : class, IBlockState;
 
     IEnumerable<ItemStack> GetDrops(ItemStack tool = null);
+    
+    BoundingBox BoundingBox { get; }
 }

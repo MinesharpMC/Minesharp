@@ -90,20 +90,13 @@ public sealed class Player : LivingEntity, IPlayer
         healthModule.Tick();
         breakModule.Tick();
         metadataModule.Tick();
-
-        TicksLived += 1;
     }
 
     public override void Update()
     {
         chunkModule.Update();
-        entityModule.Update();
-        healthModule.Update();
-        breakModule.Update();
-        metadataModule.Update();
 
-        LastPosition = Position;
-        LastRotation = Rotation;
+        base.Update();
     }
 
     public override IEnumerable<GamePacket> GetSpawnPackets()
@@ -122,7 +115,7 @@ public sealed class Player : LivingEntity, IPlayer
         session.SendPacket(packet);
     }
 
-    public Player(NetworkSession session, World world) : base(world)
+    public Player(NetworkSession session, World world, Position position) : base(world, position)
     {
         this.session = session;
 

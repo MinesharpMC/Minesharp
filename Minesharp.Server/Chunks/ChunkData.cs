@@ -36,7 +36,7 @@ public class ChunkData
             return;
         }
 
-        var blockId = server.BlockRegistry.GetBlockId(material);
+        var blockId = server.BlockRegistry.GetBlockIdFromMaterial(material);
         SetBlock(x, y, z, blockId);
     }
 }

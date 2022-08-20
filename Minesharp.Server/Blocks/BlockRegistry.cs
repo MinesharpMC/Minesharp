@@ -5,12 +5,11 @@ namespace Minesharp.Server.Blocks;
 
 public class BlockRegistry
 {
-    private readonly Dictionary<Material, int> blockIds = new();
-    private readonly Dictionary<int, Material> materials = new();
-
+    private readonly Dictionary<Material, int> materialToBlockId = new();
+    private readonly Dictionary<int, Material> blockIdToMaterial = new();
     private readonly Dictionary<Material, BlockType> blockTypes = new();
 
-    public void LoadBlocksMapping()
+    public void LoadBlockIdMapping()
     {
         var root = JObject.Parse(File.ReadAllText("blocks.json"));
         foreach (var value in root.Children<JProperty>())
@@ -31,14 +30,14 @@ public class BlockRegistry
                         continue;
                     }
 
-                    blockIds[material] = id;
-                    materials[id] = material;
+                    materialToBlockId[material] = id;
+                    blockIdToMaterial[id] = material;
                 }
             }
         }
     }
     
-    public void LoadBlockTypes()
+    public void LoadBlockTypeMapping()
     {
         var blocks = typeof(BlockType).Assembly.GetTypes()
             .Where(x => typeof(BlockType).IsAssignableFrom(x))
@@ -59,17 +58,17 @@ public class BlockRegistry
         }
     }
 
-    public int GetBlockId(Material material)
+    public int GetBlockIdFromMaterial(Material material)
     {
-        return blockIds.GetValueOrDefault(material);
+        return materialToBlockId.GetValueOrDefault(material);
     }
 
-    public Material GetMaterial(int blockType)
+    public Material GetMaterialFromBlockTypeId(int blockType)
     {
-        return materials.GetValueOrDefault(blockType);
+        return blockIdToMaterial.GetValueOrDefault(blockType);
     }
 
-    public BlockType GetBlock(Material material)
+    public BlockType GetBlockType(Material material)
     {
         return blockTypes.GetValueOrDefault(material);
     }

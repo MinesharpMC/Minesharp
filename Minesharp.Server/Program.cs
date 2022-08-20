@@ -9,7 +9,7 @@ var configuration = new ConfigurationBuilder()
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}")
     .Filter.ByExcluding(Matching.FromSource("Microsoft"))
-    .MinimumLevel.Information()
+    .MinimumLevel.Debug()
     .CreateLogger();
 
 var app = Host.CreateDefaultBuilder(args)

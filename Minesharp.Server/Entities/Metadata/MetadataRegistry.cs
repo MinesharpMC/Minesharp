@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace Minesharp.Server.Entities.Metadata;
 
 public class MetadataRegistry
@@ -7,7 +9,7 @@ public class MetadataRegistry
 
     public MetadataRegistry()
     {
-        
+        values[MetadataIndex.Status] = (byte)0;
     }
 
     public void Set(MetadataIndex index, object value)

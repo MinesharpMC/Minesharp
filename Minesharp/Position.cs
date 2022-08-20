@@ -26,6 +26,16 @@ public readonly struct Position : IEquatable<Position>
         BlockZ = (int)Math.Floor(Z);
     }
 
+    public Position Add(double value)
+    {
+        return Add(value, value, value);
+    }
+    
+    public Position Add(double x, double y, double z)
+    {
+        return new Position(X + x, Y + y, Z + z);
+    }
+    
     public double DistanceSquared(Position position)
     {
         return (X - position.X).Square() + (Y - position.Y).Square() + (Z - position.Z).Square();

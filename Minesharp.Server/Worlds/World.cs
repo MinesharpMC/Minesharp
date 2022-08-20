@@ -94,11 +94,7 @@ public sealed class World : IEquatable<World>, IWorld
 
     public Block GetBlockAt(int x, int y, int z)
     {
-        return new Block
-        {
-            World = this,
-            Position = new Position(x, y, z)
-        };
+        return GetBlockAt(new Position(x, y, z));
     }
 
     public Material GetBlockTypeAt(Position position)
@@ -108,9 +104,10 @@ public sealed class World : IEquatable<World>, IWorld
 
     public void DropItem(Position position, ItemStack item)
     {
-        var radius = 0.1;
+        const double radius = 0.1;
+        const double offsetY = 0.15;
+        
         var offsetX = Random.NextDouble(radius * 2) - radius;
-        var offsetY = 0.15;
         var offsetZ = Math.Sqrt(Math.Pow(radius, 2) - Math.Pow(offsetX, 2));
         
         if (Random.NextBoolean()) 
@@ -118,10 +115,11 @@ public sealed class World : IEquatable<World>, IWorld
             offsetZ *= -1;
         }
 
-        var drop = new Item(this)
+        var dropPosition = position.Add(0.5);
+        var drop = new Item(this, dropPosition)
         {
             ItemStack = item,
-            Position = new Position(position.X + 0.5, position.Y + 0.5, position.Z + 0.5),
+            Velocity = new Vector(offsetX, offsetY, offsetZ)
         };
         
         entityManager.Add(drop);
@@ -135,7 +133,7 @@ public sealed class World : IEquatable<World>, IWorld
     public void SetBlockTypeAt(int x, int y, int z, Material material)
     {
         var chunk = GetChunkAt(x, z);
-        var blockType = Server.BlockRegistry.GetBlockId(material);
+        var blockType = Server.BlockRegistry.GetBlockIdFromMaterial(material);
 
         if (chunk is null)
         {
@@ -143,21 +141,6 @@ public sealed class World : IEquatable<World>, IWorld
         }
 
         chunk.SetBlockType(x, y, z, blockType);
-    }
-
-    public bool HasEntityAt(Position position)
-    {
-        var entities = entityManager.GetEntities();
-        foreach (var entity in entities)
-        {
-            var entityPosition = entity.Position;
-            if (entityPosition.BlockX == position.BlockX && entity.Position.BlockY == position.BlockY && entityPosition.BlockZ == position.BlockZ)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public Material GetBlockTypeAt(int x, int y, int z)
@@ -169,14 +152,14 @@ public sealed class World : IEquatable<World>, IWorld
         }
 
         var blockType = chunk.GetBlockType(x, y, z);
-        var material = Server.BlockRegistry.GetMaterial(blockType);
+        var material = Server.BlockRegistry.GetMaterialFromBlockTypeId(blockType);
 
         return material;
     }
 
     public Block GetBlockAt(Position position)
     {
-        return GetBlockAt(position.BlockX, position.BlockY, position.BlockZ);
+        return new Block(this, new Position(position.BlockX, position.BlockY, position.BlockZ));
     }
 
     public Chunk GetChunkAt(Position position)

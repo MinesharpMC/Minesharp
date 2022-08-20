@@ -16,7 +16,7 @@ namespace Minesharp.Server;
 public sealed class GameServer : IServer
 {
     public const int Protocol = 759;
-    public const int TickRate = 125;
+    public const int TickRate = 100;
     public const string Version = "1.19";
 
     private readonly WorldManager worldManager;
@@ -74,7 +74,7 @@ public sealed class GameServer : IServer
     
     public BlockType GetBlockFrom(Material material)
     {
-        return blockRegistry.GetBlock(material);
+        return blockRegistry.GetBlockType(material);
     }
 
     public void Broadcast(IPacket packet)

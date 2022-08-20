@@ -22,10 +22,10 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
     protected override void Process(NetworkSession session, LoginStartPacket packet)
     {
         var world = server.GetDefaultWorld();
-        var player = session.Player = new Player(session, world)
+        var position = world.SpawnPosition;
+        var player = session.Player = new Player(session, world, position)
         {
             Username = packet.Username,
-            Position = world.SpawnPosition,
             Rotation = world.SpawnRotation,
             GameMode = world.GameMode,
             ViewDistance = server.ViewDistance,

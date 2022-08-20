@@ -21,6 +21,7 @@ public class EntityTeleportPacket : GamePacket
     {
         EntityId = entityId;
         Position = position;
+        IsGrounded = true;
     }
 
     public int EntityId { get; init; }

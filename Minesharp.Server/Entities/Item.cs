@@ -13,18 +13,15 @@ public class Item : Entity
         get => Metadata.Get<ItemStack>(MetadataIndex.Item);
         set => Metadata.Set(MetadataIndex.Item, value);
     }
-    
-    public Item(World world) : base(world)
+
+    public Item(World world, Position position) : base(world, position)
     {
-        
+        Height = 0.25;
+        Width = 0.25;
+        Gravity = new Vector(0, -0.2, 0);
     }
 
     public override void Tick()
-    {
-        
-    }
-
-    public override void Update()
     {
         
     }
@@ -33,7 +30,7 @@ public class Item : Entity
     {
         return new GamePacket[]
         {
-            new SpawnEntityPacket(Id, UniqueId, 45, Position),
+            new SpawnEntityPacket(Id, UniqueId, 44, Position),
             new EntityMetadataPacket(Id, Metadata.GetEntries()),
             new EntityTeleportPacket(Id, Position),
             new EntityVelocityPacket(Id, Velocity)
