@@ -1,25 +1,31 @@
+using System.Diagnostics;
 using DotNetty.Buffers;
 using Minesharp.Server.Extension;
+using Serilog;
 
 namespace Minesharp.Server.Network.Packet;
 
 public sealed class PacketFactory
 {
-    private readonly Dictionary<Protocol, Dictionary<int, IPacketCodec>> codecsById;
-    private readonly Dictionary<Protocol, Dictionary<Type, IPacketCodec>> codecsByType;
+    private readonly Dictionary<Protocol, Dictionary<int, IPacketDecoder>> codecsById;
+    private readonly Dictionary<Protocol, Dictionary<Type, IPacketEncoder>> codecsByType;
 
-    public PacketFactory(IEnumerable<IPacketCodec> codecs)
+    public PacketFactory(IEnumerable<IPacketDecoder> decoders, IEnumerable<IPacketEncoder> encoders)
     {
-        codecsById = codecs.ToNestedDictionary(x => x.Protocol, x => x.PacketId);
-        codecsByType = codecs.ToNestedDictionary(x => x.Protocol, x => x.PacketType);
+        codecsById = decoders.ToNestedDictionary(x => x.Protocol, x => x.PacketId);
+        codecsByType = encoders.ToNestedDictionary(x => x.Protocol, x => x.PacketType);
     }
 
     public IPacket Decode(Protocol protocol, IByteBuffer buffer)
     {
         var packetId = buffer.ReadVarInt();
         var codec = codecsById.GetValueOrDefault(protocol)?.GetValueOrDefault(packetId);
+        
         if (codec is null)
         {
+            if (packetId != 0x01)
+                Log.Information("[DECODE] {Protocol}:{PacketId}", protocol, packetId.ToString("X"));
+            
             return default;
         }
 
@@ -32,6 +38,7 @@ public sealed class PacketFactory
         var codec = codecsByType.GetValueOrDefault(protocol)?.GetValueOrDefault(type);
         if (codec is null)
         {
+            Log.Warning("[ENCODE] {Protocol}:{PacketType} not found", protocol, type);
             return;
         }
 

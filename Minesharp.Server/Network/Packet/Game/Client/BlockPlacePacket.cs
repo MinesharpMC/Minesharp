@@ -15,7 +15,7 @@ public class BlockPlacePacket : GamePacket
     public int Sequence { get; init; }
 }
 
-public class BlockPlacePacketCodec : GamePacketCodec<BlockPlacePacket>
+public class BlockPlacePacketCodec : GamePacketDecoder<BlockPlacePacket>
 {
     public override int PacketId => 0x30;
 
@@ -41,10 +41,5 @@ public class BlockPlacePacketCodec : GamePacketCodec<BlockPlacePacket>
             IsInsideBlock = insideBlock,
             Sequence = sequence
         };
-    }
-
-    protected override void Encode(BlockPlacePacket packet, IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -12,7 +12,7 @@ public class PlayerActionPacket : GamePacket
     public int Sequence { get; init; }
 }
 
-public class PlayerActionPacketCodec : GamePacketCodec<PlayerActionPacket>
+public class PlayerActionPacketCodec : GamePacketDecoder<PlayerActionPacket>
 {
     public override int PacketId => 0x1C;
 
@@ -30,13 +30,5 @@ public class PlayerActionPacketCodec : GamePacketCodec<PlayerActionPacket>
             Face = face,
             Sequence = sequence
         };
-    }
-
-    protected override void Encode(PlayerActionPacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteVarIntEnum(packet.Action);
-        buffer.WriteBlockPosition(packet.Position);
-        buffer.WriteByteEnum(packet.Face);
-        buffer.WriteVarInt(packet.Sequence);
     }
 }

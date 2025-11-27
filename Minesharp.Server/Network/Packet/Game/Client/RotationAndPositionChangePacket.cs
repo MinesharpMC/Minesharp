@@ -10,7 +10,7 @@ public sealed class RotationAndPositionChangePacket : GamePacket
     public bool IsGrounded { get; init; }
 }
 
-public sealed class RotationAndPositionChangePacketCodec : GamePacketCodec<RotationAndPositionChangePacket>
+public sealed class RotationAndPositionChangePacketCodec : GamePacketDecoder<RotationAndPositionChangePacket>
 {
     public override int PacketId => 0x14;
 
@@ -26,12 +26,5 @@ public sealed class RotationAndPositionChangePacketCodec : GamePacketCodec<Rotat
             Rotation = rotation,
             IsGrounded = grounded
         };
-    }
-
-    protected override void Encode(RotationAndPositionChangePacket packet, IByteBuffer buffer)
-    {
-        buffer.WritePosition(packet.Position);
-        buffer.WriteRotation(packet.Rotation);
-        buffer.WriteBoolean(packet.IsGrounded);
     }
 }

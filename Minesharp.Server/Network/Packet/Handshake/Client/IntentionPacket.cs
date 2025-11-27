@@ -28,7 +28,7 @@ public sealed class IntentionPacket : HandshakePacket
     public Protocol RequestedProtocol { get; init; }
 }
 
-public sealed class IntentionPacketCodec : HandshakePacketCodec<IntentionPacket>
+public sealed class IntentionPacketCodec : HandshakePacketDecoder<IntentionPacket>
 {
     public override int PacketId => 0x0;
 
@@ -46,13 +46,5 @@ public sealed class IntentionPacketCodec : HandshakePacketCodec<IntentionPacket>
             Port = port,
             RequestedProtocol = requestedProtocol
         };
-    }
-
-    protected override void Encode(IntentionPacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteVarInt(packet.ProtocolVersion);
-        buffer.WriteString(packet.Host);
-        buffer.WriteUnsignedShort(packet.Port);
-        buffer.WriteVarIntEnum(packet.RequestedProtocol);
     }
 }

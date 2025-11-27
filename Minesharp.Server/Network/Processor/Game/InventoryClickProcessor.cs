@@ -1,4 +1,8 @@
+using Minesharp.Server.Entities;
 using Minesharp.Server.Network.Packet.Game.Client;
+using Minesharp.Server.Network.Packet.Game.Server;
+using Minesharp.Server.Storages;
+using Minesharp.Storages;
 
 namespace Minesharp.Server.Network.Processor.Game;
 
@@ -9,21 +13,21 @@ public class InventoryClickProcessor : PacketProcessor<InventoryClickPacket>
         var player = session.Player;
         var inventory = player.Inventory;
 
-        var slot = inventory.GetSlot(packet.Slot);
-        if (packet.Mode == 1)
+        foreach (var (slotIndex, stack) in packet.Items)
         {
-            if (packet.Button is 0 or 1)
-            {
-                var slots = inventory.GetSlots(slot.Type == SlotType.Container ? SlotType.QuickBar : SlotType.Container);
-                var targetSlot = slots.FirstOrDefault(x => x.IsEmpty);
-                if (targetSlot is null)
-                {
-                    return;
-                }
+            var slot = inventory.GetSlot(slotIndex);
+            if (slot == null)
+                continue;
 
-                targetSlot.Item = slot.Item;
-                slot.Item = null;
-            }
+            slot.Item = stack;
+            
+            session.SendPacket(new UpdateInventorySlotPacket
+            {
+                Window = packet.Window,
+                Slot = slotIndex,
+                State = 0,
+                Item = stack
+            });
         }
     }
 }

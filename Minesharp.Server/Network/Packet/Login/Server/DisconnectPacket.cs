@@ -12,19 +12,9 @@ public sealed class DisconnectPacket : LoginPacket
     public TextComponent Reason { get; init; }
 }
 
-public sealed class DisconnectPacketCodec : LoginPacketCodec<DisconnectPacket>
+public sealed class DisconnectPacketCodec : LoginPacketEncoder<DisconnectPacket>
 {
     public override int PacketId => 0x0;
-
-    protected override DisconnectPacket Decode(IByteBuffer buffer)
-    {
-        var reason = buffer.ReadComponent<TextComponent>();
-
-        return new DisconnectPacket
-        {
-            Reason = reason
-        };
-    }
 
     protected override void Encode(DisconnectPacket packet, IByteBuffer buffer)
     {

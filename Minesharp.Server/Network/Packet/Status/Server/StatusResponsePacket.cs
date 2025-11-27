@@ -32,16 +32,9 @@ public class StatusDescription
     [JsonProperty("text")] public string Text { get; init; }
 }
 
-public sealed class StatusResponsePacketCodec : StatusPacketCodec<StatusResponsePacket>
+public sealed class StatusResponsePacketCodec : StatusPacketEncoder<StatusResponsePacket>
 {
     public override int PacketId => 0x0;
-
-    protected override StatusResponsePacket Decode(IByteBuffer buffer)
-    {
-        var json = buffer.ReadString();
-
-        return JsonConvert.DeserializeObject<StatusResponsePacket>(json);
-    }
 
     protected override void Encode(StatusResponsePacket packet, IByteBuffer buffer)
     {

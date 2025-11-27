@@ -15,14 +15,18 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         var block = world.GetBlockAt(packet.Position);
         var target = block.GetRelative(packet.Face);
 
+        Log.Information(packet.Hand.ToString());
+        
         if (target.Type != Material.Air)
         {
+            Log.Warning("Player {name} tried to place block on non-air block", player.Username);
             return;
         }
 
         var item = session.Player.Inventory.ItemInHand;
         if (item == null)
         {
+            Log.Warning("Player {name} tried to place block without item in hand", player.Username);
             return;
         }
 

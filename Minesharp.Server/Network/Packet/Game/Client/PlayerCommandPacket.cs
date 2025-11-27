@@ -11,7 +11,7 @@ public class PlayerCommandPacket : GamePacket
     public int JumpBoost { get; init; }
 }
 
-public class PlayerCommandPacketCodec : GamePacketCodec<PlayerCommandPacket>
+public class PlayerCommandPacketCodec : GamePacketDecoder<PlayerCommandPacket>
 {
     public override int PacketId => 0x1D;
 
@@ -27,12 +27,5 @@ public class PlayerCommandPacketCodec : GamePacketCodec<PlayerCommandPacket>
             Command = command,
             JumpBoost = jumpBoost
         };
-    }
-
-    protected override void Encode(PlayerCommandPacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteVarInt(packet.EntityId);
-        buffer.WriteVarIntEnum(packet.Command);
-        buffer.WriteVarInt(packet.JumpBoost);
     }
 }

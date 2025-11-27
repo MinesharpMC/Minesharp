@@ -34,7 +34,7 @@ public sealed class LoginStartPacket : LoginPacket
     public byte[] Signature { get; init; }
 }
 
-public sealed class LoginStartPacketCodec : LoginPacketCodec<LoginStartPacket>
+public sealed class LoginStartPacketCodec : LoginPacketDecoder<LoginStartPacket>
 {
     public override int PacketId => 0x00;
 
@@ -61,10 +61,5 @@ public sealed class LoginStartPacketCodec : LoginPacketCodec<LoginStartPacket>
             PublicKey = publicKey,
             Signature = signature
         };
-    }
-
-    protected override void Encode(LoginStartPacket packet, IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -23,27 +23,9 @@ public class SpawnPlayerPacket : GamePacket
     public Rotation Rotation { get; init; }
 }
 
-public class SpawnPlayerPacketCodec : GamePacketCodec<SpawnPlayerPacket>
+public class SpawnPlayerPacketCodec : GamePacketEncoder<SpawnPlayerPacket>
 {
     public override int PacketId => 0x02;
-
-    protected override SpawnPlayerPacket Decode(IByteBuffer buffer)
-    {
-        var id = buffer.ReadVarInt();
-        var uniqueId = buffer.ReadGuid();
-        var position = buffer.ReadPosition();
-
-        var yaw = buffer.ReadByte();
-        var pitch = buffer.ReadByte();
-
-        return new SpawnPlayerPacket
-        {
-            Id = id,
-            UniqueId = uniqueId,
-            Position = position,
-            Rotation = new Rotation(pitch, yaw)
-        };
-    }
 
     protected override void Encode(SpawnPlayerPacket packet, IByteBuffer buffer)
     {

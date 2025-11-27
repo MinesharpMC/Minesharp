@@ -23,7 +23,7 @@ public sealed class PluginResponsePacket : LoginPacket
     public byte[] Data { get; init; } = Array.Empty<byte>();
 }
 
-public sealed class PluginResponsePacketCodec : LoginPacketCodec<PluginResponsePacket>
+public sealed class PluginResponsePacketCodec : LoginPacketDecoder<PluginResponsePacket>
 {
     public override int PacketId => 0x02;
 
@@ -44,16 +44,5 @@ public sealed class PluginResponsePacketCodec : LoginPacketCodec<PluginResponseP
             IsSuccessful = successful,
             Data = data
         };
-    }
-
-    protected override void Encode(PluginResponsePacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteVarInt(packet.MessageId);
-        buffer.WriteBoolean(packet.IsSuccessful);
-
-        if (packet.IsSuccessful)
-        {
-            buffer.WriteBytes(packet.Data);
-        }
     }
 }

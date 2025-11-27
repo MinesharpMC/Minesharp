@@ -23,14 +23,9 @@ public class EquipmentPacket : GamePacket
     public ItemStack Item { get; init; }
 }
 
-public class EquipmentPacketCodec : GamePacketCodec<EquipmentPacket>
+public class EquipmentPacketCodec : GamePacketEncoder<EquipmentPacket>
 {
     public override int PacketId => 0x50;
-
-    protected override EquipmentPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(EquipmentPacket packet, IByteBuffer buffer)
     {

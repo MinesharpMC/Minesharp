@@ -11,7 +11,7 @@ public sealed class PingPacket : StatusPacket
     public long Payload { get; init; }
 }
 
-public sealed class PingPacketCodec : StatusPacketCodec<PingPacket>
+public sealed class PingPacketCodec : StatusPacketDecoder<PingPacket>
 {
     public override int PacketId => 0x01;
 
@@ -23,10 +23,5 @@ public sealed class PingPacketCodec : StatusPacketCodec<PingPacket>
         {
             Payload = payload
         };
-    }
-
-    protected override void Encode(PingPacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteLong(packet.Payload);
     }
 }

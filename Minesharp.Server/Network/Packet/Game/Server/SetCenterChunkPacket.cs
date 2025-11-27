@@ -19,21 +19,9 @@ public class SetCenterChunkPacket : GamePacket
     public int ChunkZ { get; init; }
 }
 
-public class SetCenterChunkPacketCodec : GamePacketCodec<SetCenterChunkPacket>
+public class SetCenterChunkPacketCodec : GamePacketEncoder<SetCenterChunkPacket>
 {
     public override int PacketId => 0x48;
-
-    protected override SetCenterChunkPacket Decode(IByteBuffer buffer)
-    {
-        var chunkX = buffer.ReadVarInt();
-        var chunkZ = buffer.ReadVarInt();
-
-        return new SetCenterChunkPacket
-        {
-            ChunkX = chunkX,
-            ChunkZ = chunkZ
-        };
-    }
 
     protected override void Encode(SetCenterChunkPacket packet, IByteBuffer buffer)
     {

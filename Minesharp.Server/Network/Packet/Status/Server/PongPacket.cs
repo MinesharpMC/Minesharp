@@ -10,19 +10,9 @@ public sealed class PongPacket : StatusPacket
     public long Payload { get; init; }
 }
 
-public sealed class PongPacketCodec : StatusPacketCodec<PongPacket>
+public sealed class PongPacketCodec : StatusPacketEncoder<PongPacket>
 {
     public override int PacketId => 0x01;
-
-    protected override PongPacket Decode(IByteBuffer buffer)
-    {
-        var payload = buffer.ReadLong();
-
-        return new PongPacket
-        {
-            Payload = payload
-        };
-    }
 
     protected override void Encode(PongPacket packet, IByteBuffer buffer)
     {

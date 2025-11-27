@@ -64,15 +64,26 @@ public static class ServiceCollectionExtensions
 
     public static void AddPacketFactory(this IServiceCollection services)
     {
-        var codecs = typeof(IPacketCodec).Assembly.GetTypes()
-            .Where(x => typeof(IPacketCodec).IsAssignableFrom(x))
+        var decoders = typeof(IPacketDecoder).Assembly.GetTypes()
+            .Where(x => typeof(IPacketDecoder).IsAssignableFrom(x))
+            .Where(x => !x.IsInterface)
+            .Where(x => !x.IsAbstract)
+            .ToList();
+        
+        var encoders = typeof(IPacketEncoder).Assembly.GetTypes()
+            .Where(x => typeof(IPacketEncoder).IsAssignableFrom(x))
             .Where(x => !x.IsInterface)
             .Where(x => !x.IsAbstract)
             .ToList();
 
-        foreach (var type in codecs)
+        foreach (var type in decoders)
         {
-            services.AddSingleton(typeof(IPacketCodec), type);
+            services.AddSingleton(typeof(IPacketDecoder), type);
+        }
+
+        foreach (var type in encoders)
+        {
+            services.AddSingleton(typeof(IPacketEncoder), type);
         }
 
         services.AddSingleton<PacketFactory>();

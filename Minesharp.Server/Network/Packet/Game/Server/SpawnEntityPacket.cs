@@ -22,14 +22,9 @@ public class SpawnEntityPacket : GamePacket
     }
 }
 
-public class SpawnEntityPacketCodec : GamePacketCodec<SpawnEntityPacket>
+public class SpawnEntityPacketCodec : GamePacketEncoder<SpawnEntityPacket>
 {
     public override int PacketId => 0x00;
-
-    protected override SpawnEntityPacket Decode(IByteBuffer buffer)
-    {
-        return new SpawnEntityPacket(0, Guid.Empty, 0, new Position());
-    }
 
     protected override void Encode(SpawnEntityPacket packet, IByteBuffer buffer)
     {

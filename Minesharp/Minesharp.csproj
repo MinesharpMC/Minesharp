@@ -27,9 +27,4 @@
         <None Include="../README.md" Pack="true" Visible="false" PackagePath="" />
     </ItemGroup>
 
-
-    <ItemGroup>
-      <Folder Include="Blocks\State" />
-    </ItemGroup>
-
 </Project>

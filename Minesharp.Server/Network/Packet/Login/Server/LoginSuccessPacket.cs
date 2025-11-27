@@ -44,45 +44,9 @@ public sealed class LoginProperty
     public string Signature { get; init; }
 }
 
-public sealed class LoginSuccessPacketCodec : LoginPacketCodec<LoginSuccessPacket>
+public sealed class LoginSuccessPacketCodec : LoginPacketEncoder<LoginSuccessPacket>
 {
     public override int PacketId => 0x02;
-
-    protected override LoginSuccessPacket Decode(IByteBuffer buffer)
-    {
-        var id = buffer.ReadGuid();
-        var username = buffer.ReadString();
-
-        var length = buffer.ReadVarInt();
-        var properties = new LoginProperty[length];
-        for (var i = 0; i < length; i++)
-        {
-            var propertyName = buffer.ReadString();
-            var propertyValue = buffer.ReadString();
-            var propertyIsSigned = buffer.ReadBoolean();
-            var propertySignature = string.Empty;
-
-            if (propertyIsSigned)
-            {
-                propertySignature = buffer.ReadString();
-            }
-
-            properties[i] = new LoginProperty
-            {
-                Name = propertyName,
-                Value = propertyValue,
-                IsSigned = propertyIsSigned,
-                Signature = propertySignature
-            };
-        }
-
-        return new LoginSuccessPacket
-        {
-            Id = id,
-            Username = username,
-            Properties = properties
-        };
-    }
 
     protected override void Encode(LoginSuccessPacket packet, IByteBuffer buffer)
     {

@@ -33,6 +33,14 @@ public class Item : Entity
             }
 
             var remaining = player.Inventory.AddItem(ItemStack);
+            
+            World.Broadcast(new CollectItemPacket
+            {
+                CollectedId = Id,
+                CollectorId = player.Id,
+                Count = ItemStack.Amount
+            });
+            
             if (remaining == null)
             {
                 World.RemoveEntity(this);
@@ -41,7 +49,7 @@ public class Item : Entity
             {
                 ItemStack = remaining;
             }
-
+            
             player.SendInventory();
         }
     }

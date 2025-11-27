@@ -21,14 +21,9 @@ public class UpdateEntityRotationPacket : GamePacket
     public bool IsGrounded { get; init; }
 }
 
-public class UpdateEntityRotationPacketCodec : GamePacketCodec<UpdateEntityRotationPacket>
+public class UpdateEntityRotationPacketCodec : GamePacketEncoder<UpdateEntityRotationPacket>
 {
     public override int PacketId => 0x28;
-
-    protected override UpdateEntityRotationPacket Decode(IByteBuffer buffer)
-    {
-        throw new InvalidOperationException();
-    }
 
     protected override void Encode(UpdateEntityRotationPacket packet, IByteBuffer buffer)
     {

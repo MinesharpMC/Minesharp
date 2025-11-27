@@ -7,7 +7,7 @@ public class ChangeHeldItemPacket : GamePacket
     public short Slot { get; init; }
 }
 
-public class ChangeHeldItemPacketCodec : GamePacketCodec<ChangeHeldItemPacket>
+public class ChangeHeldItemPacketCodec : GamePacketDecoder<ChangeHeldItemPacket>
 {
     public override int PacketId => 0x27;
 
@@ -19,10 +19,5 @@ public class ChangeHeldItemPacketCodec : GamePacketCodec<ChangeHeldItemPacket>
         {
             Slot = slot
         };
-    }
-
-    protected override void Encode(ChangeHeldItemPacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteShort(packet.Slot);
     }
 }

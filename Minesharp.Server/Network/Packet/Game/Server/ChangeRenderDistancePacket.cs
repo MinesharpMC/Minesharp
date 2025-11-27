@@ -8,14 +8,9 @@ public class ChangeRenderDistancePacket : GamePacket
     public int ViewDistance { get; init; }
 }
 
-public class ChangeRenderDistancePacketCodec : GamePacketCodec<ChangeRenderDistancePacket>
+public class ChangeRenderDistancePacketCodec : GamePacketEncoder<ChangeRenderDistancePacket>
 {
     public override int PacketId { get; } = 0x49;
-
-    protected override ChangeRenderDistancePacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(ChangeRenderDistancePacket packet, IByteBuffer buffer)
     {

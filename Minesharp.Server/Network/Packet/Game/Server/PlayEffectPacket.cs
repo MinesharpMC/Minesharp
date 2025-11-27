@@ -12,25 +12,9 @@ public class PlayEffectPacket : GamePacket
     public bool IgnoreDistance { get; init; }
 }
 
-public class PlayEffectPacketCodec : GamePacketCodec<PlayEffectPacket>
+public class PlayEffectPacketCodec : GamePacketEncoder<PlayEffectPacket>
 {
     public override int PacketId => 0x20;
-
-    protected override PlayEffectPacket Decode(IByteBuffer buffer)
-    {
-        var effect = buffer.ReadIntEnum<Effect>();
-        var position = buffer.ReadBlockPosition();
-        var data = buffer.ReadInt();
-        var ignored = buffer.ReadBoolean();
-
-        return new PlayEffectPacket
-        {
-            Effect = effect,
-            Position = position,
-            Data = data,
-            IgnoreDistance = ignored
-        };
-    }
 
     protected override void Encode(PlayEffectPacket packet, IByteBuffer buffer)
     {

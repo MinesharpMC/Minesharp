@@ -30,14 +30,9 @@ public class EntityTeleportPacket : GamePacket
     public bool IsGrounded { get; init; }
 }
 
-public class EntityTeleportPacketCodec : GamePacketCodec<EntityTeleportPacket>
+public class EntityTeleportPacketCodec : GamePacketEncoder<EntityTeleportPacket>
 {
     public override int PacketId => 0x63;
-
-    protected override EntityTeleportPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(EntityTeleportPacket packet, IByteBuffer buffer)
     {

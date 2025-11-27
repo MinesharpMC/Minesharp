@@ -21,23 +21,9 @@ public class BlockBreakStageUpdatePacket : GamePacket
     public byte Stage { get; init; }
 }
 
-public class BlockBreakAnimationPacketCodec : GamePacketCodec<BlockBreakStageUpdatePacket>
+public class BlockBreakAnimationPacketCodec : GamePacketEncoder<BlockBreakStageUpdatePacket>
 {
     public override int PacketId => 0x06;
-
-    protected override BlockBreakStageUpdatePacket Decode(IByteBuffer buffer)
-    {
-        var entityId = buffer.ReadVarInt();
-        var position = buffer.ReadBlockPosition();
-        var stage = buffer.ReadByte();
-
-        return new BlockBreakStageUpdatePacket
-        {
-            EntityId = entityId,
-            Position = position,
-            Stage = stage
-        };
-    }
 
     protected override void Encode(BlockBreakStageUpdatePacket packet, IByteBuffer buffer)
     {

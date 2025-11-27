@@ -34,14 +34,9 @@ public sealed class SectionInfo
     public IEnumerable<long> Mapping { get; init; }
 }
 
-public sealed class LoadChunkPacketCodec : GamePacketCodec<LoadChunkPacket>
+public sealed class LoadChunkPacketCodec : GamePacketEncoder<LoadChunkPacket>
 {
     public override int PacketId => 0x1F;
-
-    protected override LoadChunkPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException("This packet decoding is not yet supported");
-    }
 
     protected override void Encode(LoadChunkPacket packet, IByteBuffer buffer)
     {

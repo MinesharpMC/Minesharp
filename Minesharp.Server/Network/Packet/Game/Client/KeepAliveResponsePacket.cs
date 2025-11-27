@@ -7,7 +7,7 @@ public sealed class KeepAliveResponsePacket : GamePacket
     public long Timestamp { get; init; }
 }
 
-public sealed class KeepAliveResponsePacketCodec : GamePacketCodec<KeepAliveResponsePacket>
+public sealed class KeepAliveResponsePacketCodec : GamePacketDecoder<KeepAliveResponsePacket>
 {
     public override int PacketId => 0x11;
 
@@ -19,10 +19,5 @@ public sealed class KeepAliveResponsePacketCodec : GamePacketCodec<KeepAliveResp
         {
             Timestamp = timestamp
         };
-    }
-
-    protected override void Encode(KeepAliveResponsePacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteLong(packet.Timestamp);
     }
 }

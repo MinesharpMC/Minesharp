@@ -14,7 +14,7 @@ public sealed class SettingPacket : GamePacket
     public Hand MainHand { get; init; }
 }
 
-public sealed class SettingPacketCodec : GamePacketCodec<SettingPacket>
+public sealed class SettingPacketCodec : GamePacketDecoder<SettingPacket>
 {
     public override int PacketId => 0x07;
 
@@ -36,15 +36,5 @@ public sealed class SettingPacketCodec : GamePacketCodec<SettingPacket>
             DisplayedSkinSections = displayedSkinSections,
             MainHand = mainHand
         };
-    }
-
-    protected override void Encode(SettingPacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteString(packet.Locale);
-        buffer.WriteByte(packet.ViewDistance);
-        buffer.WriteVarIntEnum(packet.ChatMode);
-        buffer.WriteBoolean(packet.ChatColor);
-        buffer.WriteByteEnum(packet.DisplayedSkinSections);
-        buffer.WriteVarIntEnum(packet.MainHand);
     }
 }

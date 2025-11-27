@@ -18,21 +18,9 @@ public sealed class UnloadChunkPacket : GamePacket
     public int ChunkZ { get; init; }
 }
 
-public sealed class UnloadChunkPacketCodec : GamePacketCodec<UnloadChunkPacket>
+public sealed class UnloadChunkPacketCodec : GamePacketEncoder<UnloadChunkPacket>
 {
     public override int PacketId => 0x1A;
-
-    protected override UnloadChunkPacket Decode(IByteBuffer buffer)
-    {
-        var chunkX = buffer.ReadInt();
-        var chunkZ = buffer.ReadInt();
-
-        return new UnloadChunkPacket
-        {
-            ChunkX = chunkX,
-            ChunkZ = chunkZ
-        };
-    }
 
     protected override void Encode(UnloadChunkPacket packet, IByteBuffer buffer)
     {

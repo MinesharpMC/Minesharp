@@ -11,19 +11,9 @@ public sealed class CompressionPacket : LoginPacket
     public int Threshold { get; init; }
 }
 
-public sealed class CompressionPacketCodec : LoginPacketCodec<CompressionPacket>
+public sealed class CompressionPacketCodec : LoginPacketEncoder<CompressionPacket>
 {
     public override int PacketId => 0x03;
-
-    protected override CompressionPacket Decode(IByteBuffer buffer)
-    {
-        var threshold = buffer.ReadVarInt();
-
-        return new CompressionPacket
-        {
-            Threshold = threshold
-        };
-    }
 
     protected override void Encode(CompressionPacket packet, IByteBuffer buffer)
     {

@@ -22,23 +22,9 @@ public sealed class PluginRequestPacket : LoginPacket
     public byte[] Data { get; init; }
 }
 
-public sealed class PluginRequestPacketCodec : LoginPacketCodec<PluginRequestPacket>
+public sealed class PluginRequestPacketCodec : LoginPacketEncoder<PluginRequestPacket>
 {
     public override int PacketId => 0x04;
-
-    protected override PluginRequestPacket Decode(IByteBuffer buffer)
-    {
-        var messageId = buffer.ReadVarInt();
-        var channel = buffer.ReadGuid();
-        var data = buffer.ReadBytes(buffer.ReadableBytes);
-
-        return new PluginRequestPacket
-        {
-            MessageId = messageId,
-            Channel = channel,
-            Data = data.Array
-        };
-    }
 
     protected override void Encode(PluginRequestPacket packet, IByteBuffer buffer)
     {

@@ -17,19 +17,9 @@ public class AckBlockChangePacket : GamePacket
     public int Sequence { get; init; }
 }
 
-public class AckBlockChangePacketCodec : GamePacketCodec<AckBlockChangePacket>
+public class AckBlockChangePacketCodec : GamePacketEncoder<AckBlockChangePacket>
 {
     public override int PacketId => 0x05;
-
-    protected override AckBlockChangePacket Decode(IByteBuffer buffer)
-    {
-        var sequence = buffer.ReadVarInt();
-
-        return new AckBlockChangePacket
-        {
-            Sequence = sequence
-        };
-    }
 
     protected override void Encode(AckBlockChangePacket packet, IByteBuffer buffer)
     {

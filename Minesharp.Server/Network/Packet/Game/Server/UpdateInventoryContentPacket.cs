@@ -13,14 +13,9 @@ public class UpdateInventoryContentPacket : GamePacket
     public ItemStack HeldItem { get; init; }
 }
 
-public class UpdateInventoryContentPacketCodec : GamePacketCodec<UpdateInventoryContentPacket>
+public class UpdateInventoryContentPacketCodec : GamePacketEncoder<UpdateInventoryContentPacket>
 {
     public override int PacketId => 0x11;
-
-    protected override UpdateInventoryContentPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(UpdateInventoryContentPacket packet, IByteBuffer buffer)
     {

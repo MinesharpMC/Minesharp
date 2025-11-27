@@ -15,7 +15,7 @@ public class InventoryClickPacket : GamePacket
     public ItemStack CarriedItem { get; init; }
 }
 
-public class InventoryClickPacketCodec : GamePacketCodec<InventoryClickPacket>
+public class InventoryClickPacketCodec : GamePacketDecoder<InventoryClickPacket>
 {
     public override int PacketId => 0x0A;
 
@@ -49,10 +49,5 @@ public class InventoryClickPacketCodec : GamePacketCodec<InventoryClickPacket>
             Items = items,
             CarriedItem = item
         };
-    }
-
-    protected override void Encode(InventoryClickPacket packet, IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
     }
 }

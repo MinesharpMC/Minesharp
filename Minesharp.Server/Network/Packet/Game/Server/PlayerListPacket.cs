@@ -35,14 +35,9 @@ public class PlayerInfo
     public byte[] Signature { get; init; }
 }
 
-public class PlayerListPacketCodec : GamePacketCodec<PlayerListPacket>
+public class PlayerListPacketCodec : GamePacketEncoder<PlayerListPacket>
 {
     public override int PacketId => 0x34;
-
-    protected override PlayerListPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(PlayerListPacket packet, IByteBuffer buffer)
     {

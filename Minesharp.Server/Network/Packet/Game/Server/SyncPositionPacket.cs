@@ -31,27 +31,9 @@ public sealed class SyncPositionPacket : GamePacket
     public bool DismountVehicle { get; init; }
 }
 
-public sealed class SyncPositionPacketCodec : GamePacketCodec<SyncPositionPacket>
+public sealed class SyncPositionPacketCodec : GamePacketEncoder<SyncPositionPacket>
 {
     public override int PacketId => 0x36;
-
-    protected override SyncPositionPacket Decode(IByteBuffer buffer)
-    {
-        var position = buffer.ReadPosition();
-        var rotation = buffer.ReadRotation();
-        var flags = buffer.ReadByte();
-        var teleportId = buffer.ReadVarInt();
-        var dismount = buffer.ReadBoolean();
-
-        return new SyncPositionPacket
-        {
-            Position = position,
-            Rotation = rotation,
-            Flags = flags,
-            TeleportId = teleportId,
-            DismountVehicle = dismount
-        };
-    }
 
     protected override void Encode(SyncPositionPacket packet, IByteBuffer buffer)
     {

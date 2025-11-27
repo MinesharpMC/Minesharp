@@ -20,21 +20,9 @@ public class EntityAnimationPacket : GamePacket
     public Animation Animation { get; init; }
 }
 
-public class EntityAnimationPacketCodec : GamePacketCodec<EntityAnimationPacket>
+public class EntityAnimationPacketCodec : GamePacketEncoder<EntityAnimationPacket>
 {
     public override int PacketId => 0x03;
-
-    protected override EntityAnimationPacket Decode(IByteBuffer buffer)
-    {
-        var entityId = buffer.ReadVarInt();
-        var animation = buffer.ReadByteEnum<Animation>();
-
-        return new EntityAnimationPacket
-        {
-            EntityId = entityId,
-            Animation = animation
-        };
-    }
 
     protected override void Encode(EntityAnimationPacket packet, IByteBuffer buffer)
     {

@@ -15,13 +15,9 @@ public class EntityVelocityPacket : GamePacket
     }
 }
 
-public class EntityVelocityPacketCodec : GamePacketCodec<EntityVelocityPacket>
+public class EntityVelocityPacketCodec : GamePacketEncoder<EntityVelocityPacket>
 {
     public override int PacketId { get; } = 0x4F;
-    protected override EntityVelocityPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(EntityVelocityPacket packet, IByteBuffer buffer)
     {

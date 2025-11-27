@@ -35,7 +35,7 @@ public sealed class EncryptionResponsePacket : LoginPacket
     public byte[] Signature { get; init; }
 }
 
-public sealed class EncryptionResponsePacketCodec : LoginPacketCodec<EncryptionResponsePacket>
+public sealed class EncryptionResponsePacketCodec : LoginPacketDecoder<EncryptionResponsePacket>
 {
     public override int PacketId => 0x01;
 
@@ -65,21 +65,5 @@ public sealed class EncryptionResponsePacketCodec : LoginPacketCodec<EncryptionR
             Salt = salt,
             Signature = signature
         };
-    }
-
-    protected override void Encode(EncryptionResponsePacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteByteArray(packet.SharedSecret);
-        buffer.WriteBoolean(packet.HasToken);
-
-        if (packet.HasToken)
-        {
-            buffer.WriteByteArray(packet.Token);
-        }
-        else
-        {
-            buffer.WriteLong(packet.Salt);
-            buffer.WriteByteArray(packet.Signature);
-        }
     }
 }

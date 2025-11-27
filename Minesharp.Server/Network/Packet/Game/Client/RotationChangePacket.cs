@@ -8,7 +8,7 @@ public class RotationChangePacket : GamePacket
     public Rotation Rotation { get; init; }
 }
 
-public class RotationChangePacketCodec : GamePacketCodec<RotationChangePacket>
+public class RotationChangePacketCodec : GamePacketDecoder<RotationChangePacket>
 {
     public override int PacketId => 0x15;
 
@@ -20,10 +20,5 @@ public class RotationChangePacketCodec : GamePacketCodec<RotationChangePacket>
         {
             Rotation = rotation
         };
-    }
-
-    protected override void Encode(RotationChangePacket packet, IByteBuffer buffer)
-    {
-        buffer.WriteRotation(packet.Rotation);
     }
 }

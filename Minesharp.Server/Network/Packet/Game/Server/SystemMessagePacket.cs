@@ -10,21 +10,9 @@ public sealed class SystemMessagePacket : GamePacket
     public bool IsOverlay { get; init; }
 }
 
-public sealed class SystemMessagePacketCodec : GamePacketCodec<SystemMessagePacket>
+public sealed class SystemMessagePacketCodec : GamePacketEncoder<SystemMessagePacket>
 {
     public override int PacketId => 0x5F;
-
-    protected override SystemMessagePacket Decode(IByteBuffer buffer)
-    {
-        var chat = buffer.ReadComponent<TextComponent>();
-        var overlay = buffer.ReadBoolean();
-
-        return new SystemMessagePacket
-        {
-            Chat = chat,
-            IsOverlay = overlay
-        };
-    }
 
     protected override void Encode(SystemMessagePacket packet, IByteBuffer buffer)
     {

@@ -6,10 +6,6 @@ namespace Minesharp.Server.Network.Packet.Game.Server;
 
 public class EntityMetadataPacket : GamePacket
 {
-    public EntityMetadataPacket()
-    {
-    }
-
     public EntityMetadataPacket(int entityId, IList<KeyValuePair<MetadataIndex, object>> entries)
     {
         EntityId = entityId;
@@ -20,14 +16,9 @@ public class EntityMetadataPacket : GamePacket
     public IList<KeyValuePair<MetadataIndex, object>> Entries { get; init; }
 }
 
-public class EntityMetadataPacketCodec : GamePacketCodec<EntityMetadataPacket>
+public class EntityMetadataPacketCodec : GamePacketEncoder<EntityMetadataPacket>
 {
     public override int PacketId => 0x4D;
-
-    protected override EntityMetadataPacket Decode(IByteBuffer buffer)
-    {
-        throw new NotImplementedException();
-    }
 
     protected override void Encode(EntityMetadataPacket packet, IByteBuffer buffer)
     {

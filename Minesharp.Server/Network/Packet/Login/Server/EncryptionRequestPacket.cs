@@ -21,23 +21,9 @@ public sealed class EncryptionRequestPacket : LoginPacket
     public byte[] Token { get; init; }
 }
 
-public sealed class EncryptionRequestPacketCodec : LoginPacketCodec<EncryptionRequestPacket>
+public sealed class EncryptionRequestPacketCodec : LoginPacketEncoder<EncryptionRequestPacket>
 {
     public override int PacketId => 0x01;
-
-    protected override EncryptionRequestPacket Decode(IByteBuffer buffer)
-    {
-        var serverId = buffer.ReadString();
-        var publicKey = buffer.ReadByteArray();
-        var token = buffer.ReadByteArray();
-
-        return new EncryptionRequestPacket
-        {
-            ServerId = serverId,
-            PublicKey = publicKey,
-            Token = token
-        };
-    }
 
     protected override void Encode(EncryptionRequestPacket packet, IByteBuffer buffer)
     {

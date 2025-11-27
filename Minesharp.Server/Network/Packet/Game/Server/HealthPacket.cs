@@ -21,23 +21,9 @@ public sealed class HealthPacket : GamePacket
     public float Saturation { get; init; }
 }
 
-public sealed class HealthPacketCodec : GamePacketCodec<HealthPacket>
+public sealed class HealthPacketCodec : GamePacketEncoder<HealthPacket>
 {
     public override int PacketId => 0x52;
-
-    protected override HealthPacket Decode(IByteBuffer buffer)
-    {
-        var health = buffer.ReadFloat();
-        var food = buffer.ReadVarInt();
-        var saturation = buffer.ReadFloat();
-
-        return new HealthPacket
-        {
-            Health = health,
-            Food = food,
-            Saturation = saturation
-        };
-    }
 
     protected override void Encode(HealthPacket packet, IByteBuffer buffer)
     {
