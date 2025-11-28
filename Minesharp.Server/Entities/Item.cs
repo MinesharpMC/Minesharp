@@ -49,8 +49,6 @@ public class Item : Entity
             {
                 ItemStack = remaining;
             }
-            
-            player.SendInventory();
         }
     }
 

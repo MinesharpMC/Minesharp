@@ -24,22 +24,16 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
     {
         var world = server.GetDefaultWorld();
         var position = world.SpawnPosition;
-        var inventory = new PlayerStorage();
-
-        // TODO: Load inventory
-        inventory.AddItem(new ItemStack(Material.Stone));
-        inventory.AddItem(new ItemStack(Material.GrassBlock));
-        inventory.AddItem(new ItemStack(Material.Dirt));
-        inventory.AddItem(new ItemStack(Material.Cobblestone));
-
+        
         var player = session.Player = new Player(session, world, position)
         {
             Username = packet.Username,
             Rotation = world.SpawnRotation,
             GameMode = world.GameMode,
             ViewDistance = server.ViewDistance,
-            Inventory = inventory
         };
+        
+        player.Inventory.AddItem(new ItemStack(Material.StonePickaxe));
 
         session.SendPacket(new LoginSuccessPacket
         {
@@ -89,7 +83,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
         player.RefreshChunks();
 
         player.SendPlayerList();
-        player.SendInventory();
+        player.UpdateInventory();
         player.SendPosition();
     }
 }

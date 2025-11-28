@@ -23,7 +23,7 @@ public sealed class Player : LivingEntity, IPlayer
     private readonly BreakModule breakModule;
     private readonly MetadataModule metadataModule;
 
-    public PlayerStorage Inventory { get; init; }
+    public PlayerStorage Inventory { get; }
 
     public Block Breaking
     {
@@ -118,6 +118,8 @@ public sealed class Player : LivingEntity, IPlayer
     public Player(NetworkSession session, World world, Position position) : base(world, position)
     {
         this.session = session;
+
+        Inventory = new PlayerStorage(this);
 
         chunkModule = new ChunkModule(this);
         entityModule = new EntityModule(this, chunkModule);

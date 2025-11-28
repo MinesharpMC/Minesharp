@@ -6,15 +6,15 @@ public class StorageSlot
 {
     public SlotType Type { get; set; }
     public ItemStack Item { get; set; }
-    public int Index { get; }
+    public short Index { get; }
     public bool IsEmpty => Item == null;
     
-    public StorageSlot(int index) : this(SlotType.Container, index)
+    public StorageSlot(short index) : this(SlotType.Container, index)
     {
         
     }
 
-    public StorageSlot(SlotType type, int index)
+    public StorageSlot(SlotType type, short index)
     {
         Type = type;
         Index = index;

@@ -7,12 +7,14 @@ public class Storage : IStorage
 {
     private readonly StorageSlot[] slots;
 
+    public event Action<StorageSlot> SlotChanged;
+
     public Storage(StorageType type)
     {
         Type = type;
         
         slots = new StorageSlot[type.Size];
-        for (var i = 0; i < slots.Length; i++)
+        for (short i = 0; i < slots.Length; i++)
         {
             slots[i] = new StorageSlot(i);
         }
@@ -64,8 +66,10 @@ public class Storage : IStorage
                 }
 
                 slotItem.Amount += space;
-
+                
                 count -= space;
+                
+                SlotChanged?.Invoke(slot);
             }
         }
 
@@ -76,10 +80,12 @@ public class Storage : IStorage
                 var slot = slots[i];
                 var slotItem = slot.Item;
                 
-                if (slotItem == null && slot.Type == SlotType.Container)
+                if (slotItem == null && slot.Type is SlotType.Container)
                 {
                     slot.Item = new ItemStack(item.Type, Math.Min(count, 64));
                     count -= slot.Item.Amount;
+                    
+                    SlotChanged?.Invoke(slot);
                 }
             }
         }

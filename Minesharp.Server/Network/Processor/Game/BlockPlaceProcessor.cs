@@ -14,23 +14,21 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         var world = player.World;
         var block = world.GetBlockAt(packet.Position);
         var target = block.GetRelative(packet.Face);
-
-        Log.Information(packet.Hand.ToString());
         
         if (target.Type != Material.Air)
         {
-            Log.Warning("Player {name} tried to place block on non-air block", player.Username);
+            Log.Warning("Player {Name} tried to place block on non-air block", player.Username);
             return;
         }
 
-        var item = session.Player.Inventory.ItemInHand;
-        if (item == null)
+        var slot = player.Inventory.GetHandSlot(packet.Hand);
+        if (slot.Item == null)
         {
-            Log.Warning("Player {name} tried to place block without item in hand", player.Username);
+            Log.Warning("Player {Name} tried to place block without item in hand ({Hand})", player.Username, packet.Hand);
             return;
         }
 
-        target.Type = item.Type;
+        target.Type = slot.Item.Type;
 
         var e = player.Server.CallEvent(new BlockPlaceEvent(block, player));
         if (e.IsCancelled)
@@ -39,15 +37,15 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
         }
         else
         {
-            item.Amount--;
+            slot.Item.Amount--;
 
-            if (item.Amount == 0)
+            if (slot.Item.Amount == 0)
             {
-                player.Inventory.ItemInHand = null;
-                world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, player.Inventory.ItemInHand));
+                slot.Item = null;
+                world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, slot.Item));
             }
 
-            player.SendInventorySlot(player.Inventory.HandSlot);
+            player.UpdateInventorySlot(slot.Index);
         }
         
         player.SendAckBlockChange(packet.Sequence);

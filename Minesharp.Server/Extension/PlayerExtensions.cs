@@ -16,7 +16,7 @@ public static class PlayerExtensions
         player.SendPacket(new SyncPositionPacket(player.Position, player.Rotation));
     }
 
-    public static void SendInventory(this Player player)
+    public static void UpdateInventory(this Player player)
     {
         player.SendPacket(new UpdateInventoryContentPacket
         {
@@ -32,7 +32,7 @@ public static class PlayerExtensions
         player.SendPacket(new AckBlockChangePacket(sequence));
     }
 
-    public static void SendInventorySlot(this Player player, short slot)
+    public static void UpdateInventorySlot(this Player player, short slot)
     {
         var item = player.Inventory.GetItem(slot);
         player.SendPacket(new UpdateInventorySlotPacket
