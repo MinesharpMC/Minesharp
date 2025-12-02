@@ -67,15 +67,14 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
 
-        var e = server.CallEvent(new PlayerJoinEvent(player));
+        var e = server.SendEvent(new PlayerJoinEvent(player));
         if (e.IsCancelled)
         {
             session.Disconnect();
             return;
         }
 
-        world.AddPlayer(player);
-        server.AddPlayer(player);
+        world.AddEntity(player);
 
         server.BroadcastMessage(e.Message ?? $"{player.Username} joined the game", ChatColor.Yellow);
         server.BroadcastPlayerListAdd(player);

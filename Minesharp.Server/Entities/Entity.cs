@@ -75,14 +75,16 @@ public abstract class Entity : IEquatable<Entity>, IEntity
         
         Metadata.ClearChanges();
     }
-
-    public IEnumerable<Entity> GetNearbyEntities(double x, double y, double z)
+    
+    public IEnumerable<T> GetNearbyEntities<T>(double x, double y, double z) where T : Entity
     {
         var searchBox = BoundingBox.Expand(x, y, z);
-        var entities = World.Entities;
-
-        var output = entities.Where(entity => entity != this && entity.BoundingBox.Intersect(searchBox));
-        return output;
+        
+        var entities = World
+            .GetEntities<T>()
+            .Where(entity => entity != this && entity.BoundingBox.Intersect(searchBox));
+        
+        return entities;
     }
 
     public virtual IEnumerable<GamePacket> GetSpawnPackets()

@@ -30,7 +30,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
 
         target.Type = slot.Item.Type;
 
-        var e = player.Server.CallEvent(new BlockPlaceEvent(block, player));
+        var e = player.Server.SendEvent(new BlockPlaceEvent(block, player));
         if (e.IsCancelled)
         {
             target.Type = Material.Air;

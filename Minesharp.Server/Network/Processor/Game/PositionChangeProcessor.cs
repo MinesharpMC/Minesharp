@@ -9,7 +9,7 @@ public class PositionChangeProcessor : PacketProcessor<PositionPacket>
     protected override void Process(NetworkSession session, PositionPacket packet)
     {
         var player = session.Player;
-        var e = session.Player.Server.CallEvent(new PlayerMoveEvent(session.Player, player.Position, packet.Position));
+        var e = session.Player.Server.SendEvent(new PlayerMoveEvent(session.Player, player.Position, packet.Position));
 
         if (e.IsCancelled)
         {

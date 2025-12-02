@@ -54,7 +54,7 @@ public class EntityModule
             }
         }
 
-        if (removedEntities.Any())
+        if (removedEntities.Count != 0)
         {
             player.SendPacket(new RemoveEntitiesPacket(removedEntities.ToList()));
             foreach (var removedEntity in removedEntities)

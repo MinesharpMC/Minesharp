@@ -21,7 +21,6 @@ public sealed class GameServer : IServer
 
     private readonly WorldManager worldManager;
     private readonly SessionManager sessionManager;
-    private readonly PlayerManager playerManager;
     private readonly ServerConfiguration configuration;
     private readonly BlockRegistry blockRegistry;
     private readonly PluginManager pluginManager;
@@ -37,7 +36,6 @@ public sealed class GameServer : IServer
         this.configuration = configuration;
         this.sessionManager = sessionManager;
         this.worldManager = new WorldManager(this);
-        this.playerManager = new PlayerManager();
         this.blockRegistry = blockRegistry;
         this.pluginManager = new PluginManager(this);
     }
@@ -46,16 +44,10 @@ public sealed class GameServer : IServer
     public string Description => configuration.Description;
     public byte ViewDistance => configuration.ViewDistance;
     public IEnumerable<World> Worlds => worldManager.GetWorlds();
-    public IEnumerable<Player> Players => playerManager.GetPlayers();
     public PluginManager PluginManager => pluginManager;
     public BlockRegistry BlockRegistry => blockRegistry;
 
     public int Tps { get; private set; }
-
-    public IEnumerable<IPlayer> GetPlayers()
-    {
-        return Players;
-    }
 
     public IEnumerable<IWorld> GetWorlds()
     {
@@ -79,28 +71,46 @@ public sealed class GameServer : IServer
 
     public void Broadcast(IPacket packet)
     {
-        var players = playerManager.GetPlayers();
-        foreach (var player in players)
+        var worlds = worldManager.GetWorlds();
+        foreach (var world in worlds)
         {
-            player.SendPacket(packet);
+            var players = world.GetEntities<Player>();
+            foreach (var player in players)
+            {
+                player.SendPacket(packet);
+            }
         }
     }
 
     public void Broadcast(IPacket packet, params IBroadcastRule[] rules)
     {
-        var players = playerManager.GetPlayers();
-        foreach (var player in players)
+        var worlds = worldManager.GetWorlds();
+        foreach (var world in worlds)
         {
-            if (!rules.All(x => x.IsAllowed(player)))
+            var players = world.GetEntities<Player>();
+            foreach (var player in players)
             {
-                continue;
+                if (!rules.All(x => x.IsAllowed(player)))
+                {
+                    continue;
+                }
+                
+                player.SendPacket(packet);
             }
-
-            player.SendPacket(packet);
         }
     }
 
-    public T CallEvent<T>(T e) where T : IEvent
+    public IEnumerable<Player> GetPlayers()
+    {
+        var players = worldManager
+            .GetWorlds()
+            .SelectMany(x => x.GetEntities<Player>())
+            .ToList();
+        
+        return players;
+    }
+
+    public T SendEvent<T>(T e) where T : IEvent
     {
         PluginManager.CallEvent(e);
         return e;
@@ -109,16 +119,6 @@ public sealed class GameServer : IServer
     public World GetDefaultWorld()
     {
         return worldManager.GetDefaultWorld();
-    }
-
-    public void AddPlayer(Player player)
-    {
-        playerManager.Add(player);
-    }
-
-    public void RemovePlayer(Player player)
-    {
-        playerManager.Remove(player);
     }
 
     public void Tick()

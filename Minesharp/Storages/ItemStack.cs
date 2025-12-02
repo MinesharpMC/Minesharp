@@ -20,6 +20,11 @@ public class ItemStack : IEquatable<ItemStack>
     public Material Type { get; }
     public int Amount { get; set; }
 
+    public bool CanStackWith(ItemStack other)
+    {
+        return Type == other.Type;
+    }
+
     public bool Equals(ItemStack other)
     {
         if (ReferenceEquals(null, other))

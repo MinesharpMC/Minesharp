@@ -11,13 +11,13 @@ public interface IWorld
     public string Name { get; }
     public Difficulty Difficulty { get; }
     public GameMode GameMode { get; }
-
-    IEnumerable<IEntity> GetEntities();
-    IEnumerable<IPlayer> GetPlayers();
-
+    
     IBlock GetBlock(Position position);
     IEntity GetEntity(Guid uniqueId);
-    IPlayer GetPlayer(Guid uniqueId);
+    
+    T GetEntity<T>(Guid uniqueId) where T : class, IEntity;
+    IEnumerable<T> GetEntities<T>() where T : class, IEntity;
+    
     IChunk GetChunk(Position position);
     
     Material GetBlockTypeAt(Position position);

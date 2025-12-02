@@ -8,5 +8,4 @@ public interface IServer
     int Tps { get; }
 
     IEnumerable<IWorld> GetWorlds();
-    IEnumerable<IPlayer> GetPlayers();
 }

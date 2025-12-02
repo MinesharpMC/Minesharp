@@ -2,6 +2,7 @@ using Minesharp.Blocks;
 using Minesharp.Chunks;
 using Minesharp.Entities;
 using Minesharp.Server.Blocks;
+using Minesharp.Server.Entities;
 using Minesharp.Server.Extension;
 using Minesharp.Server.Worlds;
 using Minesharp.Worlds;
@@ -38,7 +39,7 @@ public sealed class Chunk : IEquatable<Chunk>, IChunk
     {
         var output = new List<IEntity>();
 
-        var entities = World.GetEntities();
+        var entities = World.GetEntities<Player>();
         foreach (var entity in entities)
         {
             var chunk = World.GetChunkAt(entity.Position);
@@ -55,7 +56,7 @@ public sealed class Chunk : IEquatable<Chunk>, IChunk
     {
         var output = new List<IPlayer>();
 
-        var players = World.GetPlayers();
+        var players = World.GetEntities<Player>();
         foreach (var player in players)
         {
             var chunk = World.GetChunkAt(player.Position);

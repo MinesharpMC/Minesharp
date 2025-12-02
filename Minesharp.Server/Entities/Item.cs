@@ -24,31 +24,56 @@ public class Item : Entity
 
     public override void Tick()
     {
-        var entities = GetNearbyEntities(1, 0.5, 1);
-        foreach (var entity in entities)
+        if (ItemStack.Amount <= 0)
+            return;
+        
+        var items = GetNearbyEntities<Item>(1, 1, 1);
+        foreach (var other in items)
         {
-            if (entity is not Player player)
-            {
+            if (!ItemStack.CanStackWith(other.ItemStack))
                 continue;
-            }
+            
+            var space = 64 - ItemStack.Amount;
+            if (space <= 0)
+                break;
+            
+            var amount = Math.Min(space, other.ItemStack.Amount);
+            
+            ItemStack.Amount += amount;
+            other.ItemStack.Amount -= amount; 
 
+            if (other.ItemStack.Amount <= 0)
+            {
+                World.RemoveEntity(other);
+            }
+            
+            World.Broadcast(new EntityMetadataPacket(Id, Metadata.GetEntries()));
+        }
+        
+        var players = GetNearbyEntities<Player>(1, 1, 1);
+        foreach (var player in players)
+        {
+            var before = ItemStack.Amount;
             var remaining = player.Inventory.AddItem(ItemStack);
+            var pickedUp = before - (remaining?.Amount ?? 0);
+
+            if (pickedUp <= 0)
+                continue;
             
             World.Broadcast(new CollectItemPacket
             {
                 CollectedId = Id,
                 CollectorId = player.Id,
-                Count = ItemStack.Amount
+                Count = pickedUp
             });
             
-            if (remaining == null)
+            if (remaining == null || remaining.Amount <= 0)
             {
                 World.RemoveEntity(this);
+                break;
             }
-            else
-            {
-                ItemStack = remaining;
-            }
+
+            ItemStack = remaining;
         }
     }
 

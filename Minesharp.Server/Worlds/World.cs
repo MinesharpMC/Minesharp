@@ -15,7 +15,6 @@ namespace Minesharp.Server.Worlds;
 
 public sealed class World : IEquatable<World>, IWorld
 {
-    private readonly PlayerManager playerManager;
     private readonly EntityManager entityManager;
     private readonly ChunkManager chunkManager;
 
@@ -29,14 +28,11 @@ public sealed class World : IEquatable<World>, IWorld
         SpawnRotation = creator.SpawnRotation;
         Random = new Random(Guid.NewGuid().GetHashCode());
         Server = server;
-
-        playerManager = new PlayerManager();
+        
         entityManager = new EntityManager();
         chunkManager = new ChunkManager(new ChunkFactory(creator.ChunkGenerator, this));
     }
-
-    public IEnumerable<Entity> Entities => entityManager.GetEntities();
-    public IEnumerable<Player> Players => playerManager.GetPlayers();
+    
     public Random Random { get; }
     public GameServer Server { get; }
     public Position SpawnPosition { get; set; }
@@ -61,15 +57,16 @@ public sealed class World : IEquatable<World>, IWorld
     public string Name { get; }
     public Difficulty Difficulty { get; }
     public GameMode GameMode { get; }
+    public IEnumerable<Entity> Entities => entityManager.GetEntities();
 
-    public IEnumerable<IEntity> GetEntities()
+    public T GetEntity<T>(Guid uniqueId) where T : class, IEntity
     {
-        return Entities;
+        return entityManager.GetEntity<T>(uniqueId);
     }
 
-    public IEnumerable<IPlayer> GetPlayers()
+    public IEnumerable<T> GetEntities<T>() where T : class, IEntity
     {
-        return Players;
+        return entityManager.GetEntities<T>();
     }
 
     public IBlock GetBlock(Position position)
@@ -80,11 +77,6 @@ public sealed class World : IEquatable<World>, IWorld
     public IEntity GetEntity(Guid uniqueId)
     {
         return entityManager.GetEntity(uniqueId);
-    }
-
-    public IPlayer GetPlayer(Guid uniqueId)
-    {
-        return playerManager.GetPlayer(uniqueId);
     }
 
     public IChunk GetChunk(Position position)
@@ -182,12 +174,6 @@ public sealed class World : IEquatable<World>, IWorld
         return chunkManager.GetChunk(key);
     }
 
-    public void AddPlayer(Player player)
-    {
-        playerManager.Add(player);
-        entityManager.Add(player);
-    }
-
     public void AddEntity(Entity entity)
     {
         entityManager.Add(entity);
@@ -195,7 +181,7 @@ public sealed class World : IEquatable<World>, IWorld
 
     public void Broadcast(GamePacket packet, params IBroadcastRule[] rules)
     {
-        var players = playerManager.GetPlayers();
+        var players = entityManager.GetEntities<Player>();
         foreach (var player in players)
         {
             if (!rules.All(x => x.IsAllowed(player)))
@@ -209,7 +195,6 @@ public sealed class World : IEquatable<World>, IWorld
 
     public void RemovePlayer(Player player)
     {
-        playerManager.Remove(player);
         entityManager.Remove(player);
     }
 
