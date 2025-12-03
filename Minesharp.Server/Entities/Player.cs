@@ -24,6 +24,12 @@ public sealed class Player : LivingEntity, IPlayer
     private readonly MetadataModule metadataModule;
 
     public PlayerStorage Inventory { get; }
+    public StorageView OpenedInventory { get; set; }
+    
+    public IPlayerStorage GetInventory()
+    {
+        return Inventory;
+    }
 
     public Block Breaking
     {
@@ -51,11 +57,6 @@ public sealed class Player : LivingEntity, IPlayer
     public int Food { get; set; }
     public float Exhaustion { get; set; }
     public float Saturation { get; set; }
-
-    public IPlayerStorage GetInventory()
-    {
-        return Inventory;
-    }
 
     public bool CanSee(Entity entity)
     {

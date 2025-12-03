@@ -70,10 +70,10 @@ public class PlayerStorage : Storage, IPlayerStorage
     
     public ItemStack GetItem(EquipmentSlot slot)
     {
-        return GetSlot(slot)?.Item;
+        return GetEquipmentSlot(slot)?.Item;
     }
 
-    public StorageSlot GetSlot(EquipmentSlot slot)
+    public StorageSlot GetEquipmentSlot(EquipmentSlot slot)
     {
         return slot switch
         {
@@ -89,7 +89,7 @@ public class PlayerStorage : Storage, IPlayerStorage
 
     public void SetItem(EquipmentSlot slot, ItemStack item)
     {
-        var storageSlot = GetSlot(slot);
+        var storageSlot = GetEquipmentSlot(slot);
         if (storageSlot is null)
         {
             return;

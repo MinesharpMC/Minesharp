@@ -12,6 +12,20 @@ public readonly struct Vector : IEquatable<Vector>
         Y = y;
         Z = z;
     }
+    
+    public Vector Normalized()
+    {
+        var length = Length();
+        
+        return length > 0 
+            ? new Vector(X / length, Y / length, Z / length) 
+            : new Vector(0, 0, 0);
+    }
+    
+    public double Length()
+    {
+        return Math.Sqrt(X * X + Y * Y + Z * Z);
+    }
 
     public bool Equals(Vector other)
     {

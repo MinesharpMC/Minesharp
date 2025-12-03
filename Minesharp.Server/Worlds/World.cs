@@ -117,6 +117,17 @@ public sealed class World : IEquatable<World>, IWorld
         entityManager.Add(drop);
     }
 
+    public void DropItem(Position position, ItemStack item, Vector velocity)
+    {
+        var drop = new Item(this, position)
+        {
+            ItemStack = item,
+            Velocity = velocity
+        };
+        
+        entityManager.Add(drop);
+    }
+
     public void SetBlockTypeAt(Position position, Material material)
     {
         SetBlockTypeAt(position.BlockX, position.BlockY, position.BlockZ, material);

@@ -74,4 +74,9 @@ public class ItemStack : IEquatable<ItemStack>
     {
         return !Equals(left, right);
     }
+
+    public override string ToString()
+    {
+        return $"{Type} x {Amount}";
+    }
 }

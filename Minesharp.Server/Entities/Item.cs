@@ -26,6 +26,9 @@ public class Item : Entity
     {
         if (ItemStack.Amount <= 0)
             return;
+
+        if (TicksLived < 100)
+            return;
         
         var items = GetNearbyEntities<Item>(1, 1, 1);
         foreach (var other in items)
@@ -84,7 +87,7 @@ public class Item : Entity
             new SpawnEntityPacket(Id, UniqueId, 44, Position),
             new EntityMetadataPacket(Id, Metadata.GetEntries()),
             // new EntityTeleportPacket(Id, Position),
-            // new EntityVelocityPacket(Id, Velocity)
+            new EntityVelocityPacket(Id, Velocity)
         };
     }
 }

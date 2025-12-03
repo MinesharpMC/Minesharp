@@ -35,6 +35,18 @@ public readonly struct Rotation : IEquatable<Rotation>
     {
         return !left.Equals(right);
     }
+    
+    public Vector ToDirection()
+    {
+        var yawRad = Math.PI * Yaw / 180.0;
+        var pitchRad = Math.PI * Pitch / 180.0;
+        
+        var x = -Math.Sin(yawRad) * Math.Cos(pitchRad);
+        var y = -Math.Sin(pitchRad);
+        var z =  Math.Cos(yawRad) * Math.Cos(pitchRad);
+
+        return new Vector(x, y, z).Normalized();
+    }
 
     public override string ToString()
     {

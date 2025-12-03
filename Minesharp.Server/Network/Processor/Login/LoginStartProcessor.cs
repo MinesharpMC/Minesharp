@@ -32,8 +32,6 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             GameMode = world.GameMode,
             ViewDistance = server.ViewDistance,
         };
-        
-        player.Inventory.AddItem(new ItemStack(Material.StonePickaxe));
 
         session.SendPacket(new LoginSuccessPacket
         {

@@ -25,7 +25,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             ? EquipmentSlot.MainHand 
             : EquipmentSlot.OffHand;
         
-        var slot = player.Inventory.GetSlot(equipmentSlot);
+        var slot = player.Inventory.GetEquipmentSlot(equipmentSlot);
         if (slot.Item == null)
         {
             Log.Warning("Player {Name} tried to place block without item in hand ({Hand})", player.Username, packet.Hand);

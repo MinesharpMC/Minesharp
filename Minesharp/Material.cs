@@ -1216,4 +1216,9 @@ public sealed class Material : IEquatable<Material>
     {
         return ById.GetValueOrDefault(id);
     }
+
+    public override string ToString()
+    {
+        return $"({Id}) {Name}";
+    }
 }
