@@ -110,9 +110,9 @@ public sealed class GameServer : IServer
         return players;
     }
 
-    public T SendEvent<T>(T e) where T : IEvent
+    public T Publish<T>(T e) where T : IEvent
     {
-        PluginManager.CallEvent(e);
+        PluginManager.Publish(e);
         return e;
     }
 

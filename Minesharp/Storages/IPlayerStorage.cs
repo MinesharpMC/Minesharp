@@ -1,7 +1,7 @@
 namespace Minesharp.Storages;
 
-public interface IPlayerStorage
+public interface IPlayerStorage : IStorage
 {
-    ItemStack ItemInHand { get; }
-    ItemStack ItemInOffHand { get; }
+    ItemStack GetItem(EquipmentSlot slot);
+    void SetItem(EquipmentSlot slot, ItemStack item);
 }

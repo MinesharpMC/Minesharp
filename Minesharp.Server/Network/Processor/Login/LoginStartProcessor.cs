@@ -67,7 +67,7 @@ public class LoginStartProcessor : PacketProcessor<LoginStartPacket>
             HasDeathLocation = false
         });
 
-        var e = server.SendEvent(new PlayerJoinEvent(player));
+        var e = server.Publish(new PlayerJoinEvent(player));
         if (e.IsCancelled)
         {
             session.Disconnect();

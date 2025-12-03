@@ -103,7 +103,7 @@ public class PluginManager
         }
     }
 
-    public void CallEvent<T>(T e) where T : IEvent
+    public void Publish<T>(T e) where T : IEvent
     {
         foreach (var plugin in plugins)
         {

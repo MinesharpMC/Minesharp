@@ -9,7 +9,7 @@ public class RotationAndPositionChangeProcessor : PacketProcessor<RotationAndPos
     protected override void Process(NetworkSession session, RotationAndPositionChangePacket packet)
     {
         var player = session.Player;
-        var e = session.Player.Server.SendEvent(new PlayerMoveEvent(session.Player, player.Position, packet.Position));
+        var e = session.Player.Server.Publish(new PlayerMoveEvent(session.Player, player.Position, packet.Position));
 
         if (e.IsCancelled)
         {

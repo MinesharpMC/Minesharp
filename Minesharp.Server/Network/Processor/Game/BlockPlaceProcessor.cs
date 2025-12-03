@@ -21,7 +21,11 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             return;
         }
 
-        var slot = player.Inventory.GetHandSlot(packet.Hand);
+        var equipmentSlot = packet.Hand == Hand.MainHand 
+            ? EquipmentSlot.MainHand 
+            : EquipmentSlot.OffHand;
+        
+        var slot = player.Inventory.GetSlot(equipmentSlot);
         if (slot.Item == null)
         {
             Log.Warning("Player {Name} tried to place block without item in hand ({Hand})", player.Username, packet.Hand);
@@ -30,7 +34,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
 
         target.Type = slot.Item.Type;
 
-        var e = player.Server.SendEvent(new BlockPlaceEvent(block, player));
+        var e = player.Server.Publish(new BlockPlaceEvent(block, player));
         if (e.IsCancelled)
         {
             target.Type = Material.Air;
@@ -42,7 +46,7 @@ public class BlockPlaceProcessor : PacketProcessor<BlockPlacePacket>
             if (slot.Item.Amount == 0)
             {
                 slot.Item = null;
-                world.Broadcast(new EquipmentPacket(player.Id, EquipmentSlot.MainHand, slot.Item));
+                world.Broadcast(new EquipmentPacket(player.Id, equipmentSlot, slot.Item));
             }
 
             player.UpdateInventorySlot(slot.Index);

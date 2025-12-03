@@ -33,7 +33,7 @@ public class SessionHandler : ChannelHandlerAdapter
         var player = session.Player;
         if (player is not null)
         {
-            player.Server.SendEvent(new PlayerDisconnectEvent(player));
+            player.Server.Publish(new PlayerDisconnectEvent(player));
 
             player.World.RemovePlayer(player);
             player.Server.BroadcastPlayerListRemove(player);

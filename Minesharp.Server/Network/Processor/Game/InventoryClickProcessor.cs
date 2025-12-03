@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Minesharp.Server.Entities;
 using Minesharp.Server.Network.Packet.Game.Client;
 using Minesharp.Server.Network.Packet.Game.Server;
@@ -9,12 +10,14 @@ namespace Minesharp.Server.Network.Processor.Game;
 
 public class InventoryClickProcessor : PacketProcessor<InventoryClickPacket>
 {
+    private static readonly ConcurrentDictionary<Player, ItemStack> Cursors = new();
+    
     protected override void Process(NetworkSession session, InventoryClickPacket packet)
     {
         var player = session.Player;
         var inventory = player.Inventory;
-
-        Log.Information("Clicked on slot {Slot}", packet.Slot);
+        
+        Cursors[player] = packet.CarriedItem;
         
         foreach (var (slotIndex, stack) in packet.Items)
         {

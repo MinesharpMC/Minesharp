@@ -12,7 +12,7 @@ public class PlayerStorage : Storage, IPlayerStorage
     {
         Owner = player;
         
-        GetHandSlot(0).Type = SlotType.Result;
+        GetSlot(0).Type = SlotType.Result;
         
         for (var i = 1; i <= 4; i++)
         {
@@ -68,18 +68,33 @@ public class PlayerStorage : Storage, IPlayerStorage
     public short HandSlot { get; set; } = 36;
     public short OffHandSlot { get; set; } = 45;
     
-    public ItemStack GetItemInHand(Hand hand)
+    public ItemStack GetItem(EquipmentSlot slot)
     {
-        return hand switch
+        return GetSlot(slot)?.Item;
+    }
+
+    public StorageSlot GetSlot(EquipmentSlot slot)
+    {
+        return slot switch
         {
-            Hand.MainHand => ItemInHand,
-            Hand.OffHand => ItemInOffHand,
+            EquipmentSlot.MainHand => GetSlot(HandSlot),
+            EquipmentSlot.OffHand => GetSlot(OffHandSlot),
+            EquipmentSlot.Head => GetSlot(5),
+            EquipmentSlot.Chest => GetSlot(6),
+            EquipmentSlot.Legs => GetSlot(7),
+            EquipmentSlot.Feet => GetSlot(8),
             _ => null
         };
     }
 
-    public StorageSlot GetHandSlot(Hand hand)
+    public void SetItem(EquipmentSlot slot, ItemStack item)
     {
-        return GetSlot((hand == Hand.MainHand ? HandSlot : OffHandSlot));
+        var storageSlot = GetSlot(slot);
+        if (storageSlot is null)
+        {
+            return;
+        }
+        
+        storageSlot.Item = item;
     }
 }

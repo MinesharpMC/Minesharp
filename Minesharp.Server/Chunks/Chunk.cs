@@ -96,14 +96,14 @@ public sealed class Chunk : IEquatable<Chunk>, IChunk
 
     public void AddLock()
     {
-        lockCount++;
+        Interlocked.Increment(ref lockCount);
     }
 
     public void RemoveLock()
     {
         if (lockCount > 0)
         {
-            lockCount--;
+            Interlocked.Decrement(ref lockCount);
         }
     }
 
