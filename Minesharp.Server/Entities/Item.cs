@@ -30,7 +30,7 @@ public class Item : Entity
         if (TicksLived < 100)
             return;
         
-        var items = GetNearbyEntities<Item>(1, 1, 1);
+        var items = GetNearbyEntities<Item>(3, 3, 3);
         foreach (var other in items)
         {
             if (!ItemStack.CanStackWith(other.ItemStack))
@@ -53,7 +53,7 @@ public class Item : Entity
             World.Broadcast(new EntityMetadataPacket(Id, Metadata.GetEntries()));
         }
         
-        var players = GetNearbyEntities<Player>(1, 1, 1);
+        var players = GetNearbyEntities<Player>(1, 0.5, 1);
         foreach (var player in players)
         {
             var before = ItemStack.Amount;
